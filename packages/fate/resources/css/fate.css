@@ -1,0 +1,29 @@
+.action_OV{
+    background: transparent url(images/action_icn/ov.svg) no-repeat center center;
+}
+.action_AT{
+    background: transparent url(images/action_icn/at.svg) no-repeat center center;
+}
+.action_CA{
+    background: transparent url(images/action_icn/ca.svg) no-repeat center center;
+
+}
+.action_DE{
+    background: transparent url(images/action_icn/de.svg) no-repeat center center;
+}
+.action_60{
+    height: 60px;
+    width: 60px;
+    background-size: 50px;
+}
+
+
+.action_20{
+    height: 20px;
+    width: 20px;
+    background-size: 18px;
+}
+
+
+
+

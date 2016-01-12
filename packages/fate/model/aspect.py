@@ -8,7 +8,7 @@ class Table(object):
         tbl.column('image',name_long='Image',name_short='Image')
         tbl.column('game_id',size='22',name_long='Game',name_short='Game').relation('fate.game.id',relation_name='aspects', mode='foreignkey')
         tbl.column('undiscovered',dtype='B',name_long='undiscovered',name_short='undiscovered')
-        tbl.column('aspect_type_id',size='22',name_long='Aspect type',name_short='Aspect type').relation('fate.aspect_type',relation_name='aspects', mode='foreignkey', onDelete='raise')
+        tbl.column('type_code',size='2',name_long='Type Code',name_short='Type').relation('fate.aspect_type.code',relation_name='aspects', mode='foreignkey', onDelete='raise')
         tbl.column('pc_id',size='22',name_long='PC',name_short='PC').relation('fate.player_character.id',relation_name='aspects', mode='foreignkey')
         tbl.column('npc_id',size='22',name_long='NPC',name_short='NPC').relation('fate.npc.id',relation_name='aspects', mode='foreignkey')
         tbl.column('scene_id',size='22',name_long='Scene',name_short='Scene')

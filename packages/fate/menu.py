@@ -13,4 +13,6 @@ def config(root,application=None):
     fate.thpage('Scenario',table='fate.scenario')
     fate.thpage('Scenes',table='fate.scene')
     fate.thpage('Sessions',table='fate.session')
+    fate.thpage('Actions',table='fate.action_type')
+    fate.thpage('Skill',table='fate.skill')
     fate.lookups('Lookup tables',lookup_manager='fate')

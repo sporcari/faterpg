@@ -8,16 +8,19 @@ class View(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('action_type_id')
+        r.fieldcell('action_type')
         r.fieldcell('skill_id')
         r.fieldcell('description')
 
     def th_order(self):
-        return 'action_type_id'
+        return 'action_type'
 
-    def th_query(self):
-        return dict(column='id', op='contains', val='')
+class ViewFromSkill(BaseComponent):
 
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('action_type', edit=True, width='14em')
+        r.fieldcell('description', edit=True, width='100%')
 
 
 class Form(BaseComponent):

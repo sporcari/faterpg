@@ -10,7 +10,6 @@ class View(BaseComponent):
         r = struct.view().rows()
         r.fieldcell('name')
         r.fieldcell('description')
-        r.fieldcell('icon')
         r.fieldcell('succeed')
         r.fieldcell('with_style')
         r.fieldcell('fail')
@@ -25,18 +24,22 @@ class View(BaseComponent):
 
 
 class Form(BaseComponent):
+    css_requires='css/fate'
 
     def th_form(self, form):
-        pane = form.record
-        fb = pane.formbuilder(cols=2, border_spacing='4px')
-        fb.field('name')
+        bc = form.center.borderContainer(datapath='.record')
+        fb = bc.contentPane(region='center', margin='4px').formbuilder(cols=1, border_spacing='4px')
+        fb.field('name', mandatory=True)
         fb.field('description')
-        fb.field('icon')
-        fb.field('succeed')
-        fb.field('with_style')
-        fb.field('fail')
-        fb.field('tie')
+        fb.field('fail', tag='simpletextarea', height='8ex')
+        fb.field('tie', tag='simpletextarea', height='8ex')
+        fb.field('succeed', tag='simpletextarea', height='8ex')
+        fb.field('with_style', tag='simpletextarea', height='8ex')
 
+
+        bc.contentPane(region='right',width='150px').div(
+                                         _class='^.$cls_action')
+        bc.dataFormula('.$cls_action',"code? 'action_60 action_'+code:'';",code='^.code')
 
     def th_options(self):
         return dict(dialog_height='400px', dialog_width='600px')

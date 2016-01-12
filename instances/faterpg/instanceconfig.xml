@@ -5,10 +5,11 @@
 	<packages>
 		<gnrcore_sys pkgcode="gnrcore:sys"/>
 		<gnrcore_adm pkgcode="gnrcore:adm"/>
+        <gnrextra_www pkgcode="gnrextra:www"/>
 		<fate/>
 	</packages>
 
-	<authentication pkg="gnrcore:sys">
+	<authentication pkg="adm">
 		<py_auth defaultTags="user" method="authenticate" pkg="adm"/>
 	</authentication>
 </GenRoBag>

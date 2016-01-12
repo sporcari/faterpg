@@ -22,21 +22,16 @@ class View(BaseComponent):
     def th_query(self):
         return dict(column='name', op='contains', val='')
 
+class ViewFromSkill(BaseComponent):
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('name', edit=True, width='12em')
+        r.fieldcell('description', edit=True, width='100%')
+        r.fieldcell('action_type', edit=True, name='Action', width='10em')
+        #r.fieldcell('ruleset', edit=True, width='10em')
+
+    def th_order(self):
+        return 'name'
 
 
-class Form(BaseComponent):
-
-    def th_form(self, form):
-        pane = form.record
-        fb = pane.formbuilder(cols=2, border_spacing='4px')
-        fb.field('name')
-        fb.field('description')
-        fb.field('approach_id')
-        fb.field('ruleset')
-        fb.field('action_type_id')
-        fb.field('skill_id')
-        fb.field('custom')
-
-
-    def th_options(self):
-        return dict(dialog_height='400px', dialog_width='600px')
