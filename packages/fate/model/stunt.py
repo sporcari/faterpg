@@ -11,3 +11,10 @@ class Table(object):
         tbl.column('action_type',size='2',name_long='Action Type',name_short='Action Type').relation('fate.action_type.code',relation_name='stunts', mode='foreignkey')
         tbl.column('skill_id',size='22',name_long='Skill',name_short='Skill').relation('fate.skill.id',relation_name='stunts', mode='foreignkey')
         tbl.column('custom',dtype='B',name_long='Custom',name_short='Custom')
+        tbl.column('once_per_scene',dtype='B',name_long='Once per scene',name_short='OP Scene')
+        tbl.column('n_per_session',dtype='I',name_long='N per session',name_short='NP Session')
+        tbl.column('in_conflict',dtype='B',name_long='In conflict',name_short='In conflict')
+        tbl.column('spend_fp',dtype='B',name_long='Spend fate point',name_short='Spend FP')
+
+
+

@@ -25,6 +25,17 @@ class View(BaseComponent):
         return dict(column='name', op='contains', val='')
 
 
+class ViewFromEmptyGamesheet(BaseComponent):
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('player_id', edit=True, width='100%')
+        #r.fieldcell('name')
+        #r.fieldcell('description')
+        #r.fieldcell('high_concept')
+
+
+
 
 class Form(BaseComponent):
 

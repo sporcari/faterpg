@@ -13,3 +13,5 @@ class Table(object):
         tbl.column('trouble_id',size='22',name_long='Trouble',name_short='Trouble').relation('fate.aspect.id',relation_name='troubled_pc', mode='foreignkey', one_one=True)
         tbl.column('fate_points',dtype='I',name_long='Fate Points',name_short='Fate Points')
         tbl.column('image',name_long='Image',name_short='Image')
+        tbl.aliasColumn('high_concept','@high_concept_id.phrase', name_long='High concept')
+        tbl.aliasColumn('trouble', '@trouble_id.phrase', name_long='Trouble')

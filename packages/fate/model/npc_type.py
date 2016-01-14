@@ -6,3 +6,15 @@ class Table(object):
         self.sysFields(tbl)
         tbl.column('name',name_long='Name',name_short='Name',unique=True)
         tbl.column('description',name_long='Description',name_short='Description')
+
+    def sysRecord_NL(self):
+        return self.newrecord(name='Nameless',
+                              description='Nameless NPC')
+
+    def sysRecord_SU(self):
+        return self.newrecord(name='Supporting NPC',
+                              description='Supporting NPC')
+
+    def sysRecord_MA(self):
+        return self.newrecord(name='Main NPC',
+                              description='Main NPC')

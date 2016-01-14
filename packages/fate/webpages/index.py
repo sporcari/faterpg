@@ -3,7 +3,7 @@
 
 class GnrCustomWebPage(object):
     auth_main='user'
-    py_requires='th/th:TableHandler'
+    py_requires='th/th:TableHandler,public:Public'
 
     def windowTitle(self):
         return 'Fate RPG webtabletop'
@@ -14,8 +14,8 @@ class GnrCustomWebPage(object):
     def main(self,root,**kwargs):
         tc = root.tabContainer(datapath='main', region='center')
         self.playerProfile(tc.contentPane(title='Profile'))
-
-        tc.contentPane(title='Games')
+        self.playerGames(tc.contentPane(title='Games'))
+        
         tc.contentPane(title='Character Sheets')
         tc.contentPane(title='Friends')
         tc.contentPane(title='Docs')
@@ -24,3 +24,8 @@ class GnrCustomWebPage(object):
         form = pane.thFormHandler(table='fate.player',
                                   startKey=self.rootenv['player_id'],
                                   datapath='.player')
+
+    def playerGames(self, pane):
+        gamesth = pane.dialogTableHandler(table='fate.game',
+                                            view_store_onStart=True,
+                                           viewResource='ViewFromPlayerDashboard')

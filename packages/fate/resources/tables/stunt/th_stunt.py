@@ -26,10 +26,15 @@ class ViewFromSkill(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('name', edit=True, width='12em')
-        r.fieldcell('description', edit=True, width='100%')
-        r.fieldcell('action_type', edit=True, name='Action', width='10em')
-        #r.fieldcell('ruleset', edit=True, width='10em')
+        r.fieldcell('name', edit=True, width='20em')
+        r.fieldcell('description', edit=dict(tag='simpletextarea', height='10ex'), width='100%')
+        r.fieldcell('action_type', edit=True, name='Action', width='11em')
+        r.fieldcell('once_per_scene',name='OPSc.', width='7em', edit=True)
+        r.fieldcell('n_per_session',name='NPSes.', width='7em', edit=True)
+        r.fieldcell('in_conflict',name='Conflict', width='7em', edit=True)
+        r.fieldcell('spend_fp',name='Spend FP', width='7em', edit=True)
+
+
 
     def th_order(self):
         return 'name'

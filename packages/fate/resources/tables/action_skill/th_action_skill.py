@@ -20,7 +20,7 @@ class ViewFromSkill(BaseComponent):
     def th_struct(self,struct):
         r = struct.view().rows()
         r.fieldcell('action_type', edit=True, width='14em')
-        r.fieldcell('description', edit=True, width='100%')
+        r.fieldcell('description', edit=dict(tag='simpletextarea', height='10ex'), width='100%')
 
 
 class Form(BaseComponent):

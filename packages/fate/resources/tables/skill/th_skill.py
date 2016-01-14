@@ -24,11 +24,13 @@ class Form(BaseComponent):
 
     def th_form(self, form):
         bc = form.center.borderContainer(datapath='.record')
-        top = bc.borderContainer(region='top', height='240px')
-        fb = top.contentPane(region='left', margin='4px', width='430px', margin_right='10px').formbuilder(cols=2, border_spacing='4px', width='100%', fld_width='90%')
+        top = bc.borderContainer(region='top', height='350px')
+        fb = top.contentPane(region='left', margin='2px', width='460px').div(margin='10px').formbuilder(cols=2, border_spacing='4px', width='100%', fld_width='100%')
         fb.field('name')
         fb.field('skill_set', lbl='Set')
-        fb.field('description', tag='simpletextarea', colspan=2, height='140px')
+        fb.field('description', tag='simpletextarea', colspan=2, height='134px')
+        fb.field('special', tag='simpletextarea', colspan=2, height='134px')
+
 
         top.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@actions',
                                                            viewResource='ViewFromSkill')
