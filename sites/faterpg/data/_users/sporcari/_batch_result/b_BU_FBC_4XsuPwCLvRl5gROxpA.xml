@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GenRoBag><title>Dump all</title>
+<batch_id>BU_FBC_4XsuPwCLvRl5gROxpA</batch_id>
+<owner_page_id>zdYU010_NWSYbJ4h5JLNIw</owner_page_id>
+<note _T="NN"></note>
+<start_ts _T="DH">2016-01-14T18:27:09.110292+01:00</start_ts>
+<end_ts _T="DH">2016-01-14T18:27:10.553076+01:00</end_ts>
+<time_delta>0:00:01</time_delta>
+<result url="/_site/maintenance/backups/2016_01_14_18_27.zip">Dump complete</result></GenRoBag>

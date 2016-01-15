@@ -2,7 +2,7 @@
             
 class GnrCustomWebPage(object):
     def main(self,root,*args, **kwargs):
-        kw = self.getCallArgs('__ins_user','shortname')
+        kw = self.getCallArgs('__ins_user','code')
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
         main_bc = root.borderContainer(datapath='main')
         top = main_bc.contentPane(region='top', height='150px', background_color='lime')
