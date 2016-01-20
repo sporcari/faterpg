@@ -1,14 +1,16 @@
 # encoding: utf-8
 
 from gnr.core.gnrbag import Bag
+from gnr.core.gnrdecorator import public_method
+
 
 class Table(object):
     def config_db(self,pkg):
-        tbl =  pkg.table('game',pkey='id',name_long='Game',name_plural='Games',caption_field='id',lookup=False)
+        tbl =  pkg.table('game',pkey='id',name_long='Game',name_plural='Games',caption_field='title', rowcaption='$title', lookup=False)
         self.sysFields(tbl,df=True, user_ins=True)
         tbl.column('title',name_long='Title',name_short='Title',unique=True,indexed=True, validate_notnull=True, validate_case='l')
         tbl.column('description', name_long='Description')
-        tbl.column('code', size=':8', name_long='code',name_short='code',unique=True, indexed=True)
+        tbl.column('code', size=':8', name_long='Code',name_short='Code',unique=True, indexed=True)
         tbl.column('ruleset',size=':4',name_long='Ruleset',name_short='Ruleset').relation('fate.ruleset.code',relation_name='games', mode='foreignkey', onDelete='raise')
         tbl.column('gm_id',size='22',name_long='Game Master',name_short='GM').relation('fate.player.id',relation_name='gm_campaigns', mode='foreignkey', onDelete='setnull', one_name='Game Master', many_name='Gm for campaigns')
         tbl.column('weekday',size=':12',name_long='Preferred weekday',name_short='Weekday')
@@ -51,3 +53,15 @@ class Table(object):
                      use_phases=True,
                      pc_aspects=5,initial_stunts=3,
                      gm_id=self.db.currentEnv.get('player_id'))
+
+    @public_method
+    def createCharacterSheets(self, game_id):
+        game_player_tbl = self.db.table('fate.game_player')
+        game_record = self.record(game_id).output('bag')
+        players = game_player_tbl.query(where='$game_id=:game_id AND $player_id!=:gm_id',
+                                                          game_id=game_id, gm_id=game_record['gm_id']).fetch()
+        for p in players:
+            old_record = dict(p)
+            p['character_id'] = self.db.table('fate.player_character').createEmptySheet(p['player_id'], game_record)
+            game_player_tbl.update(p, old_record)
+        self.db.commit()

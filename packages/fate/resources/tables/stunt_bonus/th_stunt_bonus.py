@@ -8,36 +8,28 @@ class View(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('skill_id')
-        r.fieldcell('pc_id')
-        r.fieldcell('npc_id')
-        r.fieldcell('rate')
+        r.fieldcell('code')
+        r.fieldcell('name')
+        r.fieldcell('description')
+        r.fieldcell('roll_bonus')
 
     def th_order(self):
-        return 'skill_id'
+        return 'code'
 
     def th_query(self):
         return dict(column='id', op='contains', val='')
 
-class ViewFromPC(BaseComponent):
 
-    def th_struct(self,struct):
-        r = struct.view().rows()
-        r.fieldcell('rate', width='4em')
-        r.fieldcell('skill_id', edit=True, width='100%')
-
-    def th_order(self):
-        return 'rate'
 
 class Form(BaseComponent):
 
     def th_form(self, form):
         pane = form.record
         fb = pane.formbuilder(cols=2, border_spacing='4px')
-        fb.field('skill_id')
-        fb.field('pc_id')
-        fb.field('npc_id')
-        fb.field('rate')
+        fb.field('code')
+        fb.field('name')
+        fb.field('description')
+        fb.field('roll_bonus')
 
 
     def th_options(self):

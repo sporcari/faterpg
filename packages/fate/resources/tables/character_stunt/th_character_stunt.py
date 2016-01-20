@@ -19,6 +19,36 @@ class View(BaseComponent):
         return dict(column='id', op='contains', val='')
 
 
+class ViewFromPC(BaseComponent):
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('name', edit=dict(tag='dbcombobox',
+                                    dbtable='fate.stunt',
+                                    hasDownArrow='True',
+                                    limit=30,
+                                    selected_description='.description',
+                                    selected_id='.stunt_id',
+                                    selected_skill_id='.skill_id',
+                                    selected_approach_id='.approach_id',
+                                    selected_action_type='.action_type',
+                                    selected_stunt_type='.stunt_type'), width='15em')
+
+        r.fieldcell('description', edit=True, width='100%')
+        #r.fieldcell('skill_id', edit=True, hidden='^.use_approaches')
+        #r.fieldcell('approach_id', edit=True, hidden='^.use_approaches?=!#v')
+        #r.fieldcell('action_type', edit=True)
+        r.fieldcell('stunt_type', edit=True, name='Type', width='12em')
+        #r.fieldcell('bonus',name='Bonus', width='9em', edit=True)
+        #r.fieldcell('n_per_session',name='TPSes.', width='4em', edit=True)
+        #r.fieldcell('n_per_scene',name='TPScn', width='4em', edit=True)
+        #r.fieldcell('scene_type',name='Only for', width='8em', edit=True)
+        #r.fieldcell('spend_fp',name='Spend FP', width='6em', edit=True)
+#
+    def th_order(self):
+        return 'rate'
+
+
 
 class Form(BaseComponent):
 

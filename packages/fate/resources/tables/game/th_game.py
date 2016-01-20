@@ -107,9 +107,11 @@ class Form(BaseComponent):
         self.stressTracksEditor(bc.contentPane(region='right', width='210px', margin='4px'))
         
         fb =left.formbuilder(cols=1,border_spacing='3px')
-        fb.field('game_creation',lbl='', label='Coop Game creation', colspan=3)
-        fb.field('use_approaches', lbl='', label='Use approaches', colspan=3, disabled="==(ruleset=='FAE')", ruleset='^.ruleset')
-        fb.field('use_phases', lbl='',label='Phases PC creation', colspan=3)
+        fb.field('game_creation',lbl='', label='Coop Game creation')
+        fb.field('use_approaches', lbl='', label='Use approaches', disabled="==(ruleset=='FAE')", ruleset='^.ruleset')
+        fb.field('use_phases', lbl='',label='Phases PC creation')
+        fb.button('Create Characters', action='FIRE #FORM.createCharacters')
+        fb.dataRpc('dummy', self.db.table('fate.game').createCharacterSheets, game_id='=#FORM.pkey', _fired='^#FORM.createCharacters' )
        
         fb =center.formbuilder(cols=3,border_spacing='3px')
         fb.field('approach_set', hidden='^.use_approaches?=!#v', colspan=3,width='100%', lbl='Appr.Set')

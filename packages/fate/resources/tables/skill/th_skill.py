@@ -63,10 +63,10 @@ class FormFromGame(BaseComponent):
 
     def th_form(self, form):
         bc = form.center.borderContainer()
-        fb = bc.borderContainer(datapath='.record', region='top', height='350px').div(margin='10px').formbuilder(cols=2, border_spacing='4px', width='100%', fld_width='100%')
+        fb = bc.borderContainer(datapath='.record', region='top', height='350px').div(margin='10px').formbuilder(cols=1, border_spacing='4px', width='100%', fld_width='100%')
         fb.field('name')
-        fb.field('description', tag='simpletextarea', colspan=2, height='134px')
-        fb.field('special', tag='simpletextarea', colspan=2, height='134px')
+        fb.field('description', tag='simpletextarea', height='134px')
+        fb.field('special', tag='simpletextarea', height='134px')
         bc.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@actions',
                                                            viewResource='ViewFromSkill')
 

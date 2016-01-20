@@ -12,17 +12,16 @@ class View(BaseComponent):
         r.fieldcell('game_id')
         r.fieldcell('name')
         r.fieldcell('description')
-        r.fieldcell('refresh')
         r.fieldcell('high_concept_id')
         r.fieldcell('trouble_id')
+        r.fieldcell('refresh')
         r.fieldcell('fate_points')
-        r.fieldcell('image')
 
     def th_order(self):
         return 'player_id'
 
-    def th_query(self):
-        return dict(column='name', op='contains', val='')
+    def th_options(self):
+        return dict(virtualStore=False)
 
 
 class ViewFromEmptyGamesheet(BaseComponent):
@@ -40,17 +39,59 @@ class ViewFromEmptyGamesheet(BaseComponent):
 class Form(BaseComponent):
 
     def th_form(self, form):
-        pane = form.record
-        fb = pane.formbuilder(cols=2, border_spacing='4px')
+        bc = form.center.borderContainer(datapath='.record')
+        top = bc.borderContainer(region='top', height='200px')
+        topleft = top.contentPane(region='left', width='50%', margin='2px')
+        topright= top.contentPane(region='center', datapath='#FORM', margin='2px')
+        fb = topleft.formbuilder(cols=2, border_spacing='4px', fld_width='100%')
         fb.field('player_id')
         fb.field('game_id')
-        fb.field('name')
-        fb.field('description')
-        fb.field('refresh')
-        fb.field('high_concept_id')
-        fb.field('trouble_id')
+        fb.field('name', colspan=2)
+        fb.field('description', tag='simpleTextArea', colspan=2, height='8ex')
         fb.field('fate_points')
-        fb.field('image')
+        fb.field('refresh')
+        topright.inlineTableHandler(relation='@aspects',
+                                viewResource='ViewFromPC',
+                                pbl_classes=True, title='Aspects',addrow=False,
+                                delrow=False,
+                                searchOn=False)
+
+        center = bc.borderContainer(region='center', datapath='#FORM')
+        cleft = center.contentPane(region='left', width='200px',margin='2px')
+        ccenter = center.contentPane(region='center',margin='2px')
+
+        
+        cleft.inlineTableHandler(relation='@skills',
+                                viewResource='ViewFromPC',
+                                pbl_classes=True, title='Skills',
+                                addrow=False,
+                                delrow=False,
+                                searchOn=False)
+        ccenter.inlineTableHandler(relation='@stunts',
+                                viewResource='ViewFromPC',
+                                pbl_classes=True,
+                                picker='stunt_id',
+                                title='Stunts',addrow=False,
+                                delrow=False,
+                                searchOn=False)
+
+        bottom = bc.borderContainer(region='bottom', height='190px')
+        self.stressTracksGrid(bottom.contentPane(region='left', width='50%',margin='2px'))
+        self.consequencesGrid(bottom.contentPane(region='center',margin='2px'))
+
+    def stressTracksGrid(self, pane):
+        grid = pane.quickGrid(value='^.stress_tracks',
+                         title='Stress tracks')
+        grid.column('track_name', name='Track', width='100%')
+        grid.column('stress_boxes', name='Marked boxes',width='20em', 
+                   edit=dict(tag='checkboxtext', values='=.values'))
+
+    def consequencesGrid(self, pane):
+        pane.div('conseq')
+        #pane.inlineTableHandler(relation='@consequences',
+        #                        viewResource='ViewFromPC',
+        #                        pbl_classes=True, title='Consequences')
+#
 
 
     def th_options(self):

@@ -26,7 +26,13 @@ class View(BaseComponent):
     def th_query(self):
         return dict(column='phrase', op='contains', val='')
 
+class ViewFromPC(BaseComponent):
 
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('aspect_type_id', width='10em')
+        r.fieldcell('phrase', edit=True, width='100%')
+        
 
 class Form(BaseComponent):
 
