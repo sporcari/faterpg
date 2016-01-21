@@ -19,6 +19,7 @@ class GnrCustomWebPage(object):
         tc.contentPane(title='Character Sheets')
         tc.contentPane(title='Friends')
         tc.contentPane(title='Docs')
+        #first
 
     def playerProfile(self, pane):
         form = pane.thFormHandler(table='fate.player',
