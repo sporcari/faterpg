@@ -8,24 +8,26 @@ class View(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
+        r.fieldcell('code')
         r.fieldcell('name')
         r.fieldcell('description')
-        r.fieldcell('approach_set')
 
     def th_order(self):
-        return 'name'
+        return 'code'
 
     def th_query(self):
         return dict(column='name', op='contains', val='')
+
+
 
 class Form(BaseComponent):
 
     def th_form(self, form):
         pane = form.record
         fb = pane.formbuilder(cols=2, border_spacing='4px')
+        fb.field('code')
         fb.field('name')
         fb.field('description')
-        fb.field('approach_set')
 
 
     def th_options(self):

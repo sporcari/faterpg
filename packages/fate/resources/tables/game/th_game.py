@@ -69,8 +69,10 @@ class Form(BaseComponent):
                                 stBag.setItem('s.track_name','Stress');
                                 stBag.setItem('s.n_boxes',3);
                                 SET .use_approaches=true;
+                                SET .stunt_sets='';
                              }
-                             SET .stress_tracks = stBag;""", ruleset='^.ruleset', _userChanges=True)
+                             SET .stress_tracks = stBag;""",
+                             ruleset='^.ruleset', _userChanges=True)
 
         fb.field('setting_tags', tag='checkBoxText', 
                   cols=2,
@@ -110,6 +112,10 @@ class Form(BaseComponent):
         fb.field('game_creation',lbl='', label='Coop Game creation')
         fb.field('use_approaches', lbl='', label='Use approaches', disabled="==(ruleset=='FAE')", ruleset='^.ruleset')
         fb.field('use_phases', lbl='',label='Phases PC creation')
+        fb.dataController("SET .stunt_sets=''; SET .skill_sets=''; SET approach_set=FAE;",
+                          use_approaches='^.use_approaches', _if='use_approaches')
+        
+
         fb.button('Create Characters', action='FIRE #FORM.createCharacters')
         fb.dataRpc('dummy', self.db.table('fate.game').createCharacterSheets, game_id='=#FORM.pkey', _fired='^#FORM.createCharacters' )
        
@@ -122,7 +128,12 @@ class Form(BaseComponent):
         fb.field('refresh',lbl='Refresh rate', width='3em')
         fb.field('initial_stunts',lbl='Initial Stunts', width='3em')
         fb.field('skill_cap',  width='3em', hidden='^.use_approaches')
-
+        fb.field('stunt_sets' ,width='100%', tag='checkBoxText',
+                   colspan=3, 
+                   lbl='Stunt sets',
+                   cols='1',
+                   popup=True,
+                   table='fate.stunt_set')
 
     def skillPreferences(self, bc):
         top = bc.roundedGroup(title='Skills configuration' ,height='50px', region='top')

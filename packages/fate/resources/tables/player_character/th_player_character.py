@@ -67,14 +67,27 @@ class Form(BaseComponent):
                                 addrow=False,
                                 delrow=False,
                                 searchOn=False)
-        ccenter.inlineTableHandler(relation='@stunts',
+        th = ccenter.inlineTableHandler(relation='@stunts',
                                 viewResource='ViewFromPC',
                                 pbl_classes=True,
-                                picker='stunt_id',
-                                title='Stunts',addrow=False,
+                                #picker='stunt_id',
+                                title='Stunts',
+                                addrow=False,
                                 delrow=False,
                                 searchOn=False)
+        tb = th.view.top.bar.replaceSlots('#','#,stunt_picker')
+        pane = tb.stunt_picker.palettePane(paletteCode='stunts',margin='2px',
+                                        title='Stunts', dockButton=True)
+        pane.plainTableHandler(viewResource='ViewStuntsPicker', searchOn=True,
+                                table='fate.stunt',
+                                nodeId='stunt_picker',
+                                condition="""$skill_stunt=:is_skill AND $stunt_set IN :stunt_sets""",
+                                condition_is_skill='=#FORM.record.@game_id.use_approaches?=!#v',
+                                condition__stunt_sets='^#FORM.record.@game_id.stunt_sets',
+                                condition_stunt_sets="==_stunt_sets? _stunt_sets.split(','):[]")
 
+        grid = th.view.grid
+        grid.dragAndDrop(dropCodes='stunt_picker')
         bottom = bc.borderContainer(region='bottom', height='190px')
         self.stressTracksGrid(bottom.contentPane(region='left', width='50%',margin='2px'))
         self.consequencesGrid(bottom.contentPane(region='center',margin='2px'))

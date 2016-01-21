@@ -18,6 +18,7 @@ class Table(object):
 
         tbl.column('banner_url',name_long='Banner URL',name_short='Banner URL')
         tbl.column('skill_sets',name_long='Skill Sets',name_short='Skill Sets')
+        tbl.column('stunt_sets',name_long='Stunt Sets',name_short='Stunt Sets')
         tbl.column('approach_set',size=':3',name_long='Approach set',name_short='Approach set').relation('fate.approach_set.code',relation_name='games', mode='foreignkey')
         tbl.column('pc_aspects',dtype='I',name_long='PC aspects',name_short='PC aspects')
         tbl.column('use_phases', dtype='B', name_long='Use phases')
@@ -44,6 +45,7 @@ class Table(object):
                      stress_tracks = stressbag,
                      use_approaches=False,
                      skill_sets='STD',
+                     stunt_sets='STD',
                      approach_set='STD',
                      consequences_slots='2,4,6',
                      refresh=3,

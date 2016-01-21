@@ -44,4 +44,7 @@ class Table(object):
     def sysRecord_BO(self):
         return self.newrecord(name='Boost',
                               description="""Boosts are a super-transient kind of aspect. You get a boost when you’re trying to create an advantage but don’t succeed well enough, or as an added benefit to succeeding especially well at an action. You get to invoke them for free, but as soon as you do, the aspect goes away. If you want, you can also allow another character to invoke your boost, if it’s relevant and could help them out.""")
+    def sysRecord_FP(self):
+        return self.newrecord(name='Faces & Places',
+                              description='Decide who the important people and locations are')
     
