@@ -1,22 +1,25 @@
 # -*- coding: UTF-8 -*-
             
 class GnrCustomWebPage(object):
-    def main(self,root,*args, **kwargs):
-        kw = self.getCallArgs('__ins_user','code')
-        self.game_record = self.db.table('fate.game').record(**kw).output('bag')
-        main_bc = root.borderContainer(datapath='main')
-        top = main_bc.contentPane(region='top', height='150px', background_color='lime')
-        top.div(self.game_record['title'])
-        center = main_bc.stackContainer(region='center')
-        if self.game_record['game_creation'] or self.game_record['use_phases']:
-            self.gameSetup(center)
+    py_requires='pagecontent_handler/pagecontent_handler:PageContentIndex'
 
-        self.gameAspects(center)
-        self.characterSheets(center)
-        self.playDashboard(center)
-        if self.game_record['gm_id'] == self.rootenv['player_id']:
-            self.gmTools(center)
-        self.offgameTools(center)
+
+   #def main(self,root,*args, **kwargs):
+   #    kw = self.getCallArgs('__ins_user','code')
+   #    self.game_record = self.db.table('fate.game').record(**kw).output('bag')
+   #    main_bc = root.borderContainer(datapath='main')
+   #    top = main_bc.contentPane(region='top', height='150px', background_color='lime')
+   #    top.div(self.game_record['title'])
+   #    center = main_bc.stackContainer(region='center')
+   #    if self.game_record['game_creation'] or self.game_record['use_phases']:
+   #        self.gameSetup(center)
+
+   #    self.gameAspects(center)
+   #    self.characterSheets(center)
+   #    self.playDashboard(center)
+   #    if self.game_record['gm_id'] == self.rootenv['player_id']:
+   #        self.gmTools(center)
+   #    self.offgameTools(center)
 
     def commonBar(self,frame):
         return frame.top.slotToolbar('2,parentStackButtons,*')

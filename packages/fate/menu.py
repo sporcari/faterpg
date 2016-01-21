@@ -17,3 +17,4 @@ def config(root,application=None):
     fate.thpage('Actions',table='fate.action_type')
     fate.thpage('Skills',table='fate.skill')
     fate.lookups('Lookup tables',lookup_manager='fate')
+    root.branch('WWW',pkg='www')

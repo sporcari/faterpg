@@ -8,7 +8,7 @@ class Table(object):
     def config_db(self,pkg):
         tbl =  pkg.table('game',pkey='id',name_long='Game',name_plural='Games',caption_field='title', rowcaption='$title', lookup=False)
         self.sysFields(tbl,df=True, user_ins=True)
-        tbl.column('title',name_long='Title',name_short='Title',unique=True,indexed=True, validate_notnull=True, validate_case='l')
+        tbl.column('title',name_long='Title',name_short='Title',unique=True,indexed=True, validate_notnull=True, validate_case='c')
         tbl.column('description', name_long='Description')
         tbl.column('code', size=':8', name_long='Code',name_short='Code',unique=True, indexed=True)
         tbl.column('ruleset',size=':4',name_long='Ruleset',name_short='Ruleset').relation('fate.ruleset.code',relation_name='games', mode='foreignkey', onDelete='raise')

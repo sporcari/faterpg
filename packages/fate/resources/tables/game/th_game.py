@@ -28,6 +28,7 @@ class View(BaseComponent):
 class ViewFromPlayerDashboard(BaseComponent):
 
     def th_struct(self,struct):
+
         r = struct.view().rows()
         r.fieldcell('code')
         r.fieldcell('title')
@@ -44,6 +45,16 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_condition(self):
         return dict(condition='$current_player_game IS TRUE')
 
+class FormNewGame(BaseComponent):
+    def th_form(self, form):
+        fb = form.record.formbuilder(cols=1,border_spacing='3px')
+        fb.field('title')
+        fb.field('code', validate_regex='![^A-Za-z0-9_]', width='4em',
+                validate_regex_error='!!Invalid code: "." char is not allowed')
+        fb.field('ruleset')
+
+    def th_options(self):
+        return dict(dialog_parentRatio=.5,modal=True)
 
 class Form(BaseComponent):
 
@@ -168,3 +179,15 @@ class Form(BaseComponent):
 
     def th_options(self):
         return dict(dialog_height='660px', dialog_width='880px')
+
+
+class FormNewGame(Form):
+    def th_form(self, form):
+        fb = form.record.formbuilder(cols=1,border_spacing='3px')
+        fb.field('title')
+        fb.field('code', validate_regex='![^A-Za-z0-9_]', width='4em',
+                validate_regex_error='!!Invalid code: "." char is not allowed')
+        fb.field('ruleset')
+
+    def th_options(self):
+        return dict(dialog_parentRatio=.5,modal=True)

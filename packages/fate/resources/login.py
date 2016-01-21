@@ -11,7 +11,6 @@ class LoginComponent(BaseComponent):
 
         if avatar.authmode == 'xml':
             return
-
         player_tbl = self.db.table('fate.player')
         player = player_tbl.query(where='$user_id=:uid',uid=avatar.user_id).fetch()
         if not player:
