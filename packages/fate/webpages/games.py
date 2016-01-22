@@ -11,10 +11,15 @@ class GnrCustomWebPage(object):
         return 'Games'
 
     def main(self,root,**kwargs):
-        bc = root.borderContainer(datapath='main')        
-        th = bc.contentPane(region='center').stackTableHandler(table='fate.game',
+        bc = root.borderContainer(datapath='main')
+        bc.contentPane(region='center').stackTableHandler(table='fate.game',
                                             view_store_onStart=True,
                                            viewResource='ViewFromPlayerDashboard',
-                                           formResource='Form',pbl_classes='*',
-                                           configurable=False)
-        th.view.top.popNode('bar')
+                                           #formResource='FormNewGame',
+                                           form_link_event=False,
+                                           grid_connect_onRowDblClick="""
+                                                    var urlprefix = '/tabletop/play/';
+                                                    var username = genro.getData('gnr.avatar.user');
+                                                    var gamecode = this.widget.rowByIndex($1.rowIndex)['code'];
+                                                    var url = urlprefix+username+'/'+gamecode;
+                                                    genro.openWindow(url)""")

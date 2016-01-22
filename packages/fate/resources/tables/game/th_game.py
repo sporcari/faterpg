@@ -50,16 +50,6 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_condition(self):
         return dict(condition='$current_player_game IS TRUE')
 
-class FormNewGame(BaseComponent):
-    def th_form(self, form):
-        fb = form.record.formbuilder(cols=1,border_spacing='3px')
-        fb.field('title')
-        fb.field('code', validate_regex='![^A-Za-z0-9_]', width='4em',
-                validate_regex_error='!!Invalid code: "." char is not allowed')
-        fb.field('ruleset')
-
-    def th_options(self):
-        return dict(dialog_parentRatio=.5,modal=True)
 
 class Form(BaseComponent):
 
@@ -183,15 +173,14 @@ class Form(BaseComponent):
 
 
     def th_options(self):
-        return dict(dialog_height='660px', dialog_width='880px')
+        return dict(dialog_height='660px', dialog_width='880px', modal=True)
 
 
 class FormNewGame(Form):
     def th_form(self, form):
-        fb = form.record.formbuilder(cols=1,border_spacing='3px')
-        fb.field('title')
-        fb.field('code', validate_regex='![^A-Za-z0-9_]', width='4em',
-                validate_regex_error='!!Invalid code: "." char is not allowed')
+        fb = form.record.formbuilder(cols=2,border_spacing='3px')
+        fb.field('title', colspan=2)
+        fb.field('code', width='4em')
         fb.field('ruleset')
 
     def th_options(self):
