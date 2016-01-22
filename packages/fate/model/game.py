@@ -34,6 +34,9 @@ class Table(object):
         tbl.formulaColumn('current_player_game', '(@players.player_id=:env_player_id)', dtype='B')
         tbl.formulaColumn('current_player_gm', '$gm_id=:env_player_id',  dtype='B')
 
+        tbl.pyColumn('template_game',dtype='A',group='_',py_method='templateColumn', template_name='playcell')
+
+
     def defaultValues(self):
         stressbag = Bag()
         stressbag.setItem('p.track_name', 'Phisical')

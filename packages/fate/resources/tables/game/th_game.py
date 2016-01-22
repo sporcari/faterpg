@@ -27,14 +27,19 @@ class View(BaseComponent):
 
 class ViewFromPlayerDashboard(BaseComponent):
 
+    def th_hiddencolumns(self):
+        return '$code,$title,$description,$setting_tags,$ruleset'
+
     def th_struct(self,struct):
 
         r = struct.view().rows()
-        r.fieldcell('code')
-        r.fieldcell('title')
-        r.fieldcell('description')
-        r.fieldcell('setting_tags')
-        r.fieldcell('ruleset')
+        r.fieldcell('template_game',width='100%')
+        r.cell('apri_tab',name="Apri",calculated=True,width='3em',
+                    cellClasses='cellbutton',
+                    format_buttonclass='icon48 arrow_right iconbox',
+                    format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
+                                                           var user = genro.getData('gnr.avatar.user');
+                                                           genro.childBrowserTab('/tabletop/play/'+user+'/'+row['code']);""")
 
         #r.fieldcell('weekday')
         #r.fieldcell('image')
