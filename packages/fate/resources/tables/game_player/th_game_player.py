@@ -17,11 +17,22 @@ class View(BaseComponent):
     def th_query(self):
         return dict(column='id', op='contains', val='')
 
+class ViewGamePlayers(BaseComponent):
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('player_id',width='15em',cellClasses='cellPlayer')
+        r.cell('page_id',calculated=True,width='10em',name='Page')
+        r.fieldcell('character_id',width='15em')
+
+
+
 class ViewFromGame(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
         r.fieldcell('player_id', name='Player', width='100%', edit=True)
+        r.fieldcell('role_desc',width='5em',name=' ')
         r.checkboxcolumn('gm', width='4em', name='GM',
                           radioButton=True, 
                           checkedField='player_id',

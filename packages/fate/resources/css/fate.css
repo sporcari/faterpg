@@ -26,4 +26,23 @@
 
 
 
+.tundra._common_d11 .user_idle .cellPlayer .cellContent{
+    background: url(/_gnr/11/css/icons/base14/yellowLight.gif) no-repeat right center;
+}
 
+
+.tundra._common_d11 .user_away .cellPlayer .cellContent{
+    background: url(/_gnr/11/css/icons/base14/redLight.gif) no-repeat right center;
+
+}
+
+.tundra._common_d11 .cellPlayer .cellContent{
+    background: url(/_gnr/11/css/icons/base14/greenLight.gif) no-repeat right center;
+
+}
+
+
+.tundra._common_d11 .user_disconnected .cellPlayer .cellContent{
+    background: url(/_gnr/11/css/icons/base14/grayLight.gif) no-repeat right center;
+
+}

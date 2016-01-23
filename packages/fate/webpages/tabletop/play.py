@@ -1,18 +1,93 @@
 # -*- coding: UTF-8 -*-
             
+from gnr.core.gnrdecorator import public_method
+from gnr.core.gnrbag import Bag
+
 class GnrCustomWebPage(object):
-    py_requires='layoutbuilder/layoutbuilder:LayoutBuilder'
-    css_requires='homepage'
-    def rootWidget(self, root, **kwargs):
-        return root.borderContainer(_class='homelayout',**kwargs)
+    py_requires='th/th:TableHandler,public:Public'
+    css_requires='css/fate'
+    auth_main='user'
+
+    def isDeveloper(self):
+        return True
 
     def main(self,root,*args, **kwargs):
-        mainLayout = root.layoutBuilder(contentKey='play',region='center')
 
         kw = self.getCallArgs('__ins_user','code')
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
-        main_bc = mainLayout.borderContainer(datapath='main')
-        top = main_bc.contentPane(region='top', height='150px', background_color='lime')
+        form = root.frameForm(frameCode='game',datapath='main',table='fate.game',
+                                store=True,store_startKey=self.game_record['id'],
+                                store_autoSave=True)
+        main_bc = form.center.borderContainer()
+        main_bc.contentPane(region='top').img(src='^.record.banner_img',crop_height='100px',
+                        upload_folder='site:img/game/banner',edit=True,
+                        placeholder=self.getResourceUri('css/images/banner_placeholder.jpg'),
+                        upload_filename='=#FORM.record.code',crop_border_bottom='1px solid #ddd')
+        bc = main_bc.borderContainer(region='center')
+        self.gameCommon(bc)
+        if self.game_record['status'] == 'CR':
+            self.gameCreation(bc)
+        else:
+            self.gamePlay(bc)
+
+
+    def gameCommon(self,main_bc):
+        bc = main_bc.borderContainer(region='top',height='160px')
+        bc.contentPane(region='left',width='500px').plainTableHandler(relation='@players',viewResource='ViewGamePlayers',
+                                                        condition='$player_id!=:env_player_id',pbl_classes=True,configurable=False,
+                                                        nodeId='playersTH')
+        fb = bc.contentPane(region='center').formbuilder(cols=1,border_spacing='3px',datapath='.record')
+        fb.textbox(value='^.description',lbl='Description')
+        fb.button('Test',fire='test')
+        fb.dataRpc('dummy',self.pagesTest,_fired='^test',game_id=self.game_record['id'],
+                    _onResult="""
+                        var s = GET #playersTH.view.store;
+                        s.forEach(function(n){
+                                var r = result.getItem(n.attr.player_id);
+                                if(r){
+                                    n.updAttributes({page_id:r.getItem('page_id'),_customClasses:r.getItem('_customClasses')},true);
+                                }
+                            });
+
+                    """,_timing=2)
+
+    @public_method
+    def pagesTest(self,game_id=None):
+        game_players = self.pageStore().getItem('game_players.%s' %game_id)
+        if not game_players:
+            game_players = dict([(r['user'],r['player_id']) for r in self.db.table('fate.game_player').query(columns='$player_id,@player_id.@user_id.username AS user',
+                                                                                                        where='$game_id=:g AND $player_id!=:env_player_id',g=game_id).fetch()])
+            
+            self.pageStore().setItem('game_players.%s' %game_id,game_players)
+        pages = self.site.register.pages(filters='relative_url:/tabletop/play/%(username)s/%(code)s' %self.getCallArgs('username','code'))
+        result = Bag()
+        for page_id,p in pages.items():
+            if p['user'] in game_players:
+                result[game_players[p['user']]] = Bag(dict(page_id =page_id))
+        connected_users = self.connection.connected_users_bag(exclude_guest=True)
+        for k,v in game_players.items():
+            kw = connected_users.getAttr(k)
+            result[game_players[k]] = result[game_players[k]] or Bag()
+            if kw:
+                result[game_players[k]] = result[game_players[k]] or Bag()
+                result[game_players[k]]['_customClasses'] = kw['_customClasses']
+            else:
+                result[game_players[k]]['_customClasses'] = 'user_disconnected'
+        return result
+
+
+
+    def gamePlay(self,main_bc):
+        main_bc.contentPane(region='center').div('Game play')
+
+    def gameCreation(self,main_bc):
+        main_bc.contentPane(region='center').div('Game creation')
+
+
+
+    def xxx(self,main_bc):
+
+        top = main_bc.contentPane()
         top.div(self.game_record['title'])
         center = main_bc.stackContainer(region='center')
         if self.game_record['game_creation'] or self.game_record['use_phases']:

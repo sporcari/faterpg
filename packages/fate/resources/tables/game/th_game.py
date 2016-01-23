@@ -28,7 +28,7 @@ class View(BaseComponent):
 class ViewFromPlayerDashboard(BaseComponent):
 
     def th_hiddencolumns(self):
-        return '$code,$title,$description,$setting_tags,$ruleset'
+        return '$code,$title,$description,$setting_tags,$ruleset,$__ins_user'
 
     def th_struct(self,struct):
 
@@ -38,8 +38,7 @@ class ViewFromPlayerDashboard(BaseComponent):
                     cellClasses='cellbutton',
                     format_buttonclass='icon48 arrow_right iconbox',
                     format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
-                                                           var user = genro.getData('gnr.avatar.user');
-                                                           genro.childBrowserTab('/tabletop/play/'+user+'/'+row['code']);""")
+                                                           genro.childBrowserTab('/tabletop/play/'+row['__ins_user']+'/'+row['code']);""")
 
         #r.fieldcell('weekday')
         #r.fieldcell('image')
@@ -50,36 +49,58 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_condition(self):
         return dict(condition='$current_player_game IS TRUE')
 
+    def th_top_bar_custom(self,top):
+        bar = top.bar.replaceSlots('vtitle','sections@status')
+        bar = bar.replaceSlots('addrow','newgame')
+        bar.newgame.slotButton('New Game',action='frm.newrecord({__ins_user:user,ruleset:"CORE",use_approaches:false})',
+                                frm=self.newGameForm(bar).js_form,user=self.user)
 
-class Form(BaseComponent):
+
+    def newGameForm(self,pane):
+        dlg = pane.dialog(title='New Game')
+        form = dlg.frameForm(frameCode='newgame',datapath='.newgame',height='200px',width='300px',store='memory',form_locked=False)
+        fb = form.center.contentPane(padding='5px',datapath='.record').formbuilder(cols=1,border_spacing='3px',dbtable='fate.game')
+        fb.dataController('dlg.show();',formsubscribe_onLoaded=True,dlg=dlg.js_widget)
+        fb.dataController('dlg.hide();',formsubscribe_onDismissed=True,dlg=dlg.js_widget)
+        fb.field('code',lbl='Code',width='4em',validate_nodup=True,
+                            validate_nodup_relative='__ins_user')
+        fb.field('title',lbl='!!Title',width='15em',validate_notnull=True)
+        fb.field('ruleset',lbl='!!Rulset',width='15em',validate_notnull=True)
+        fb.field('use_approaches',lbl='',label='!!Use approaches',row_hidden='^.ruleset?=#v=="FAE"')
+        bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
+        bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
+        bar.confirm.slotButton('!!Confirm',action='FIRE #FORM.confirm;')
+        bar.dataRpc('dummy',self.createNewGame,code='=#FORM.record.code',title='=#FORM.record.title',
+                    use_approaches='=#FORM.record.use_approaches',
+                    ruleset='=#FORM.record.ruleset',
+                    _fired='^#FORM.confirm',
+                    _onCalling="if(!this.form.isValid()){return;}",
+                    _onResult="""
+                                genro.publish('configureGame',{pkey:result});
+                                this.form.abort();
+                            """)
+        return form
+
+    @public_method
+    def createNewGame(self,code=None,title=None,ruleset=None,use_approaches=None):
+        tblobj = self.db.table('fate.game')
+        record = tblobj.newrecord(code=code,title=title,ruleset=ruleset,use_approaches=use_approaches)
+        tblobj.insert(record)
+        self.db.commit()
+        return record['id']
+
+
+class ConfigurationForm(BaseComponent):
 
     def th_form(self, form):
+        form.dataController("this.form.goToRecord(pkey)",subscribe_configureGame=True)
         bc = form.center.borderContainer(datapath='.record')
         top = bc.borderContainer(region='top', height='160px')
         base_info = top.roundedGroup(region='left', width='50%', title='Game info').div(margin_right='10px')
         fb = base_info.formbuilder(cols=2, border_spacing='4px', width='100%', fld_width='100%')
         fb.field('title', colspan=2)
-        fb.field('code', validate_regex='![^A-Za-z0-9_]', 
-                validate_regex_error='!!Invalid code: "." char is not allowed')
-        fb.field('ruleset')
-        fb.dataController("""var stBag = new gnr.GnrBag();
-                             if (ruleset=='CORE'){
-                                stBag.setItem('p.track_name','Phisical');
-                                stBag.setItem('p.n_boxes',2);
-                                stBag.setItem('m.track_name','Mental');
-                                stBag.setItem('m.n_boxes',2);
-                                stBag.setItem('m.skill_id',2);
-                                SET .use_approaches=false;
-                             }
-                             if (ruleset=='FAE'){
-                                stBag.setItem('s.track_name','Stress');
-                                stBag.setItem('s.n_boxes',3);
-                                SET .use_approaches=true;
-                                SET .stunt_sets='';
-                             }
-                             SET .stress_tracks = stBag;""",
-                             ruleset='^.ruleset', _userChanges=True)
-
+        #fb.field('code', validate_regex='![^A-Za-z0-9_]', 
+        #        validate_regex_error='!!Invalid code: "." char is not allowed',disabled=True)
         fb.field('setting_tags', tag='checkBoxText', 
                   cols=2,
                    popup=True, 
@@ -87,10 +108,9 @@ class Form(BaseComponent):
                    table='fate.setting')
         fb.field('description', tag='simpleTextArea', colspan=2, height='8ex')
         self.playersGrid(top.contentPane(region='center', datapath='#FORM'))
-        center = bc.borderContainer(region='center')
-        self.configOptions(center.roundedGroupFrame(region='bottom', height='160px', title='Game configuration'))
-        self.imagePane(center.roundedGroup(title="Game's banner", region='center'))
-        self.skillPreferences(bc.borderContainer(region='bottom', height='200px',  hidden='^.use_approaches'))
+        self.configOptions(bc.roundedGroupFrame(region='center', title='Game configuration'))
+        self.skillPreferences(bc.borderContainer(region='bottom', height='200px'))
+        bc.dataController("bc.setRegionVisible('bottom',!use_approaches);",use_approaches='^.use_approaches',bc=bc.js_widget)
 
     def playersGrid(self, pane):
         pane.inlineTableHandler(relation='@players',
@@ -116,15 +136,7 @@ class Form(BaseComponent):
         
         fb =left.formbuilder(cols=1,border_spacing='3px')
         fb.field('game_creation',lbl='', label='Coop Game creation')
-        fb.field('use_approaches', lbl='', label='Use approaches', disabled="==(ruleset=='FAE')", ruleset='^.ruleset')
-        fb.field('use_phases', lbl='',label='Phases PC creation')
-        fb.dataController("SET .stunt_sets=''; SET .skill_sets=''; SET approach_set=FAE;",
-                          use_approaches='^.use_approaches', _if='use_approaches')
-        
-
-        fb.button('Create Characters', action='FIRE #FORM.createCharacters')
-        fb.dataRpc('dummy', self.db.table('fate.game').createCharacterSheets, game_id='=#FORM.pkey', _fired='^#FORM.createCharacters' )
-       
+        fb.field('use_phases', lbl='',label='Phases PC creation')       
         fb =center.formbuilder(cols=3,border_spacing='3px')
         fb.field('approach_set', hidden='^.use_approaches?=!#v', colspan=3,width='100%', lbl='Appr.Set')
         fb.field('pc_phases', lbl='N.Phases', width='3em', hidden='^.use_phases?=!#v', validate_max=3)
@@ -171,17 +183,19 @@ class Form(BaseComponent):
         grid.tools('delrow,addrow', position='BR')
 
 
+    def th_bottom_custom(self,bottom):
+        bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px',_class='slotbar_dialog_footer')
+        bar.back.button('!!Cancel',action='this.form.abort();')
+        box = bar.confirm.div()
+        box.slotButton('!!Start Game',action="""SET #FORM.record.status = game_creation_status;
+                                                        this.form.save();
+                                                        """,game_creation_status = 'CR',
+                                                        hidden='^#FORM.record.status?=#v!="CO"')
+        box.slotButton('!!Open Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
+                                                        """,
+                                                        hidden='^#FORM.record.status?=#v=="CO"',
+                                                        user='=#FORM.record.__ins_user',
+                                                        code='=#FORM.record.code')
 
     def th_options(self):
-        return dict(dialog_height='660px', dialog_width='880px', modal=True)
-
-
-class FormNewGame(Form):
-    def th_form(self, form):
-        fb = form.record.formbuilder(cols=2,border_spacing='3px')
-        fb.field('title', colspan=2)
-        fb.field('code', width='4em')
-        fb.field('ruleset')
-
-    def th_options(self):
-        return dict(dialog_parentRatio=.5,modal=True)
+        return dict(dialog_height='660px', dialog_width='880px', autoSave=True,showtoolbar=False)
