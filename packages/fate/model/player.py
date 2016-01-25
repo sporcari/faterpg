@@ -12,3 +12,5 @@ class Table(object):
         tbl.aliasColumn('username', relation_path='@user_id.username', name_long='Username')
         tbl.formulaColumn('fullname', "@user_id.firstname || ' ' || @user_id.lastname", name_long='Fullname')
         tbl.formulaColumn('avatar_img', "avatar_url" ,dtype='P',name_long='!!Avatar image',name_short='Avatar', cell_format='auto:.5')
+        tbl.formulaColumn('current_player_friend', exists=dict(table='fate.friend',
+                                     where="$friend_id=#THIS.id AND $me_id=:env_player_id"), dtype='B')

@@ -12,7 +12,7 @@ class GnrCustomWebPage(object):
 
     def main(self,root,**kwargs):
         bc = root.borderContainer(datapath='main')
-        bc.contentPane(region='center').stackTableHandler(table='fate.game',
+        bc.contentPane(region='center').dialogTableHandler(table='fate.game',
                                             view_store_onStart=True,
                                            viewResource='ViewFromPlayerDashboard',
                                            formResource='ConfigurationForm',
