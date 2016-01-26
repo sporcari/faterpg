@@ -30,7 +30,6 @@ class ViewFromPlayerDashboard(BaseComponent):
         return dict(condition='$current_player_friend IS TRUE')
 
 
-
 class Form(BaseComponent):
 
     def th_form(self, form):
