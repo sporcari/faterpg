@@ -4,7 +4,7 @@ from gnr.core.gnrdecorator import public_method
 from gnr.core.gnrbag import Bag
 
 class GnrCustomWebPage(object):
-    py_requires='th/th:TableHandler,public:Public'
+    py_requires='th/th:TableHandler,public:Public,fate_component:FateComponent'
     css_requires='css/fate'
     auth_main='user'
 
@@ -15,21 +15,22 @@ class GnrCustomWebPage(object):
 
         kw = self.getCallArgs('__ins_user','code')
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
-        form = root.frameForm(frameCode='game',datapath='main',table='fate.game',
-                                store=True,store_startKey=self.game_record['id'],
-                                store_autoSave=True)
-        main_bc = form.center.borderContainer()
-        main_bc.contentPane(region='top').img(src='^.record.banner_img',crop_height='100px',
-                        upload_folder='site:img/game/banner',edit=True,
-                        placeholder=self.getResourceUri('css/images/banner_placeholder.jpg'),
-                        upload_filename='=#FORM.record.code',crop_border_bottom='1px solid #ddd')
-        bc = main_bc.borderContainer(region='center')
-        self.gameCommon(bc)
+        #root.data('game',Bag())
+        root.data('game', None, shared_id='game_%(__ins_user)s_%(code)s' %kw,shared_expire=-1)
+        #form = root.frameForm(frameCode='game',datapath='main',table='fate.game',
+        #                        store=True,store_startKey=self.game_record['id'],
+        #                        store_autoSave=True)
+        #main_bc = form.center.borderContainer()
+        #main_bc.contentPane(region='top').img(src='^.record.banner_img',crop_height='100px',
+        #                upload_folder='site:img/game/banner',edit=True,
+        #                placeholder=self.getResourceUri('css/images/banner_placeholder.jpg'),
+        #                upload_filename='=#FORM.record.code',crop_border_bottom='1px solid #ddd')
+        bc = root.borderContainer(region='center', datapath='main')
+        #self.gameCommon(bc)
         if self.game_record['status'] == 'CR':
             self.gameCreation(bc)
         else:
             self.gamePlay(bc)
-
 
     def gameCommon(self,main_bc):
         bc = main_bc.borderContainer(region='top',height='160px')
@@ -81,7 +82,31 @@ class GnrCustomWebPage(object):
         main_bc.contentPane(region='center').div('Game play')
 
     def gameCreation(self,main_bc):
-        main_bc.contentPane(region='center').div('Game creation')
+        top = main_bc.borderContainer(region='top', height='300px')
+        center = main_bc.borderContainer(region='center')
+
+        top.aspectGrid(region='left',
+                            width='50%',
+                           frameCode='currentIssues',
+                           title='Current Issues',
+                           aspect_type='CURRISS',
+                           storepath='game.game_sheet.issues.current')
+        top.aspectGrid(region='center',
+                           frameCode='impendingIssues',
+                           title='Impending Issues',
+                           aspect_type='IMPISS',
+                           storepath='game.game_sheet.issues.impending')
+        center.aspectGrid(region='left',
+                            width='50%',
+                           frameCode='settingFaces',
+                           title='Faces',
+                           aspect_type='FACES',
+                           storepath='game.game_sheet.faces')
+        center.aspectGrid(region='center',
+                           frameCode='settingPlaces',
+                           title='Places',
+                           aspect_type='PLACES',
+                           storepath='game.game_sheet.places')
 
 
 

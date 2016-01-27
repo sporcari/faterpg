@@ -1,10 +1,6 @@
 <?xml version="1.0" ?>
 <GenRoBag>
-	<wsgi mainpackage="fate"/>
-
-	<connection_timeout/>
-
-	<connection_refresh/>
+	<wsgi mainpackage="fate" websockets="t"/>
 
 	<dojo version="11"/>
 </GenRoBag>
