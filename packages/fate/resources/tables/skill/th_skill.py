@@ -25,16 +25,15 @@ class ViewCustomFromGame(BaseComponent):
     def th_struct(self,struct):
         r = struct.view().rows()
         #r.fieldcell('set', name='Set', width='5em')
-        r.fieldcell('name', width='10em')
-        r.fieldcell('description', width='100%')
-        r.fieldcell('actions', width='10em')
+        r.fieldcell('name', width='18em', edit=True)
+        r.fieldcell('description', width='100%', edit=dict(tag='simpletextarea', height='50px'))
+        r.fieldcell('actions', width='10em', name='Actions', edit=dict(tag='checkBoxText', 
+                  cols=1,
+                   popup=True, 
+                   table='fate.action_type'))
         
     def th_order(self):
         return 'name'
-
-    def th_options(self):
-        return dict(virtualStore=False)
-
 
 class Form(BaseComponent):
 
@@ -71,7 +70,7 @@ class FormFromGame(BaseComponent):
                                                            viewResource='ViewFromSkill')
 
     def th_options(self):
-        return dict(dialog_height='600px', dialog_width='400px')
+        return dict(dialog_height='550px', dialog_width='400px')
 
 
 

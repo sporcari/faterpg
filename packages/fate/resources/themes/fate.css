@@ -210,21 +210,20 @@
     border-radius: 6px;
     border:1px solid #ddd;
 }
-
 .pbl_roundedGroupLabel {
-    height: 20px;
-    line-height:19px;
+    height: 25px;
+    line-height: 24px;
     padding-bottom: 0;
     padding-left: 4px;
     padding-right: 4px;
-    background-color: #49637c;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    font-size: 0.9em;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#C8D1DC), to(#B4BECB));
+    background-color: #002643;
+    border-top-left-radius: 6px;
+    /* border-top-right-radius: 4px; */
+    font-size: 1em;
+    /* background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#C8D1DC), to(#B4BECB)); */
     background-image: -moz-linear-gradient(-90deg, #C8D1DC, #B4BECB);
-    color: #555;
-    text-indent: 2px;
+    color: #f6f6f6;
+    text-indent: 5px;
 }
 .pbl_roundedGroupVertical {
     background-image: -webkit-gradient(linear, 0% 0%, 0% 0, from(#C8D1DC), to(#B4BECB));
@@ -326,15 +325,13 @@
 /* @end */
 
 .tundra._common_d11 .dijitDialogTitleBar {
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#5B6F8D), to(#224272));
-    background-image: -moz-linear-gradient(-90deg, #5B6F8D, #224272);
-    color: #ffffff;
+    color: #316ac5;
     vertical-align: middle;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     text-align: center;
-    font-weight:normal;
-    border-bottom:1px solid #ccc;
+    font-weight: normal;
+    border-bottom: 1px solid #ccc;
     font-size: .9em;
 }
 
@@ -630,11 +627,14 @@
 
 
 .gnrfieldlabel {
-    color: #707070;
+    color: #002643;
 }
 
 .label {
     color: rgba(95, 75, 66, 0.7);
+}
+.gnrfield.tag_checkbox label {
+    color: #002643;
 }
 
 .gnr_recordinfo {

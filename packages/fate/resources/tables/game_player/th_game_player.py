@@ -31,13 +31,12 @@ class ViewFromGame(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('player_id', name='Player', width='100%', edit=True)
-        r.fieldcell('role_desc',width='5em',name=' ')
+        r.fieldcell('player_id', name='Player', width='100%', edit=dict(condition='$current_player_friend IS TRUE'))
+        r.fieldcell('role_desc',width='3em',name=' ')
         r.checkboxcolumn('gm', width='4em', name='GM',
                           radioButton=True, 
                           checkedField='player_id',
                           checkedId='#FORM.record.gm_id')
-
 
 class Form(BaseComponent):
 
@@ -47,7 +46,6 @@ class Form(BaseComponent):
         fb.field('game_id')
         fb.field('player_id')
         fb.field('character_id')
-
 
     def th_options(self):
         return dict(dialog_height='400px', dialog_width='600px')
