@@ -216,18 +216,18 @@
     padding-bottom: 0;
     padding-left: 4px;
     padding-right: 4px;
-    background-color: #002643;
+    background-color: #1172BD;
     border-top-left-radius: 6px;
     /* border-top-right-radius: 4px; */
     font-size: 1em;
     /* background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#C8D1DC), to(#B4BECB)); */
-    background-image: -moz-linear-gradient(-90deg, #C8D1DC, #B4BECB);
+    background-image: -moz-linear-gradient(-90deg, #1172BD, #1172BD);
     color: #f6f6f6;
     text-indent: 5px;
 }
 .pbl_roundedGroupVertical {
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 0, from(#C8D1DC), to(#B4BECB));
-    background-image: -moz-linear-gradient(0deg, #C8D1DC, #B4BECB);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 0, from(#1172BD), to(#1172BD));
+    background-image: -moz-linear-gradient(0deg, #1172BD, #1172BD);
 }
 
 
@@ -917,4 +917,11 @@
 }
 ._common_d11.tundra .dijitPopup > div, .tundra .dijitPopup > table{
     opacity: 1;
+}
+
+
+
+._common_d11 .iconbox{
+    background-color: white;
+    border-radius: 6;
 }

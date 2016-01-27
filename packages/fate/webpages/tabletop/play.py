@@ -6,6 +6,9 @@ from gnr.core.gnrbag import Bag
 class GnrCustomWebPage(object):
     py_requires='th/th:TableHandler,public:Public,fate_component:FateComponent'
     css_requires='css/fate'
+    css_theme = 'fate'
+    css_icons = 'retina/red'
+
     auth_main='user'
 
     def isDeveloper(self):

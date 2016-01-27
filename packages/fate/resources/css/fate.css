@@ -46,6 +46,12 @@
 
 }
 
+/* @group AspectGrid */
+
+.aspectGrid{
+    margin:5px;
+}
+
 .aspectGrid .dojoxGrid-scrollbox{
     margin-left: 5px;
 }
@@ -74,27 +80,46 @@
 }
 
 .aspectGrid .cellContent{
-    border-radius:4px;
+    color: #1173BF;
+    border-radius:10px;
     margin-top:0;
     margin-right:0px;
-    text-align:center;
-    padding-top:2px;
-    padding-bottom:1px;
+    padding-top:5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-bottom:5px;
     line-height:16px;
-    font-size: 8pt;
-    font-variant:small-caps;
-
+    font-size: 10pt;
     color:#333;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#EDEDEE), to(#CDCDCD));
-    background-image: -moz-linear-gradient(-90deg, #EDEDEE, #CDCDCD);
-    border: 1px solid #666;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#FFF58B), to(#FFF47E));
+    background-image: -moz-linear-gradient(-90deg, #FFF58B, #FFF47E);
     cursor:pointer;
-    margin-top:2px;
+    margin:7px;
+    box-shadow: 2px 2px 4px #B2B2B2;
 }
 
 .aspectGrid .dojoxGrid-row-selected .cellContent{
-    background:#888;
-    color: #fff;
-    -moz-box-shadow: inset 1px 1px 2px #222;
-    -webkit-box-shadow:inset 1px 1px 2px #222;
+
 }
+
+.tundra._common_d11 .aspectGrid  .dojoxGrid-content>div{
+    border-bottom: 0px;
+}
+
+.aspect_name{
+    text-align: center;
+    font-weight: bold;
+    font-size: 12pt;
+    color:#BF1129;    
+}
+
+.aspect_phrase{
+    text-align: center;
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+.aspect_description{
+    font-style: italic;
+}
+/* @end */
