@@ -45,11 +45,19 @@ class GnrCustomWebPage(object):
         bc = tc.contentPane(title='^.title' %character,datapath='.%(username)s' %character,detachable=True).borderContainer()
         
         #bc.dataFormula('.title',"name || username",name='^.name',username=character['username'])
-        top = bc.roundedGroup(title='Head',region='top',height='100px')
-        fb = top.formbuilder(cols=1,border_spacing='3px',datapath='game.pcsheets.%(username)s' %character)
-        fb.textbox(value='^.name',lbl='Character name')
-        fb.textbox(value='^.phisical_description',lbl='Description')
-        bc.contentPane(region='center',background='red')
+        top = bc.roundedGroup(title='ID',region='top',height='210px')
+        fb = top.div(margin='5px', margin_right='20px').formbuilder(cols=2,lblpos='T', width='100%', fld_width='100%',border_spacing='5px',datapath='game.pcsheets.%(username)s' %character)
+        fb.textbox(value='^.name',lbl='Name', colspan=2)
+        fb.simpleTextArea(value='^.description',lbl='Description',colspan=2, height='40px')
+        fb.numberTextBox(value='^.refresh', lbl='Refresh')
+        fb.numberTextBox(value='^.fate_points',lbl='Fate points')
+
+        center = bc.borderContainer(region='center')
+        center.borderContainer(region='top', height='300px').aspectGrid(region='top',
+                           frameCode='%(username)s_aspects' %character,
+                           title='Aspects',
+                           aspect_type='CHASP',
+                           storepath='game.pcsheets.%(username)s.aspects'%character)
 
 
     def gameCommon(self,main_bc):

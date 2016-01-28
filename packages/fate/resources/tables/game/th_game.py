@@ -34,7 +34,7 @@ class ViewFromPlayerDashboard(BaseComponent):
 
         r = struct.view().rows()
         r.fieldcell('template_game',width='100%')
-        r.cell('apri_tab',name="Apri",calculated=True,width='3em',
+        r.cell('join_game',name="Join Game",calculated=True,width='3em',
                     cellClasses='cellbutton',
                     format_buttonclass='icon48 arrow_right iconbox',
                     format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);

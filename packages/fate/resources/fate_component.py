@@ -37,9 +37,11 @@ class FateComponent(BaseComponent):
 
 
     def ft_aspectForm_base(self,form):
-        fb = form.record.formbuilder(cols=1)
+        #bc = form.center.borderContainer()
+
+        fb = form.record.formbuilder(cols=1, fld_width='220px',lblpos='T')
         fb.textbox(value='^.phrase', lbl='Phrase')
-        fb.simpleTextArea(value='^.description', lbl='Description')
+        fb.simpleTextArea(value='^.description', lbl='Description', height='170px')
         
 
     def ft_aspectForm_FACES(self,form):
