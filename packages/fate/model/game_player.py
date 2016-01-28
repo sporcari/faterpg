@@ -17,18 +17,18 @@ class Table(object):
     def pyColumn_page_id(self,record=None,field=None):
         return 'pippo'
 
-    def trigger_onUpdated(self,record=None,old_record=None):
-        self.checkCharacter(record,old_record=old_record)
+   #def trigger_onUpdated(self,record=None,old_record=None):
+   #    self.checkCharacter(record,old_record=old_record)
 
-    def trigger_onInserted(self,record=None):
-        self.checkCharacter(record)
+   #def trigger_onInserted(self,record=None):
+   #    self.checkCharacter(record)
 
     def defaultValues(self):
         return dict(role='PL')
 
-    def checkCharacter(self,record=None,old_record=None):
-        if record['role'] == 'PL' and not record['character_id']:
-            game_record = self.db.table('fate.game').record(record['id']).output('dict')
-            if game_record['status'] != 'CO':
-                record['character_id'] = self.db.table('fate.player_character').createEmptySheet(record['player_id'], game_record)
+    #def checkCharacter(self,record=None,old_record=None):
+    #    if record['role'] == 'PL' and not record['character_id']:
+    #        game_record = self.db.table('fate.game').record(record['id']).output('dict')
+    #        if game_record['status'] != 'CO':
+    #            record['character_id'] = self.db.table('fate.player_character').createEmptySheet(record['player_id'], game_record)
 

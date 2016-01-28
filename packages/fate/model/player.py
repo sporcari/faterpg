@@ -14,3 +14,4 @@ class Table(object):
         tbl.formulaColumn('avatar_img', "avatar_url" ,dtype='P',name_long='!!Avatar image',name_short='Avatar', cell_format='auto:.5')
         tbl.formulaColumn('current_player_friend', exists=dict(table='fate.friend',
                                      where="$friend_id=#THIS.id AND $me_id=:env_player_id"), dtype='B')
+

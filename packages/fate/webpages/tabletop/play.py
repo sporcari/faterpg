@@ -20,20 +20,37 @@ class GnrCustomWebPage(object):
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
         #root.data('game',Bag())
         root.data('game', None, shared_id='game_%(__ins_user)s_%(code)s' %kw,shared_expire=-1)
-        #form = root.frameForm(frameCode='game',datapath='main',table='fate.game',
-        #                        store=True,store_startKey=self.game_record['id'],
-        #                        store_autoSave=True)
-        #main_bc = form.center.borderContainer()
-        #main_bc.contentPane(region='top').img(src='^.record.banner_img',crop_height='100px',
-        #                upload_folder='site:img/game/banner',edit=True,
-        #                placeholder=self.getResourceUri('css/images/banner_placeholder.jpg'),
-        #                upload_filename='=#FORM.record.code',crop_border_bottom='1px solid #ddd')
-        bc = root.borderContainer(region='center', datapath='main')
+        bc = root.borderContainer(datapath='main',design='sidebar')
+        self.gameCharacters(bc)
         #self.gameCommon(bc)
         if self.game_record['status'] == 'CR':
             self.gameCreation(bc)
         else:
             self.gamePlay(bc)
+
+    def gameCharacters(self,bc):
+        tc = bc.tabContainer(region='left',width='400px',margin='2px',drawer=True,datapath='main.pcsheets',splitter=True)
+        charactersdict = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',gid=self.game_record['id'],
+                                                    plrole='PL',
+                                                    columns="""@player_id.@user_id.username AS username,$player_id""").fetchAsDict('username')
+        mycharacter = charactersdict.pop(self.user,None)
+        if mycharacter:
+            self.makeCharacterSheet(tc,mycharacter)
+        for username in sorted(charactersdict.keys()):
+            self.makeCharacterSheet(tc,charactersdict[username])
+
+
+    def makeCharacterSheet(self,tc,character=None):
+        tc.data('.%(username)s.title' %character,character['username'])
+        bc = tc.contentPane(title='^.title' %character,datapath='.%(username)s' %character,detachable=True).borderContainer()
+        
+        #bc.dataFormula('.title',"name || username",name='^.name',username=character['username'])
+        top = bc.roundedGroup(title='Head',region='top',height='100px')
+        fb = top.formbuilder(cols=1,border_spacing='3px',datapath='game.pcsheets.%(username)s' %character)
+        fb.textbox(value='^.name',lbl='Character name')
+        fb.textbox(value='^.phisical_description',lbl='Description')
+        bc.contentPane(region='center',background='red')
+
 
     def gameCommon(self,main_bc):
         bc = main_bc.borderContainer(region='top',height='160px')

@@ -126,6 +126,8 @@ class ConfigurationForm(BaseComponent):
             viewResource='ViewFromGame',
             searchOn=False,
             margin='2px',
+            autoSave=True,
+            default_role='PL',
            # pbl_classes=True,
             title='Players')
 
