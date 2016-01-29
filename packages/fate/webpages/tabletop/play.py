@@ -23,13 +23,14 @@ class GnrCustomWebPage(object):
         bc = root.borderContainer(datapath='main',design='sidebar')
         self.gameCharacters(bc)
         #self.gameCommon(bc)
+        bc.data('game_record',self.game_record)
         if self.game_record['status'] == 'CR':
             self.gameCreation(bc)
         else:
             self.gamePlay(bc)
 
     def gameCharacters(self,bc):
-        tc = bc.tabContainer(region='left',width='400px',margin='2px',drawer=True,datapath='main.pcsheets',splitter=True)
+        tc = bc.tabContainer(region='left',width='400px',margin='2px',drawer=True,datapath='main.pcsheets')
         charactersdict = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',gid=self.game_record['id'],
                                                     plrole='PL',
                                                     columns="""@player_id.@user_id.username AS username,$player_id""").fetchAsDict('username')
@@ -45,19 +46,34 @@ class GnrCustomWebPage(object):
         bc = tc.contentPane(title='^.title' %character,datapath='.%(username)s' %character,detachable=True).borderContainer()
         
         #bc.dataFormula('.title',"name || username",name='^.name',username=character['username'])
-        top = bc.roundedGroup(title='ID',region='top',height='210px')
-        fb = top.div(margin='5px', margin_right='20px').formbuilder(cols=2,lblpos='T', width='100%', fld_width='100%',border_spacing='5px',datapath='game.pcsheets.%(username)s' %character)
-        fb.textbox(value='^.name',lbl='Name', colspan=2)
-        fb.simpleTextArea(value='^.description',lbl='Description',colspan=2, height='40px')
-        fb.numberTextBox(value='^.refresh', lbl='Refresh')
-        fb.numberTextBox(value='^.fate_points',lbl='Fate points')
+        top = bc.roundedGroupFrame(title='ID',region='top',height='210px', 
+                                    datapath='game.pcsheets.%(username)s' %character,
+                                    wrp_border='1px solid #444',
+                                    lbl_background='transparent',
+                                    wrp_margin='3px',
+                                    wrp_display='block',
+                                    lbl_color='#444',lbl_border=0)
+        topbc = top.center.borderContainer()
+        left = topbc.contentPane(region='center')
+        right = topbc.contentPane(region='right',width='90px')
+        left.textbox(value='^.name',lbl='Name',width='90%',border='0px')
+        left.simpleTextArea(value='^.description',lbl='Description', 
+                            height='70px', width='90%',border=0)
+
+        right.numberTextBox(value='^.refresh', lbl='Refresh',width='90%',
+            font_size='1.2em',border=0, wrp_height='60px')
+        right.numberTextBox(value='^.fate_points',lbl='Fate points',
+            width='90%',font_size='1.2em',border=0, wrp_height='60px')
 
         center = bc.borderContainer(region='center')
-        center.borderContainer(region='top', height='300px').aspectGrid(region='top',
+        #defaultbag =Bag()
+        #center.dataFormula()
+        center.aspectGrid(region='top',height='300px',
                            frameCode='%(username)s_aspects' %character,
                            title='Aspects',
                            aspect_type='CHASP',
-                           storepath='game.pcsheets.%(username)s.aspects'%character)
+                           storepath='game.pcsheets.%(username)s.aspects'%character
+                           )
 
 
     def gameCommon(self,main_bc):

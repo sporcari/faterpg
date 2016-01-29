@@ -72,24 +72,101 @@ class Table(object):
 
 
     @public_method
-    def createCharacterSheets(self, game_id):
+    def createCharacterSheets(self, game_id, **kwargs):
         game_player_tbl = self.db.table('fate.game_player')
         game_record = self.record(game_id).output('bag')
-        players = game_player_tbl.query(where='$game_id=:game_id AND $player_id!=:gm_id',
-                                                          game_id=game_id, gm_id=game_record['gm_id']).fetch()
+        players = game_player_tbl.query(columns='$player_id,$username,$role',
+                                        where='$game_id=:game_id AND $role=:role',
+                                        game_id=game_id,
+                                        role='PL').fetch()
+        result=Bag()
         for p in players:
-            old_record = dict(p)
-            p['character_id'] = self.db.table('fate.player_character').createEmptySheet(p['player_id'], game_record)
-            game_player_tbl.update(p, old_record)
-        self.db.commit()
+            result[p['username']] = self.createEmptySheet(game_record)
+        return result
+
+    def prepareStressTrack(self, stress_tracks):
+        result = Bag()
+        for k,v in stress_tracks.items():
+            result[k] = Bag(dict(track_name=v['track_name'],
+                                values= ','.join(['b%i' % (i+1) for i in range(v['n_boxes']) ])))
+        return result
+
+    def prepareApproaches(self, game_record):
+        result = Bag()
+        rates = [3,2,2,1,1,0]
+        approaches = self.db.table('fate.approach').query(where='$approach_set=:approach_set',
+                                            approach_set=game_record['approach_set']).fetch()
+        for i,ap in enumerate(approaches):
+            result[ap['name']] = rates['id']
+        return result
+
+    def prepareSkills(self, game_record):
+        result = Bag()
+        cap = game_record['skill_cap']
+        for i in range(cap):
+            slots = cap - i
+            rate = i+1
+            for s in range(slots):
+                result.setItem('r%i.s%i'%(rate,s),None,rate=rate,skill_id=None)
+        return result
+
+    def prepareStunts(self, game_record):
+        result = Bag()
+        for s in range(game_record['initial_stunts']):
+            result['st%i' % s+1] = Bag(dict(stunt_id=None,
+                                          name=None,
+                                          description=None,
+                                          stunt_type=None,
+                                          approach_id=None,
+                                          skill_id=None,
+                                          action_type=None,
+                                          bonus=None,
+                                          n_per_scene=None,
+                                          n_per_session=None,
+                                          scene_type=None,
+                                          spend_fp=None))
+        return result
+
+    def prepareAspects(self, game_record):
+        result = Bag()
+        result['hc']= dict(aspect_type ='HC', phrase=None, description=None)
+        result['tr'] = dict(aspect_type ='TR', phrase=None, description=None)
+        if game_record['use_phases']:
+            for i in range(game_record['pc_phases']):
+                p = i+1
+                result['ph%i'%p]= dict(aspect_type = 'PH',
+                                       phrase=None,
+                                       description=None)
+        else:
+            for i in range(2,game_record['pc_aspects']):
+                result['A%i'%i+1]= dict(aspect_type = 'PCA', 
+                                       phrase=None,
+                                       description=None)
+        return result
+               
+    def createEmptySheet(self, game_record):
+        pcSheet = Bag()
+        pcSheet['refresh'] = game_record['refresh']
+        pcSheet['fate_points'] = pcSheet['refresh']
+        pcSheet['skill_cap'] = game_record['skill_cap']
+        pcSheet['n_stunts'] = game_record['initial_stunts']
+        pcSheet['stress_tracks'] = self.prepareStressTrack(game_record['stress_tracks'])
+
+        if game_record['use_approaches']:
+            pcSheet['approaches'] = self.prepareApproaches(game_record)
+        else:
+            pcSheet['skills'] = self.prepareSkills(game_record)
+        pcSheet['stunts'] = self.prepareStunts(game_record)
+        pcSheet['aspects'] = self.prepareAspects(game_record)
+        return pcSheet
 
 
     def trigger_onInserting(self,record=None):
         getattr(self,'configDefault_%(ruleset)s' %record)(record=record)
 
-    def trigger_onUpdated(self,record=None,old_record=None):
-        if old_record['status']=='CO' and record['status'] =='CR':
-            self.db.table('fate.game_player').touchRecords(where='$game_id=:g_id AND $role=:r',g_id=record['id'],r='PL')
+    #def trigger_onUpdated(self,record=None,old_record=None):
+    #    if old_record['status']=='CO' and record['status'] =='CR':
+    #        self.db.table('fate.game_player').touchRecords(where='$game_id=:g_id AND $role=:r',g_id=record['id'],r='PL')
 
     def trigger_onInserted(self,record=None):
         self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id'),

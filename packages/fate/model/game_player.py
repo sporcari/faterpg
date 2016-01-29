@@ -13,7 +13,10 @@ class Table(object):
                                          ELSE '' END)
                                         """)
         tbl.pyColumn('page_id')
-
+        tbl.aliasColumn('username', relation_path='@player_id.username', name_long='Username')
+        tbl.aliasColumn('nickname', relation_path='@player_id.nickname', name_long='Nickname')
+        tbl.aliasColumn('fullname', relation_path='@player_id.fullname', name_long='Fullname')
+    
     def pyColumn_page_id(self,record=None,field=None):
         return 'pippo'
 

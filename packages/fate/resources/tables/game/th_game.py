@@ -33,8 +33,8 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_struct(self,struct):
 
         r = struct.view().rows()
-        r.fieldcell('template_game',width='100%')
-        r.cell('join_game',name="Join Game",calculated=True,width='3em',
+        r.fieldcell('template_game',width='100%', name='-')
+        r.cell('join_game',name="Join Game",calculated=True,width='6em',
                     cellClasses='cellbutton',
                     format_buttonclass='icon48 arrow_right iconbox',
                     format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
@@ -99,12 +99,25 @@ class ConfigurationForm(BaseComponent):
 
     def th_form(self, form):
         form.dataController("this.form.goToRecord(pkey)",subscribe_configureGame=True)
+
         tc = form.center.tabContainer(datapath='.record')
         
         self.gameInfo(tc.borderContainer(title='Game'))
         
         self.configOptions(tc.borderContainer(region='center', title='Rules settings'))
         self.skillPreferences(tc.borderContainer(region='bottom',  datapath='#FORM', title='Skills', hidden='^#FORM.record.use_approaches'))
+        form.dataRpc('#FORM.pcsheets',
+                        self.db.table('fate.game').createCharacterSheets,
+                                 game_id='=#FORM.record.id',
+                                 _fired='^#FORM.prepareEmptySheets',
+                                 _onResult="""var shared_id = 'game_'+kwargs._user+'_'+kwargs._code;
+                                                var path = 'main.gameSharedItem';
+                                                var kw = {id:shared_id,expire:-1};
+                                                genro.wsk.subscribeSharedData(path,kw);
+                                                genro.setData(path,new gnr.GnrBag({'pcsheets':result}))
+                            """,
+                            _user='=#FORM.record.__ins_user',
+                            _code='=#FORM.record.code')
 
     def gameInfo(self, bc):
         top = bc.contentPane(region='top', height='80px').div(margin='10px')
@@ -113,8 +126,9 @@ class ConfigurationForm(BaseComponent):
         fb.field('setting_tags', tag='checkBoxText', 
                   cols=2,
                   lbl='World tags',
-                   popup=True, separator=', ',
-                   table='fate.setting', width='40em')
+                   popup=True,
+                   table='fate.setting',
+                   width='40em')
         center = bc.borderContainer(region='center')
         note = center.contentPane(region='center').roundedGroupFrame(title='Abstract')
         note.simpleTextArea(value='^.description',editor=True,speech=True)
@@ -200,10 +214,12 @@ class ConfigurationForm(BaseComponent):
         bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px',_class='slotbar_dialog_footer')
         bar.back.button('!!Cancel',action='this.form.abort();')
         box = bar.confirm.div()
-        box.slotButton('!!Start Game Creation',action="""SET #FORM.record.status = game_creation_status;
-                                                        this.form.save();
-                                                        """,game_creation_status = 'CR',
-                                                        hidden='^#FORM.record.status?=#v!="CO"')
+        box.slotButton('!!Create Empty Sheets',action="""SET #FORM.record.status = game_creation_status;
+                                                        var that = this;
+                                                        this.form.save({onReload:function(){
+                                                                that.fireEvent('#FORM.prepareEmptySheets',true);
+                                                            }});
+                                                        """,game_creation_status = 'CR',hidden='^#FORM.record.status?=#v!="CO"')
         box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
                                                         """,
                                                         hidden='^#FORM.record.status?=#v=="CO"',
