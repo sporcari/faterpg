@@ -20,6 +20,21 @@ class View(BaseComponent):
     def th_options(self):
         return dict(virtualStore=False)
 
+class ViewPicker(BaseComponent):
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('@skill_set.code', name='Set', width='5em')
+        r.fieldcell('name', width='10em')
+
+
+    def th_order(self):
+        return 'name'
+
+    def th_options(self):
+        return dict(virtualStore=False)
+
+
 class ViewCustomFromGame(BaseComponent):
 
     def th_struct(self,struct):

@@ -122,4 +122,11 @@
 .aspect_description{
     font-style: italic;
 }
+
+.aspect_HC{
+    background-color: #C1E4F2;
+}
+.aspect_TR{
+    background-color: #E18282;
+}
 /* @end */

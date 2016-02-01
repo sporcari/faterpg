@@ -113,7 +113,8 @@ class Table(object):
     def prepareStunts(self, game_record):
         result = Bag()
         for s in range(game_record['initial_stunts']):
-            result['st%i' % s+1] = Bag(dict(stunt_id=None,
+            s =s+1
+            result['st%i'%s] = Bag(dict(stunt_id=None,
                                           name=None,
                                           description=None,
                                           stunt_type=None,
@@ -129,19 +130,29 @@ class Table(object):
 
     def prepareAspects(self, game_record):
         result = Bag()
-        result['hc']= dict(aspect_type ='HC', phrase=None, description=None)
-        result['tr'] = dict(aspect_type ='TR', phrase=None, description=None)
+        aspect_types = self.db.table('fate.aspect_type').query().fetchAsDict(key='__syscode')
+        result['hc']= Bag(dict(aspect_type ='HC', _pkey='hc', 
+                                phrase=None,
+                                description=None,
+                                type_label=aspect_types['HC']['name']))
+        result['tr'] = Bag(dict(aspect_type ='TR', _pkey='tr',
+                                phrase=None,
+                                description=None,
+                                type_label=aspect_types['TR']['name']))
         if game_record['use_phases']:
             for i in range(game_record['pc_phases']):
                 p = i+1
-                result['ph%i'%p]= dict(aspect_type = 'PH',
+                result['ph%i'%p]= Bag(dict(aspect_type ='PH',
                                        phrase=None,
-                                       description=None)
+                                       _pkey='ph%i'%p,
+                                       description=None))
         else:
             for i in range(2,game_record['pc_aspects']):
-                result['A%i'%i+1]= dict(aspect_type = 'PCA', 
+                i = i+1
+                result['a%i'%i]= Bag(dict(aspect_type = 'PCA', 
                                        phrase=None,
-                                       description=None)
+                                       _pkey='a%i'%i,
+                                       description=None))
         return result
                
     def createEmptySheet(self, game_record):

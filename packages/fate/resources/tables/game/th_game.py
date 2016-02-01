@@ -111,13 +111,17 @@ class ConfigurationForm(BaseComponent):
                                  game_id='=#FORM.record.id',
                                  _fired='^#FORM.prepareEmptySheets',
                                  _onResult="""var shared_id = 'game_'+kwargs._user+'_'+kwargs._code;
-                                                var path = 'main.gameSharedItem';
-                                                var kw = {id:shared_id,expire:-1};
-                                                genro.wsk.subscribeSharedData(path,kw);
-                                                genro.setData(path,new gnr.GnrBag({'pcsheets':result}))
-                            """,
-                            _user='=#FORM.record.__ins_user',
-                            _code='=#FORM.record.code')
+                                                var path = 'shared_game_data.'+shared_id;
+                                                genro.setData(path,new gnr.GnrBag({'pcsheets':result}));
+                                                
+                            """,_user='=#FORM.record.__ins_user',_code='=#FORM.record.code')
+        form.dataController("""
+            var shared_id = 'game_'+user+'_'+code;
+            var path = 'shared_game_data.'+shared_id;
+            genro.som.registerSharedObject(path,shared_id,{expire:10000, saveOnClose:true, autoLoad:true});
+            """,user='=#FORM.record.__ins_user',
+               code='=#FORM.record.code',
+                _fired='^#FORM.controller.loaded')
 
     def gameInfo(self, bc):
         top = bc.contentPane(region='top', height='80px').div(margin='10px')
@@ -219,7 +223,7 @@ class ConfigurationForm(BaseComponent):
                                                         this.form.save({onReload:function(){
                                                                 that.fireEvent('#FORM.prepareEmptySheets',true);
                                                             }});
-                                                        """,game_creation_status = 'CR',hidden='^#FORM.record.status?=#v!="CO"')
+                                                        """,game_creation_status = 'CR')#,hidden='^#FORM.record.status?=#v!="CO"')
         box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
                                                         """,
                                                         hidden='^#FORM.record.status?=#v=="CO"',

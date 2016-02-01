@@ -9,16 +9,17 @@ class FateComponent(BaseComponent):
     css_requires='fate'
 
     @struct_method
-    def ft_aspectGrid(self, pane, frameCode=None, title=None, datapath=None, aspect_type=None, storepath=None,
+    def ft_aspectGrid(self, pane, frameCode=None, 
+                     title=None, datapath=None,
+                     aspect_type=None,
+                     storepath=None,
                      **kwargs):
-        struct = getattr(self,'ft_aspectStruct_%s' %aspect_type,self.ft_aspectStruct_base)
-
         frame = pane.bagGrid(frameCode=frameCode , 
                             title=title,
                             _class='aspectGrid',
                             pbl_classes='*',
                             datapath='.%s'%frameCode, 
-                            struct=struct,
+                            struct=self.ft_aspectStruct,
                             storepath=storepath, **kwargs)
         form = frame.grid.linkedForm(datapath='.form', _class='aspectForm',
                               frameCode='%s_form' % frameCode,
@@ -32,7 +33,6 @@ class FateComponent(BaseComponent):
         bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
         bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
         bar.confirm.slotButton('!!Confirm',action='this.form.save({destPkey:"*dismiss*"})')
-
         return frame
 
 
@@ -43,6 +43,8 @@ class FateComponent(BaseComponent):
         fb.textbox(value='^.phrase', lbl='Phrase')
         fb.simpleTextArea(value='^.description', lbl='Description', height='170px')
         
+    def tf_aspectForm_SKILLS(self, form):
+        pass
 
     def ft_aspectForm_FACES(self,form):
         self._ft_aspectForm_FACES_PLACES(form)
@@ -56,19 +58,7 @@ class FateComponent(BaseComponent):
         fb.textbox(value='^.phrase', lbl='Aspect')
         
 
-    def ft_aspectStruct_base(self,struct):
+    def ft_aspectStruct(self,struct):
         r = struct.view().rows()
-        r.cell('aspect', rowTemplate="""<div class='aspect_phrase'>$phrase</div>
-        <div class='aspect_description'>$description</div>""",width='100%')
-
-
-    def ft_aspectStruct_FACES(self,struct):
-        r = struct.view().rows()
-        r.cell('aspect', rowTemplate="""<div class='aspect_phrase'>$phrase</div>
-        <div class='aspect_description'>$description</div>""",width='100%')
-
-    def ft_aspectStruct_PLACES(self,struct):
-        r = struct.view().rows()
-        r.cell('aspect', rowTemplate="""<div class='aspect_name'>$name</div>
-        <div class='aspect_phrase'>$phrase</div>""",width='100%')
-
+        r.cell('aspect', _customGetter='function(row){return Fate.renderAspectRow(row);}',
+                width='100%')

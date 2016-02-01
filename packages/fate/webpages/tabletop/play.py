@@ -8,6 +8,7 @@ class GnrCustomWebPage(object):
     css_requires='css/fate'
     css_theme = 'fate'
     css_icons = 'retina/red'
+    js_requires = 'fate'
 
     auth_main='user'
 
@@ -19,7 +20,10 @@ class GnrCustomWebPage(object):
         kw = self.getCallArgs('__ins_user','code')
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
         #root.data('game',Bag())
-        root.data('game', None, shared_id='game_%(__ins_user)s_%(code)s' %kw,shared_expire=-1)
+        root.data('game', None, shared_id='game_%(__ins_user)s_%(code)s' %kw,
+                                                  shared_expire=10000,
+                                                  shared_autoLoad=True,
+                                                  shared_autoSave=True)
         bc = root.borderContainer(datapath='main',design='sidebar')
         self.gameCharacters(bc)
         #self.gameCommon(bc)
@@ -31,23 +35,28 @@ class GnrCustomWebPage(object):
 
     def gameCharacters(self,bc):
         tc = bc.tabContainer(region='left',width='400px',margin='2px',drawer=True,datapath='main.pcsheets')
-        charactersdict = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',gid=self.game_record['id'],
+        game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',
+                                                    gid=self.game_record['id'],
                                                     plrole='PL',
-                                                    columns="""@player_id.@user_id.username AS username,$player_id""").fetchAsDict('username')
-        mycharacter = charactersdict.pop(self.user,None)
-        if mycharacter:
-            self.makeCharacterSheet(tc,mycharacter)
-        for username in sorted(charactersdict.keys()):
-            self.makeCharacterSheet(tc,charactersdict[username])
+                                                    columns="""$player_id,
+                                                               $username""").fetchAsDict(key='username')
+        my_rec = game_players.pop(self.user,None)
+        if my_rec:
+            self.makeCharacterSheet(tc,self.user)
+        for username in sorted(game_players.keys()):
+            self.makeCharacterSheet(tc,username)
 
+        self.skillsPicker(bc)
 
-    def makeCharacterSheet(self,tc,character=None):
-        tc.data('.%(username)s.title' %character,character['username'])
-        bc = tc.contentPane(title='^.title' %character,datapath='.%(username)s' %character,detachable=True).borderContainer()
+    def makeCharacterSheet(self,tc,username=None):
+        tc.data('.%s.title' %username,username)
+
+        bc = tc.contentPane(title='^.%s.title' %username,
+                            detachable=True).borderContainer()
         
         #bc.dataFormula('.title',"name || username",name='^.name',username=character['username'])
-        top = bc.roundedGroupFrame(title='ID',region='top',height='210px', 
-                                    datapath='game.pcsheets.%(username)s' %character,
+        top = bc.roundedGroupFrame(title='ID',region='top',height='180px', 
+                                    datapath='game.pcsheets.%s' %username,
                                     wrp_border='1px solid #444',
                                     lbl_background='transparent',
                                     wrp_margin='3px',
@@ -64,16 +73,40 @@ class GnrCustomWebPage(object):
             font_size='1.2em',border=0, wrp_height='60px')
         right.numberTextBox(value='^.fate_points',lbl='Fate points',
             width='90%',font_size='1.2em',border=0, wrp_height='60px')
-
         center = bc.borderContainer(region='center')
+        self.characterAspects(center, username=username)
+        self.characterSkills(center, username=username)
         #defaultbag =Bag()
         #center.dataFormula()
-        center.aspectGrid(region='top',height='300px',
-                           frameCode='%(username)s_aspects' %character,
+
+    def characterAspects(self, bc, username):
+        bc.aspectGrid(region='top',height='300px',
+                           frameCode='%s_aspects' %username,
                            title='Aspects',
-                           aspect_type='CHASP',
-                           storepath='game.pcsheets.%(username)s.aspects'%character
-                           )
+                           storepath='game.pcsheets.%s.aspects'% username)
+
+    def characterSkills(self, bc, username):
+        bc.contentPane(region='center').lightButton('Skills', 
+                                background_color='red',
+                                height='180px',action='PUBLISH openSkillsPicker = {username:username}', username=username)
+
+    def skillsPicker(self, pane):
+        dlg = pane.dialog(title='Choose skills',
+                          datapath='main.pickers.skills_picker',
+                          subscribe_openSkillsPicker="""this.widget.show();
+                                                         """,
+                          )
+        dlg.dataController("console.log('loadSkillPicker',username);",subscribe_openSkillsPicker=True)
+        
+        th = dlg.plainTableHandler(viewResource='ViewPicker',
+                                        view_store_onStart=True)
+        dlg.dataController("""for (var i=0; i<=skill_cap;i++){
+                                grid.addNewSetColumn({field:'lv'+i})
+                                }
+                                """, grid=th.view.grid.js_widget,
+                               skill_cap = '=game_record.skill_cap', 
+                               _onStart=True)
+
 
 
     def gameCommon(self,main_bc):
