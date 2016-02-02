@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from gnr.core.gnrdecorator import metadata
+
 class Table(object):
     def config_db(self,pkg):
         tbl =  pkg.table('stunt',pkey='id',name_long='Stunt',name_plural='Stunt',caption_field='name',rowcaption='$name')
@@ -7,11 +9,11 @@ class Table(object):
         tbl.column('name',size=':30',name_long='Name',name_short='Name',unique=True,indexed=True)
         tbl.column('description',name_long='Description',name_short='Description')
         tbl.column('approach_id',size='22',name_long='Approach',name_short='Approach').relation('fate.approach.name',relation_name='stunts', mode='foreignkey')
-        tbl.column('skill_id',size='22',name_long='Skill',name_short='Skill').relation('fate.skill.id',relation_name='stunts', mode='foreignkey')
+        #tbl.column('skill_id',size='22',name_long='Skill',name_short='Skill')
+        tbl.column('skill_code',name_long='Skill',name_short='Skill').relation('fate.skill.code',relation_name='stunts', mode='foreignkey')
         tbl.column('stunt_type', size='4', name_long='Stunt Type').relation('fate.stunt_type.code', relation_name='stunts', mode='foreignkey', onDelete='raise')
         tbl.column('stunt_set', size='3', name_long='Stunt set').relation('fate.stunt_set.code', relation_name='stunts', mode='foreignkey', onDelete='raise')
         tbl.column('action_type',size='2',name_long='Action Type',name_short='Action Type').relation('fate.action_type.code',relation_name='stunts', mode='foreignkey')
-        tbl.column('skill_id',size='22',name_long='Skill',name_short='Skill').relation('fate.skill.id',relation_name='stunts', mode='foreignkey')
         tbl.column('bonus',name_long='Bonus',name_short='Bonus').relation('fate.stunt_bonus.code')
         tbl.column('n_per_scene',dtype='I',name_long='Times per scene',name_short='T.Scene')
         tbl.column('n_per_session',dtype='I',name_long='Times per session',name_short='T.Session')
@@ -22,3 +24,7 @@ class Table(object):
 
     def setStandardSet(self):
         self.batchUpdate(dict(stunt_set='STD'), where='$skill_id IS NOT NULL')
+
+    @metadata(doUpdate=True)
+    def touch_setSkillCode(self, record, old_record):
+        record['skill_code'] = self.db.table('fate.skill').readColumns(record['skill_id'],'code')

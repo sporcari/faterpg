@@ -11,7 +11,7 @@ class View(BaseComponent):
         r.fieldcell('@skill_set.code', name='Set', width='5em')
         r.fieldcell('name', width='10em')
         r.fieldcell('description', width='100%')
-        r.fieldcell('actions', width='10em')
+        #r.fieldcell('actions', width='10em')
         
 
     def th_order(self):
@@ -27,7 +27,6 @@ class ViewPicker(BaseComponent):
         r.fieldcell('@skill_set.code', name='Set', width='5em')
         r.fieldcell('name', width='10em')
 
-
     def th_order(self):
         return 'name'
 
@@ -42,10 +41,10 @@ class ViewCustomFromGame(BaseComponent):
         #r.fieldcell('set', name='Set', width='5em')
         r.fieldcell('name', width='18em', edit=True)
         r.fieldcell('description', width='100%', edit=dict(tag='simpletextarea', height='50px'))
-        r.fieldcell('actions', width='10em', name='Actions', edit=dict(tag='checkBoxText', 
-                  cols=1,
-                   popup=True, 
-                   table='fate.action_type'))
+        #r.fieldcell('actions', width='10em', name='Actions', edit=dict(tag='checkBoxText', 
+        #          cols=1,
+        #           popup=True, 
+        #           table='fate.action_type'))
         
     def th_order(self):
         return 'name'
@@ -62,12 +61,22 @@ class Form(BaseComponent):
         fb.field('special', tag='simpletextarea', colspan=2, height='134px')
 
 
-        top.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@actions',
-                                                           viewResource='ViewFromSkill')
+        top.contentPane(region='center').bagGrid(frameCode='actionsGrid',
+                                 title='!!Action types',
+                                 storepath='#FORM.record.action_types',
+                                 datapath='#FORM.actionsGrid',
+                                 pbl_classes=True,
+                                 margin='2px',
+                                 struct=self.actions_struct)
 
         bc.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@stunts',
                                                            viewResource='ViewFromSkill')
         
+
+    def actions_struct(self, struct):
+        r = struct.view().rows()
+        r.cell('action_type', name='Action',width='9em',edit=dict(tag='dbselect', dbtable='fate.action_type'))
+        r.cell('description', name='Description', width='100%', edit=True)
 
 
     def th_options(self):

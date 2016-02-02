@@ -4,7 +4,7 @@ from gnr.core.gnrdecorator import public_method
 from gnr.core.gnrbag import Bag
 
 class GnrCustomWebPage(object):
-    py_requires='th/th:TableHandler,public:Public,fate_component:FateComponent'
+    py_requires='th/th:TableHandler,public:Public,fate_component'
     css_requires='css/fate'
     css_theme = 'fate'
     css_icons = 'retina/red'
@@ -34,7 +34,7 @@ class GnrCustomWebPage(object):
             self.gamePlay(bc)
 
     def gameCharacters(self,bc):
-        tc = bc.tabContainer(region='left',width='400px',margin='2px',drawer=True,datapath='main.pcsheets')
+        tc = bc.tabContainer(region='left',width='600px',margin='2px',drawer=True,datapath='main.pcsheets')
         game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',
                                                     gid=self.game_record['id'],
                                                     plrole='PL',
@@ -42,72 +42,10 @@ class GnrCustomWebPage(object):
                                                                $username""").fetchAsDict(key='username')
         my_rec = game_players.pop(self.user,None)
         if my_rec:
-            self.makeCharacterSheet(tc,self.user)
+            tc.characterSheet(self.user, detachable=True)
+            bc.skillsPicker()
         for username in sorted(game_players.keys()):
-            self.makeCharacterSheet(tc,username)
-
-        self.skillsPicker(bc)
-
-    def makeCharacterSheet(self,tc,username=None):
-        tc.data('.%s.title' %username,username)
-
-        bc = tc.contentPane(title='^.%s.title' %username,
-                            detachable=True).borderContainer()
-        
-        #bc.dataFormula('.title',"name || username",name='^.name',username=character['username'])
-        top = bc.roundedGroupFrame(title='ID',region='top',height='180px', 
-                                    datapath='game.pcsheets.%s' %username,
-                                    wrp_border='1px solid #444',
-                                    lbl_background='transparent',
-                                    wrp_margin='3px',
-                                    wrp_display='block',
-                                    lbl_color='#444',lbl_border=0)
-        topbc = top.center.borderContainer()
-        left = topbc.contentPane(region='center')
-        right = topbc.contentPane(region='right',width='90px')
-        left.textbox(value='^.name',lbl='Name',width='90%',border='0px')
-        left.simpleTextArea(value='^.description',lbl='Description', 
-                            height='70px', width='90%',border=0)
-
-        right.numberTextBox(value='^.refresh', lbl='Refresh',width='90%',
-            font_size='1.2em',border=0, wrp_height='60px')
-        right.numberTextBox(value='^.fate_points',lbl='Fate points',
-            width='90%',font_size='1.2em',border=0, wrp_height='60px')
-        center = bc.borderContainer(region='center')
-        self.characterAspects(center, username=username)
-        self.characterSkills(center, username=username)
-        #defaultbag =Bag()
-        #center.dataFormula()
-
-    def characterAspects(self, bc, username):
-        bc.aspectGrid(region='top',height='300px',
-                           frameCode='%s_aspects' %username,
-                           title='Aspects',
-                           storepath='game.pcsheets.%s.aspects'% username)
-
-    def characterSkills(self, bc, username):
-        bc.contentPane(region='center').lightButton('Skills', 
-                                background_color='red',
-                                height='180px',action='PUBLISH openSkillsPicker = {username:username}', username=username)
-
-    def skillsPicker(self, pane):
-        dlg = pane.dialog(title='Choose skills',
-                          datapath='main.pickers.skills_picker',
-                          subscribe_openSkillsPicker="""this.widget.show();
-                                                         """,
-                          )
-        dlg.dataController("console.log('loadSkillPicker',username);",subscribe_openSkillsPicker=True)
-        
-        th = dlg.plainTableHandler(viewResource='ViewPicker',
-                                        view_store_onStart=True)
-        dlg.dataController("""for (var i=0; i<=skill_cap;i++){
-                                grid.addNewSetColumn({field:'lv'+i})
-                                }
-                                """, grid=th.view.grid.js_widget,
-                               skill_cap = '=game_record.skill_cap', 
-                               _onStart=True)
-
-
+            tc.characterSheet(username, detachable=True)
 
     def gameCommon(self,main_bc):
         bc = main_bc.borderContainer(region='top',height='160px')

@@ -104,10 +104,9 @@ class Table(object):
         result = Bag()
         cap = game_record['skill_cap']
         for i in range(cap):
-            slots = cap - i
+            #slots = cap - i
             rate = i+1
-            for s in range(slots):
-                result.setItem('r%i.s%i'%(rate,s),None,rate=rate,skill_id=None)
+            result.setItem('lv%i'%rate,'')
         return result
 
     def prepareStunts(self, game_record):
