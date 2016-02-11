@@ -24,6 +24,7 @@ class GnrCustomWebPage(object):
                                                   shared_expire=10000,
                                                   shared_autoLoad=True,
                                                   shared_autoSave=True)
+        root.data('main.game_skills', self.getGameSkills())
         bc = root.borderContainer(datapath='main',design='sidebar')
         self.gameCharacters(bc)
         #self.gameCommon(bc)

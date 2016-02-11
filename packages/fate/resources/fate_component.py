@@ -137,13 +137,13 @@ class CharacterSheet(BaseComponent):
 
     @struct_method
     def ft_skillsPicker(self, pane):
-        pane.data('main.game_skills', self.getGameSkills())
         dlg = pane.dialog(title='Choose skills',
                           closable=True,
                           datapath='main.pickers.skills_picker',
                           subscribe_openSkillsPicker="""this.widget.show();
                                                          """,
                           )
+        pickerStorePath = 'game.pcsheets.%s.skills'% self.user
         th = dlg.plainTableHandler(table='fate.skill',
             height='470px', width='290px',
             nodeId='skillsPickerGrid',
@@ -153,8 +153,10 @@ class CharacterSheet(BaseComponent):
                         configurable=False,
                         viewResource='ViewPicker',
                         view_store_onStart=True,
-                        view_grid_userSets='game.pcsheets.%s.skills'% self.user)
-        #th.view.dataController("Fate.prepareSkillDict(store);", store='^.store',_if='store && store.len()')
+                        view_grid_userSets=pickerStorePath)
+        th.view.dataController("Fate.skillPickerHandler(picked_skills, grid_skills);",
+                          grid_skills='=.store', 
+                          picked_skills='^%s' % pickerStorePath)
         dlg.dataController("""for (var i=1; i<=skill_cap;i++){
                                 grid.addNewSetColumn({field:'lv'+i, 
                                                       name:i, 
