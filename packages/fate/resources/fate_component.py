@@ -160,7 +160,10 @@ class CharacterSheet(BaseComponent):
         dlg.dataController("""for (var i=1; i<=skill_cap;i++){
                                 grid.addNewSetColumn({field:'lv'+i, 
                                                       name:i, 
-                                                      position:'>'})
+                                                      skillmax:skill_cap-i+1,
+                                                      position:'>',
+                                                      _customGetter:function(rowdata,rowIdx){return Fate.skillsSetGetter(this,rowdata,rowIdx)}
+                                                      })
                                 }
                                 """, grid=th.view.grid.js_widget,
                                skill_cap = '=game_record.skill_cap', 

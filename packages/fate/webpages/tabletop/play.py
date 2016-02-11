@@ -36,9 +36,8 @@ class GnrCustomWebPage(object):
 
     def gameCharacters(self,bc):
         tc = bc.tabContainer(region='left',width='600px',margin='2px',drawer=True,datapath='main.pcsheets')
-        game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $role=:plrole',
+        game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $is_gm IS FALSE',
                                                     gid=self.game_record['id'],
-                                                    plrole='PL',
                                                     columns="""$player_id,
                                                                $username""").fetchAsDict(key='username')
         my_rec = game_players.pop(self.user,None)

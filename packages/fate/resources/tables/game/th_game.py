@@ -144,9 +144,6 @@ class ConfigurationForm(BaseComponent):
             viewResource='ViewFromGame',
             searchOn=False,
             margin='2px',
-            autoSave=True,
-            default_role='PL',
-           # pbl_classes=True,
             title='Players')
 
     def imagePane(self, pane):
@@ -231,4 +228,4 @@ class ConfigurationForm(BaseComponent):
                                                         code='=#FORM.record.code')
 
     def th_options(self):
-        return dict(dialog_height='320px', dialog_width='640px', autoSave=True,showtoolbar=False)
+        return dict(dialog_height='320px', dialog_width='640px', showtoolbar=False)

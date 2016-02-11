@@ -32,7 +32,6 @@ class ViewFromGame(BaseComponent):
     def th_struct(self,struct):
         r = struct.view().rows()
         r.fieldcell('player_id', name='Player', width='100%', edit=dict(condition='$current_player_friend IS TRUE'))
-        r.fieldcell('role_desc',width='3em',name=' ')
         r.checkboxcolumn('gm', width='4em', name='GM',
                           radioButton=True, 
                           checkedField='player_id',

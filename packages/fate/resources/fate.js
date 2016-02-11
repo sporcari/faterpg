@@ -13,7 +13,6 @@ var Fate = {
         console.log('PICKER HANDLER','skills:',skills, 'node:',_node, 'trigpars:',_triggerpars,'reason:', _reason);
     },
     renderSkillsPyramid: function(skills, skill_cap){
-        console.log('skills',skills,'cap',skill_cap);
         if(skills){
             var slots;
             var result = [];
@@ -50,5 +49,30 @@ var Fate = {
             result = result.join('')
             return '<table class="skillPyramid"></tbody>'+ result+'</tbody></table>'
         }
+    },
+    skillsSetGetter:function(cell,row,rowIdx){
+        var sourceNode = cell.grid.sourceNode;
+        var sets = sourceNode.getRelativeData(sourceNode.attr.userSets);
+        var cellname = cell.field;
+        var setsNodes = sets.getNodes();
+        var disabled = '<div class="checkboxOff" disabled="true"></div>'
+        var regexp = new RegExp('(^|,)'+row._pkey+'($|,)');
+        for(var i=0; i<setsNodes.length; i++){
+            var n = setsNodes[i];
+            var v = n.getValue();
+            if(v.match(regexp)!=null){
+                if(n.label == cellname){
+                    return true;
+                }else{
+                    return disabled;
+                }
+            }
+        }
+        var currSet = sets.getItem(cellname);
+        var slen = currSet? currSet.split(',').length:0;
+        if(slen>=cell.skillmax){
+            return disabled
+        }
+        return false;
     }
 };

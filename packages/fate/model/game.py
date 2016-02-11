@@ -75,10 +75,9 @@ class Table(object):
     def createCharacterSheets(self, game_id, **kwargs):
         game_player_tbl = self.db.table('fate.game_player')
         game_record = self.record(game_id).output('bag')
-        players = game_player_tbl.query(columns='$player_id,$username,$role',
-                                        where='$game_id=:game_id AND $role=:role',
-                                        game_id=game_id,
-                                        role='PL').fetch()
+        players = game_player_tbl.query(columns='$player_id,$username',
+                                        where='$game_id=:game_id AND $is_gm IS FALSE',
+                                        game_id=game_id).fetch()
         result=Bag()
         for p in players:
             result[p['username']] = self.createEmptySheet(game_record)
@@ -174,13 +173,8 @@ class Table(object):
     def trigger_onInserting(self,record=None):
         getattr(self,'configDefault_%(ruleset)s' %record)(record=record)
 
-    #def trigger_onUpdated(self,record=None,old_record=None):
-    #    if old_record['status']=='CO' and record['status'] =='CR':
-    #        self.db.table('fate.game_player').touchRecords(where='$game_id=:g_id AND $role=:r',g_id=record['id'],r='PL')
-
     def trigger_onInserted(self,record=None):
-        self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id'),
-                                                      role='GM'))
+        self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id')))
 
 
 
