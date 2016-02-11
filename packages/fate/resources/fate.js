@@ -9,9 +9,7 @@ var Fate = {
     skillDict: function(code,field){
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
-    skillPickerHandler: function(skills,_node, _triggerpars,_reason){
-        console.log('PICKER HANDLER','skills:',skills, 'node:',_node, 'trigpars:',_triggerpars,'reason:', _reason);
-    },
+
     renderSkillsPyramid: function(skills, skill_cap){
         if(skills){
             var slots;

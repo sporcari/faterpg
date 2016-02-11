@@ -154,9 +154,7 @@ class CharacterSheet(BaseComponent):
                         viewResource='ViewPicker',
                         view_store_onStart=True,
                         view_grid_userSets=pickerStorePath)
-        th.view.dataController("Fate.skillPickerHandler(picked_skills, grid_skills);",
-                          grid_skills='=.store', 
-                          picked_skills='^%s' % pickerStorePath)
+
         dlg.dataController("""for (var i=1; i<=skill_cap;i++){
                                 grid.addNewSetColumn({field:'lv'+i, 
                                                       name:i, 
