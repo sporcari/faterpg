@@ -17,7 +17,7 @@ class AspectGrid(BaseComponent):
                      **kwargs):
         frame = pane.bagGrid(frameCode=frameCode , 
                             title=title,
-                            _class='aspectGrid',
+                            _class='aspectGrid grid_%s' %(aspect_type or 'BASE'),
                             pbl_classes='*',
                             datapath='.%s'%frameCode, 
                             struct=self.ft_aspectStruct,
@@ -56,8 +56,21 @@ class AspectGrid(BaseComponent):
     def _ft_aspectForm_FACES_PLACES(self,form):
         fb = form.record.formbuilder(cols=1)
         fb.textbox(value='^.name', lbl='Name')
-        fb.textbox(value='^.phrase', lbl='Aspect')
-        
+        fb.simpleTextArea(value='^.description', lbl='Description', height='170px')
+
+    def ft_aspectForm_STUNT(self,form):
+        fb = form.record.formbuilder(cols=1)
+        fb.textbox(value='^.name', lbl='Name')
+        fb.textbox(value='^.description', lbl='Description')
+
+    def ft_aspectForm_CA(self,form):
+        box = form.record.div(wrp_width='100%', wrp_display='block',wrp_margin='2px')
+        box.div('==Fate.getPreviousBackstory(this, _phase)', _phase='^.phase',_class='prev_backstory')
+        box.simpleTextArea('^.backstory', lbl='Backstory', height='90px', 
+                                wrp_hidden='^.aspect_type?=#v!="PH"')
+        box.textbox('^.phrase', lbl='Phrase',width='100%')
+
+
     def ft_aspectStruct(self,struct):
         r = struct.view().rows()
         r.cell('aspect', _customGetter='function(row){return Fate.renderAspectRow(row);}',
@@ -70,10 +83,10 @@ class CharacterSheet(BaseComponent):
     @struct_method
     def ft_characterSheet(self, parent, username=None, **kwargs):
         parent.data('.%s.title' %username,username)
-        bc = parent.contentPane(title='^.%s.title' %username, **kwargs).borderContainer()
-        top = bc.borderContainer(region='top',height='280px')
+        bc = parent.contentPane(title='^.%s.title' %username, username=username, **kwargs).borderContainer()
+        top = bc.borderContainer(region='top',height='250px')
         center = bc.borderContainer(region='center')
-        bottom = bc.borderContainer(region='bottom', height='200px')
+        bottom = bc.borderContainer(region='bottom', height='150px')
         self.idGroup(top, username=username)
         self.characterAspects(top, username=username)
         self.characterSkills(center, username=username)
@@ -129,10 +142,22 @@ class CharacterSheet(BaseComponent):
                                 height='80px')
 
     def characterStunts(self, bc, username):
-        pane = bc.roundedGroup(title='Stunts',
-                               region='center',
-                               datapath='game.pcsheets.%s' %username)
-        pane.div('ciao')
+        frame = bc.aspectGrid(region='center',frameCode='%s_stunts' %username,
+                           title='Stunts',
+                           aspect_type='STUNT',
+                           addrow=False,
+                           delrow=False,
+                           storepath='game.pcsheets.%s.stunts'% username)
+        
+        if self.user==username:
+            bar = frame.top.bar.replaceSlots('#','#,stuntsPicker,addStunt,2')
+            bar.stuntsPicker.palettePicker(grid=frame.grid,
+                width='600px',height='350px',
+                table='fate.stunt',
+                viewResource='ViewPicker_skill',
+                checkbox=True,
+                autoInsert="genro.bp(true); Fate.copyStunts(grid,data)")
+
 
     def stressTracks(self, pane):
         for v in self.game_record['stress_tracks'].values():
@@ -161,14 +186,14 @@ class CharacterSheet(BaseComponent):
                                                      bagField=True).fetchAsDict(key='code'))
 
 
+
     @struct_method
     def ft_skillsPicker(self, pane):
         dlg = pane.dialog(title='Choose skills',
                           closable=True,
                           datapath='main.pickers.skills_picker',
                           subscribe_openSkillsPicker="""this.widget.show();
-                                                         """,
-                          )
+                                                         """)
         pickerStorePath = 'game.pcsheets.%s.skills'% self.user
         th = dlg.plainTableHandler(table='fate.skill',
             height='470px', width='290px',
@@ -192,6 +217,3 @@ class CharacterSheet(BaseComponent):
                                 """, grid=th.view.grid.js_widget,
                                skill_cap = '=game_record.skill_cap', 
                                _onStart=True)
-
-
-

@@ -1,15 +1,63 @@
 var Fate = {
     aspectTemplates: {
-        BASE:"<div class='aspectLabel'>$type_label</div><div class='aspect_phrase'>$phrase</div><div class='aspect_description'>$description</div>"   
+        BASE:"<div class='txtLabel'>$type_label</div><div class='mainTxt'>$phrase</div><div class='aspect_description'>$description</div>", 
+        STUNT:"<div class='txtLabel'>$name</div><div class='mainTxt'>$description</div>"  
     },
     renderAspectRow: function(row){
         var tpl = this.aspectTemplates[row.aspect_type] || this.aspectTemplates['BASE'];
-        return dataTemplate('<div class="aspect_'+row.aspect_type+'">'+tpl+'</div>',row);
+        return dataTemplate('<div class="tplcell tpl_'+row.aspect_type+'">'+tpl+'</div>',row);
     },
     skillDict: function(code,field){
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
+    getPreviousBackstory: function(this, phase){
+        //phDict = {2:'-1,1',3:'-1,1;-2,2'}
 
+        if (!phase || phase <2){
+            return '';
+        }
+        var username = this.getInheritedAttributes()['username'];
+        var pc_sheets = genro.getData('game.pc_sheets');
+        var index = pc_sheets.index(username);
+        var backstories = [];
+        var story;
+        var character;
+        var name;
+        while(phase>=2){
+            index = index > 0 ? index-1 : pc_sheets.len();
+            character = pc_sheets.getItem('#'+index);
+            name = pc_sheets.getItem('name');
+            story = character.getItem('aspects.ph'+phase+'.story');
+            backstories.push('<div>'+name+':'+story+'</div>');
+            phase--;
+        }
+        return backstories.join('')
+
+        
+
+
+    },
+
+    copyStunts:function(grid, data){
+        if(!data.length){
+            return;
+        }
+        var pc_stunts = grid.storebag();
+        var empty_slot;
+        var value;
+        var r;
+        pc_stunts.forEach(function(n){
+            value = n.getValue();
+            if (value.getItem('name') || value.getItem('description')){
+                return;
+            }
+            r = data.shift();
+            if(r){
+                value.setItem('name',r.name);
+                value.setItem('description',r.description);
+            }
+        })
+    },
     renderSkillsPyramid: function(skills, skill_cap){
         if(skills){
             var slots;

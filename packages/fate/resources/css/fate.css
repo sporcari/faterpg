@@ -98,6 +98,10 @@
     box-shadow: 2px 2px 4px #B2B2B2;
 }
 
+.aspectGrid.grid_STUNT .cellContent{
+    background: #79D43F;
+}
+
 .aspectGrid .dojoxGrid-row-selected .cellContent{
 
 }
@@ -106,18 +110,6 @@
     border-bottom: 0px;
 }
 
-.aspect_name{
-    text-align: center;
-    font-weight: bold;
-    font-size: 12pt;
-    color:#BF1129;    
-}
-
-.aspect_phrase{
-    text-align: center;
-    font-weight: bold;
-    font-size: 10pt;
-}
 
 .aspect_description{
     font-style: italic;
@@ -130,7 +122,7 @@
     background-color: #E18282;
 }
 */
-.aspectLabel{
+.txtLabel{
     font-size: 8pt;
     font-style: italic;
     color: #4C4B4B;
@@ -143,5 +135,10 @@
     width: 90px;
     text-align: center;
     padding: 2px;
+}
+.mainTxt{
+    font-size:8pt;
+    text-align:left
+    ;
 }
 /* @end */

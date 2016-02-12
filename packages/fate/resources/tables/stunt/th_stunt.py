@@ -27,6 +27,28 @@ class View(BaseComponent):
     def th_options(self):
         return dict(virtualStore=False)
 
+class ViewPicker_skill(BaseComponent):
+
+    #def th_top_custom(self,top):
+    #    top.bar.replaceSlots('vtitle','sections@skill_code', 
+    #                           sections_skill_code_multiButton=False,
+    #                           sections_skill_code_all_begin=False)
+
+    def th_struct(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('skill_code',name='Skill', width='8em')
+        r.fieldcell('name', width='17em')
+        r.fieldcell('description',width='100%')
+        r.fieldcell('action_type',name='Action', width='11em')
+        r.fieldcell('stunt_type', name='Type', width='14em')
+        r.fieldcell('bonus',name='Bonus', width='9em')
+
+    def th_order(self):
+        return 'skill_code,name'
+        
+
+
+
 class Form(BaseComponent):
 
     def th_form(self,form):

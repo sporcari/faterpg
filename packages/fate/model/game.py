@@ -125,18 +125,11 @@ class Table(object):
         result = Bag()
         for s in range(game_record['initial_stunts']):
             s =s+1
-            result['st%i'%s] = Bag(dict(stunt_id=None,
-                                          name=None,
+            stunt_key= 'st%i'%s
+            result[stunt_key] = Bag(dict(name=None,
                                           description=None,
-                                          stunt_type=None,
-                                          approach_id=None,
-                                          skill_id=None,
-                                          action_type=None,
-                                          bonus=None,
-                                          n_per_scene=None,
-                                          n_per_session=None,
-                                          scene_type=None,
-                                          spend_fp=None))
+                                          _pkey=stunt_key,
+                                          aspect_type='STUNT'))
         return result
 
     def prepareAspects(self, game_record):
@@ -144,26 +137,24 @@ class Table(object):
         aspect_types = self.db.table('fate.aspect_type').query().fetchAsDict(key='__syscode')
         result['hc']= Bag(dict(aspect_type ='HC', _pkey='hc', 
                                 phrase=None,
-                                description=None,
                                 type_label=aspect_types['HC']['name']))
         result['tr'] = Bag(dict(aspect_type ='TR', _pkey='tr',
                                 phrase=None,
-                                description=None,
                                 type_label=aspect_types['TR']['name']))
         if game_record['use_phases']:
             for i in range(game_record['pc_phases']):
                 p = i+1
                 result['ph%i'%p]= Bag(dict(aspect_type ='PH',
+                                       phase=p,
                                        phrase=None,
                                        _pkey='ph%i'%p,
-                                       description=None))
+                                       story=None))
         else:
             for i in range(2,game_record['pc_aspects']):
                 i = i+1
                 result['a%i'%i]= Bag(dict(aspect_type = 'PCA', 
                                        phrase=None,
-                                       _pkey='a%i'%i,
-                                       description=None))
+                                       _pkey='a%i'%i))
         return result
                
     def createEmptySheet(self, game_record):
