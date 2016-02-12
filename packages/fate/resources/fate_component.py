@@ -73,10 +73,14 @@ class CharacterSheet(BaseComponent):
         bc = parent.contentPane(title='^.%s.title' %username, **kwargs).borderContainer()
         top = bc.borderContainer(region='top',height='280px')
         center = bc.borderContainer(region='center')
+        bottom = bc.borderContainer(region='bottom', height='200px')
         self.idGroup(top, username=username)
         self.characterAspects(top, username=username)
         self.characterSkills(center, username=username)
         self.characterStunts(center,username=username)
+        self.stressTracks(bottom.contentPane(region='left', width='50%',
+                                             datapath='game.pcsheets.%s.stress_tracks'% username))
+        self.consequences(bottom.contentPane(region='center'))
         #defaultbag =Bag()
         #center.dataFormula()
 
@@ -110,7 +114,7 @@ class CharacterSheet(BaseComponent):
                            storepath='game.pcsheets.%s.aspects'% username)
 
     def characterSkills(self, bc, username):
-        pane = bc.roundedGroup(title='Skills',region='center', datapath='game.pcsheets.%s' %username)
+        pane = bc.roundedGroup(title='Skills',region='top', height='130px', datapath='game.pcsheets.%s' %username)
         if self.user == username:
             pane.lightButton('==Fate.renderSkillsPyramid(_skills, _skill_cap)',
                                 _skills='^.skills',
@@ -125,8 +129,30 @@ class CharacterSheet(BaseComponent):
                                 height='80px')
 
     def characterStunts(self, bc, username):
-        pane = bc.roundedGroup(title='Stunts',region='bottom',height='100px', datapath='game.pcsheets.%s' %username)
+        pane = bc.roundedGroup(title='Stunts',
+                               region='center',
+                               datapath='game.pcsheets.%s' %username)
         pane.div('ciao')
+
+    def stressTracks(self, pane):
+        for v in self.game_record['stress_tracks'].values():
+            st = pane.div(lbl=v['track_name'], wrp_width='100%',wrp_display='block',
+                     height='30px', border='1px solid black', datapath='.%s' % v['code'])
+            for n in range(v['max_boxes']):
+                n=n+1
+                st.checkbox(value='^.boxes.b%s'%str(n), wrp_margin='2px', 
+                             wrp_display='inline block', wrp_width='30px',
+                             lbl=str(n), 
+                             disabled='==%s>n_boxes' % str(n), 
+                             n_boxes='^.n_boxes')
+            #st.numberTextBox(value='^.n_boxes')
+
+
+
+    def consequences(self, pane):
+        for i in range(4):
+            pane.div(lbl='', wrp_width='100%',wrp_display='block', height='30px', border='1px solid black')
+            
 
     def getGameSkills(self):
         return Bag(self.db.table('fate.skill').query(columns="""$name,$description,$code,

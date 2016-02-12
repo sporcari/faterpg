@@ -160,18 +160,18 @@ class ConfigurationForm(BaseComponent):
     def configOptions(self,bc):
 
         self.stressTracksEditor(bc.contentPane(region='right', width='210px', margin='4px'))
-
-        fb =bc.contentPane(region='center').div(margin='15px').formbuilder(cols=2,border_spacing='4px')
-        fb.field('game_creation',lbl='', label='Coop Game creation', colspan=2)
-        fb.field('use_phases', lbl='',label='Phases PC creation', colspan=2)       
-        fb.field('approach_set', hidden='^.use_approaches?=!#v', colspan=2,width='100%', lbl='Appr.Set')
+        self.consequencesEditor(bc.contentPane(region='bottom', height='150px'))
+        fb =bc.contentPane(region='center').div(margin='8px').formbuilder(cols=3,border_spacing='4px')
+        fb.field('game_creation',lbl='', label='Coop Game creation', colspan=3)
+        fb.field('use_phases', lbl='',label='Phases PC creation', colspan=3)       
+        fb.field('approach_set', hidden='^.use_approaches?=!#v', colspan=3,width='100%', lbl='Appr.Set')
         fb.field('pc_phases', lbl='N.Phases', width='4em', hidden='^.use_phases?=!#v', validate_max=3)
         fb.field('pc_aspects', lbl='N.Aspects', width='4em')
-        fb.field('consequences_slots',lbl='Cons. slots', width='3em')
-        
+        #fb.field('consequences_slots',lbl='Cons. slots', width='3em')
         fb.field('refresh',lbl='Refresh rate', width='4em')
         fb.field('initial_stunts',lbl='Initial Stunts', width='4em')
         fb.field('skill_cap',  width='4em', hidden='^.use_approaches')
+        fb.div()
         fb.field('stunt_sets' ,width='100%', tag='checkBoxText',
                    colspan=3, 
                    lbl='Stunt sets',
@@ -179,9 +179,19 @@ class ConfigurationForm(BaseComponent):
                    popup=True,
                    table='fate.stunt_set')
 
+    def consequencesEditor(self, pane):
+
+        grid = pane.quickGrid(value='^.consequences_slots',
+            title='Consequences',pbl_classes=True)
+        grid.column('shifts', dtype='I', name='Shifts',width='4em', edit=True)
+        grid.column('label', name='Label', width='100%', edit=True)
+        grid.column('code', dtype='I', name='Code',width='4em', edit=True)
+        grid.tools('delrow,addrow', position='TL')
+
+
     def skillPreferences(self, bc):
         top = bc.roundedGroup(title='Skill sets' ,height='80px', region='top')
-        fb =top.formbuilder(cols=1,border_spacing='3px')
+        fb =top.formbuilder(cols=1,border_spacing='3px', datapath='#FORM.record')
         fb.field('skill_sets' ,width='100%', colspan=2, tag='checkBoxText', 
                    lbl='',
                    cols='3',
@@ -196,7 +206,7 @@ class ConfigurationForm(BaseComponent):
              viewResource='ViewCustomFromGame')
 
 
-    def stressTracksEditor(self, pane): 
+    def stressTracksEditor(self, pane):
         grid = pane.quickGrid(value='^.stress_tracks',
             title='Stress tracks',pbl_classes=True,
                               selfsubscribe_addrow="""genro.dlg.prompt('Add stress track', {
@@ -208,7 +218,9 @@ class ConfigurationForm(BaseComponent):
         pane.dataController('stress_tracks.setItem(code,new gnr.GnrBag())', subscribe_newtrack=True, stress_tracks='=.stress_tracks')
         grid.column('track_name', name='Track', width='100%', edit=True)
         grid.column('n_boxes', dtype='I', name='Boxes',width='4em', edit=True)
-        grid.tools('delrow,addrow', position='BR')
+        grid.column('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
+        grid.tools('delrow,addrow', position='TL')
+
 
 
     def th_bottom_custom(self,bottom):
@@ -228,4 +240,4 @@ class ConfigurationForm(BaseComponent):
                                                         code='=#FORM.record.code')
 
     def th_options(self):
-        return dict(dialog_height='320px', dialog_width='640px', showtoolbar=False)
+        return dict(dialog_height='340px', dialog_width='640px', showtoolbar=False)

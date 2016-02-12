@@ -15,7 +15,6 @@ class Table(object):
         tbl.column('gm_id',size='22',name_long='Game Master',name_short='GM').relation('fate.player.id',relation_name='gm_campaigns', mode='foreignkey', onDelete='setnull', one_name='Game Master', many_name='Gm for campaigns')
         tbl.column('weekday',size=':12',name_long='Preferred weekday',name_short='Weekday')
         tbl.column('setting_tags',name_long='Setting tags',name_short='Setting')
-
         tbl.column('banner_url',name_long='Banner URL',name_short='Banner URL')
         tbl.column('skill_sets',name_long='Skill Sets',name_short='Skill Sets')
         tbl.column('stunt_sets',name_long='Stunt Sets',name_short='Stunt Sets')
@@ -29,7 +28,7 @@ class Table(object):
         tbl.column('refresh',dtype='I',name_long='Refresh',name_short='Refresh')
         tbl.column('initial_stunts',dtype='I',name_long='Initial stunts',name_short='N.Stunts')
         tbl.column('stress_tracks', dtype='X', name_long='Stress tracks',name_short='Stress tracks')
-        tbl.column('consequences_slots',name_long='Consequences slots',name_short='Cons. slots')
+        tbl.column('consequences_slots', dtype='X', name_long='Consequences slots',name_short='Cons. slots')
         tbl.column('status',size='2',values='CO:Configuration,CR:Creating,IP:In play,EN:Ended')
 
         tbl.formulaColumn('banner_img', "banner_url" ,dtype='P',name_long='!!Banner image',name_short='Banner', cell_format='auto:.5')
@@ -39,37 +38,44 @@ class Table(object):
         tbl.pyColumn('template_game',dtype='A',group='_',py_method='templateColumn', template_name='playcell')
 
     def defaultValues(self):
-        return dict( consequences_slots='2,4,6',
-                     refresh=3,
+        consequences_slots=Bag()
+        consequences_slots.setItem('mild', None, code='mi', shifts=2, label='Mild', available=True)
+        consequences_slots.setItem('moderate', None, code='mo', shifts=4, label='Moderate', available=True)
+        consequences_slots.setItem('severe', None, code='se', shifts=6, label='Severe',available=True)
+
+        return dict( refresh=3,
                      pc_phases=3,
                       pc_aspects=5,initial_stunts=3,
                      gm_id=self.db.currentEnv.get('player_id'),
                      stress_tracks=Bag(),
-                     status='CO')
+                     status='CO',
+                     consequences_slots=consequences_slots)
 
     def configDefault_CORE(self, record=None):
         stressbag = record['stress_tracks']
-        stressbag['p'] = Bag(dict(track_name='Phisical',n_boxes=2))
-        stressbag['m'] = Bag(dict(track_name='Mental',n_boxes=2))
+        stressbag['p'] = Bag(dict(track_name='Phisical',n_boxes=2, max_boxes=4, code='p'))
+        stressbag['m'] = Bag(dict(track_name='Mental',n_boxes=2, max_boxes=4, code='m'))
         record.update(dict(pc_phases=3,
                      game_creation=True,
                      use_phases=True))
+
         if record['use_approaches']:
             record.update(dict( approach_set='STD'))
         else:
+            consequences_slots = Bag(record['consequences_slots'])
+            consequences_slots.setItem('mild2', None, code='m2', shifts=2, label='Mild', available=False)
             record.update(dict(stunt_sets='STD',
                                 skill_sets='STD',
-                                 skill_cap=4))
+                                 skill_cap=4,
+                                 consequences_slots=consequences_slots))
 
     def configDefault_FAE(self, record=None):
         stressbag = record['stress_tracks']
-        stressbag['s'] = Bag(dict(track_name='Stress',n_boxes=3))
+        stressbag['s'] = Bag(dict(track_name='Stress',n_boxes=3, max_boxes=3, code='s'))
         record.update(dict(use_approaches=True,
                              approach_set='STD',
                              game_creation=False,
                              use_phases=False))
-
-
 
     @public_method
     def createCharacterSheets(self, game_id, **kwargs):
@@ -86,8 +92,15 @@ class Table(object):
     def prepareStressTrack(self, stress_tracks):
         result = Bag()
         for k,v in stress_tracks.items():
-            result[k] = Bag(dict(track_name=v['track_name'],
-                                values= ','.join(['b%i' % (i+1) for i in range(v['n_boxes']) ])))
+            result[k] = Bag(dict(n_boxes = v['n_boxes'], boxes=None))
+        return result
+
+    def prepareConsequences(self):
+        result = Bag()
+        result.setItem('mi', None)
+        result.setItem('m2', None)
+        result.setItem('mo', None)
+        result.setItem('se', None)
         return result
 
     def prepareApproaches(self, game_record):
