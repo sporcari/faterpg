@@ -25,4 +25,4 @@ class GnrCustomWebPage(object):
         bc.contentPane(region='center').plainTableHandler(table='fate.friend', view_store_onStart=True,
                                            viewResource='ViewFromPlayerDashboard',
                                            delrow=True,
-                                           configurable=False)
+                                           configurable=False,pbl_classes='*')

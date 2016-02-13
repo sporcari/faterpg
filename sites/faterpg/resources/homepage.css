@@ -81,6 +81,9 @@ a:visited{
   background-image:-moz-linear-gradient(top, bottom,from(rgba(104,133,142,0.99)), to(rgba(223,223,223,0.99)));*/
 
 }
+.tundra ._common_d11 .dijitTabPaneWrapper{
+    border-radius: 0;
+}
 
 .tundra .mainpage_tc .dijitTabPaneWrapper{
     border:0;

@@ -1,9 +1,17 @@
 /*vico*/
+@import url(https://fonts.googleapis.com/css?family=Lato);
+
+body.tundra._common_d11{
+    font-family: 'Lato', sans-serif;
+    font-weight: 400; 
+    background: white;
+}
+
 .frameindexroot{
     background:#eeeeee;
 }
 .frameindexcenter{
-    background:#f6f6f6;
+    background:white;
 }
 
 /* @group Floating pane */
@@ -51,7 +59,7 @@
     background-image: -moz-linear-gradient(-90deg, #5B6F8D, #224272);
     vertical-align: middle;
     text-align: center;
-    color: #f6f6f6;
+    color: white;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     padding-top: 2px;
@@ -197,32 +205,33 @@
     background-image: -moz-linear-gradient(0deg, rgb(190, 196, 204), rgb(217, 227, 233));
 }
 .pbl_roundedBlock{
-    border-radius: 6px;
+    border-radius: 2px;
     position: absolute;
     top:2px;
     bottom:2px;
     left:2px;
     right: 2px;
-    border:1px solid #ddd;
+    border: 1px solid #E9EAED;
 }
 
 .pbl_roundedGroup {
-    border-radius: 6px;
-    border:1px solid #ddd;
+    border-radius: 2px;
+    border: 1px solid #E9EAED;
+    /*background: #E9EAED;*/
 }
 .pbl_roundedGroupLabel {
-    height: 25px;
-    line-height: 24px;
+    height: 20px;
+    line-height:19px;
     padding-bottom: 0;
     padding-left: 4px;
     padding-right: 4px;
-    background-color: #1172BD;
-    border-top-left-radius: 6px;
-    /* border-top-right-radius: 4px; */
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px; 
     font-size: 1em;
-    /* background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#C8D1DC), to(#B4BECB)); */
-    background-image: -moz-linear-gradient(-90deg, #1172BD, #1172BD);
-    color: #f6f6f6;
+    /*background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#1172BE), to(#0F5891));
+    background-image: -moz-linear-gradient(-90deg, #1172BE, #0F5891);*/
+    background: #0F5891;
+    color: white;
     text-indent: 5px;
 }
 .pbl_roundedGroupVertical {
@@ -250,11 +259,6 @@
 
 
 .pbl_roundedGroupLabel .dijitButton{
-}
-.tundra._common_d11 .dijitButtonText{
-    text-align: center;
-    padding: 0 0.4em;
-    color: #444;
 }
 
 .pbl_roundedGroupBottom {
@@ -325,15 +329,22 @@
 /* @end */
 
 .tundra._common_d11 .dijitDialogTitleBar {
-    color: #316ac5;
+    color: white;
     vertical-align: middle;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     text-align: center;
     font-weight: normal;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 0;
     font-size: .9em;
+    background: #006CBF;
 }
+
+/* @group My Group */
+
+
+
+/* @end */
 
 /*._common_d11 .dijitDialogCloseIcon {
     display: none;
@@ -342,7 +353,6 @@
 ._common_d11 .dijitDialog {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #f6f6f6;
     box-shadow: 3px 3px 5px #403b3b;
     border:1px solid silver;
 }
@@ -352,8 +362,6 @@
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border: 0px;
-    background-color: #f6f6f6;
-
     /*background-image: -moz-linear-gradient(-90deg, rgba(170, 190, 201, 0.2), #FFFFFF);
     background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, rgba(170, 190, 201, 0.2), to(#FFFFFF));*/
 }
@@ -411,17 +419,15 @@
 
 ._common_d11 .dijitTab {
     font-size: .9em;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#C8D1DC), to(#B4BECB));
-    background-image: -moz-linear-gradient(-90deg, #C8D1DC, #B4BECB);
-    margin-right: 2px;
-    color: #444;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border: 0px;
+    margin-right: 0px;
+    color: white;
     font-weight: plain;
     /*background-image:-webkit-gradient(linear, 0% 0%, 0% 90%, from(rgba(104,133,142,0.99)), to(rgba(223,223,223,0.99)));
   background-image:-moz-linear-gradient(top, bottom,from(rgba(104,133,142,0.99)), to(rgba(223,223,223,0.99)));*/
-
+    background: #0F5891
 }
 
 ._common_d11 .dijitTabHover {
@@ -439,20 +445,26 @@
 }
 
 ._common_d11 .dijitTabChecked {
-    background: #f6f6f6;
-    border-bottom-color: #8a9ba5;
-    color: #ccc;
+    background: #002643;
+    border-bottom: 0;
+    color: white;
 }
 
 ._common_d11 .dijitAlignTop .dijitTabChecked, ._common_d11 .dijitAlignTop .dijitTabCloseButtonChecked {
-    background: #f6f6f6;
+    background: #002643;
     border-bottom-color: #f6f6f6;
-    color: #555;
+    color: white;
 }
 
 ._common_d11 .dijitTabPaneWrapper {
-    border-radius: 6px;
+    border-radius: 2px;
     border-top-left-radius: 0px;
+    border:0px;
+}
+
+._common_d11 .dijitTabLabels-top{
+    background: #0F5891;
+    top: 0px !important;
 }
 
 /* @group righttab */
@@ -511,8 +523,7 @@
     font-size: inherit;
     -webkit-box-shadow:3px 3px 5px #adadad !important;
     -webkit-box-shadow:3px 3px 5px #adadad !important;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#FFFFFF), to(#f6f6f6));
-    background-image: -moz-linear-gradient(-90deg, #FFFFFF, #f6f6f6);
+    background: white;
 }
 
 /* @end */
@@ -899,9 +910,6 @@
     opacity:.5;
 }
 
-
-
-
 ._common_d11.tundra .dijitMenuSeparator {
     background: transparent;
 }
@@ -919,9 +927,87 @@
     opacity: 1;
 }
 
-
-
-._common_d11 .iconbox{
-    background-color: white;
-    border-radius: 6;
+/* @group buttons */
+.tundra._common_d11 .dijitButtonContents.dijitButtonNode {
+	/* enabled state - inner */
+	border: 0;
+	border-bottom: 0;
+    padding: 0px 0px;
+    background:#006CBF;
+    color:white;
+    border-radius: 0;
+    cursor: pointer;
+    opacity: 1;
+    font-weight: normal;
+    border-radius:2px;
 }
+
+/* My Comment */
+
+.tundra._common_d11 .dijitButtonText{
+    text-align: center;
+    padding: 0.2em 0.6em;
+    color: white;
+    min-width: 4em;
+}
+
+.tundra._common_d11 .slotButtonIconOnly .dijitButtonNode{
+	background:transparent;
+}
+
+.tundra._common_d11 .slotbar_toolbar .dijitButtonHover .dijitButtonNode .iconbox, .tundra._common_d11 .slotbar_toolbar .iconbox:hover{
+    background-color:transparent;  
+}
+/* @end */
+
+.templateGrid{
+
+}
+
+/* @group ICONS RETINA OVERRIDE */
+
+._common_d11 .add_record{
+	background: url(icons/addrow.svg) no-repeat center center;
+}
+
+._common_d11 .add_row{
+	background: url(icons/addrow.svg) no-repeat center center;
+}
+
+._common_d11 .delete_record{
+    background: url(icons/delrow.svg) no-repeat center center;
+}
+
+._common_d11 .delete_row{
+    background: url(icons/delrow.svg) no-repeat center center;
+}
+
+
+
+
+
+._common_d11 .dijitButtonHover .add_record{
+    background: url(icons/yellow/addrow.svg) no-repeat center center;
+}
+
+._common_d11 .dijitButtonHover .add_row{
+    background: url(icons/yellow/addrow.svg) no-repeat center center;
+}
+
+._common_d11 .dijitButtonHover .delete_record{
+    background: url(icons/yellow/delrow.svg) no-repeat center center;
+}
+
+._common_d11 .dijitButtonHover .delete_row{
+    background: url(icons/yellow/delrow.svg) no-repeat center center;
+}
+
+
+
+
+
+
+/* @end */
+
+
+

@@ -94,8 +94,8 @@
     background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#FFF58B), to(#FFF47E));
     background-image: -moz-linear-gradient(-90deg, #FFF58B, #FFF47E);
     cursor:pointer;
-    margin:3px;
-    box-shadow: 2px 2px 4px #B2B2B2;
+    margin:4px;
+    box-shadow: 2px 2px 2px #B2B2B2;
 }
 
 .aspectGrid.grid_STUNT .cellContent{

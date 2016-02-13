@@ -53,7 +53,7 @@ class ViewFromPlayerDashboard(BaseComponent):
         bar = top.bar.replaceSlots('vtitle','sections@status')
         bar = bar.replaceSlots('addrow','newgame')
         bar.newgame.slotButton('New Game',action='frm.newrecord({__ins_user:user,ruleset:"CORE",use_approaches:false})',
-                                frm=self.newGameForm(bar).js_form,user=self.user)
+                                frm=self.newGameForm(bar).js_form,user=self.user,iconClass='iconbox add_row')
 
 
     def newGameForm(self,pane):
@@ -144,7 +144,7 @@ class ConfigurationForm(BaseComponent):
             viewResource='ViewFromGame',
             searchOn=False,
             margin='2px',
-            title='Players')
+            title='Players',pbl_classes='*')
 
     def imagePane(self, pane):
         pane.img(src='^.banner_url', #crop_width='110px',crop_height='110px',
@@ -180,13 +180,15 @@ class ConfigurationForm(BaseComponent):
                    table='fate.stunt_set')
 
     def consequencesEditor(self, pane):
+        def struct(struct):
+            r = struct.view().rows()
+            r.cell('shifts', dtype='I', name='Shifts',width='4em', edit=True)
+            r.cell('label', name='Label', width='100%', edit=True)
+            r.cell('code', dtype='I', name='Code',width='4em', edit=True)
+        pane.bagGrid(storepath='#FORM.record.consequences_slots',
+            title='Consequences',pbl_classes=True,margin='2px',struct=struct,datapath='#FORM.consequences')
 
-        grid = pane.quickGrid(value='^.consequences_slots',
-            title='Consequences',pbl_classes=True)
-        grid.column('shifts', dtype='I', name='Shifts',width='4em', edit=True)
-        grid.column('label', name='Label', width='100%', edit=True)
-        grid.column('code', dtype='I', name='Code',width='4em', edit=True)
-        grid.tools('delrow,addrow', position='TL')
+
 
 
     def skillPreferences(self, bc):
@@ -207,24 +209,26 @@ class ConfigurationForm(BaseComponent):
 
 
     def stressTracksEditor(self, pane):
-        grid = pane.quickGrid(value='^.stress_tracks',
+        def struct(struct):
+            r = struct.view().rows()
+            r.cell('track_name', name='Track', width='100%', edit=True)
+            r.cell('n_boxes', dtype='I', name='Boxes',width='4em', edit=True)
+            r.cell('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
+
+        pane.bagGrid(storepath='#FORM.record.stress_tracks',datapath='#FORM.stress',
             title='Stress tracks',pbl_classes=True,
-                              selfsubscribe_addrow="""genro.dlg.prompt('Add stress track', {
+                              grid_selfsubscribe_addrow="""genro.dlg.prompt('Add stress track', {
                                                     lbl:'Code',
                                                      action:function(value){
                                                         genro.publish('newtrack',{code:value})
                                                      }
                                                     });""")
         pane.dataController('stress_tracks.setItem(code,new gnr.GnrBag())', subscribe_newtrack=True, stress_tracks='=.stress_tracks')
-        grid.column('track_name', name='Track', width='100%', edit=True)
-        grid.column('n_boxes', dtype='I', name='Boxes',width='4em', edit=True)
-        grid.column('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
-        grid.tools('delrow,addrow', position='TL')
 
 
 
     def th_bottom_custom(self,bottom):
-        bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px',_class='slotbar_dialog_footer')
+        bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px')
         bar.back.button('!!Cancel',action='this.form.abort();')
         box = bar.confirm.div()
         box.slotButton('!!Create Empty Sheets',action="""SET #FORM.record.status = game_creation_status;

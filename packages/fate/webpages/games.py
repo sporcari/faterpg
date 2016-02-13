@@ -15,12 +15,17 @@ class GnrCustomWebPage(object):
         bc.contentPane(region='center').dialogTableHandler(table='fate.game',
                                             view_store_onStart=True,
                                            viewResource='ViewFromPlayerDashboard',
+                                           margin='2px',
+                                           _class='noheader',
                                            formResource='ConfigurationForm',
                                            configurable=False,
+                                           pbl_classes=True,
                                            grid_connect_onRowDblClick="""
                                                     var urlprefix = '/tabletop/play/';
                                                     var username = genro.getData('gnr.avatar.user');
                                                     var gamecode = this.widget.rowByIndex($1.rowIndex)['code'];
                                                     var url = urlprefix+username+'/'+gamecode;
                                                     genro.openWindow(url)""")
+    
+        
 
