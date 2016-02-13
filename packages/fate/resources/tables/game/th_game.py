@@ -100,7 +100,7 @@ class ConfigurationForm(BaseComponent):
     def th_form(self, form):
         form.dataController("this.form.goToRecord(pkey)",subscribe_configureGame=True)
 
-        tc = form.center.tabContainer(datapath='.record')
+        tc = form.center.tabContainer(datapath='.record',margin='2px')
         
         self.gameInfo(tc.borderContainer(title='Game'))
         

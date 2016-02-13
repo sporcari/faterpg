@@ -457,24 +457,25 @@ body.tundra._common_d11{
 }
 
 ._common_d11 .dijitTabPaneWrapper {
-    border-radius: 2px;
-    border-top-left-radius: 0px;
-    border:0px;
+    border-radius: 3px;
+    border:1px solid #E9EAED;
 }
 
 ._common_d11 .dijitTabLabels-top{
     background: #0F5891;
     top: 0px !important;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 
 /* @group righttab */
 
 ._common_d11 .dijitTabLabels-right-h .dijitTab {
 
-    border-bottom-right-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-left-radius: 0px;
-    border-top-left-radius: 0px;
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
 }
 
 ._common_d11 .dijitTabLabels-right-h .dijitTabInnerDiv {
