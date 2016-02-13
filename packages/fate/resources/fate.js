@@ -10,31 +10,29 @@ var Fate = {
     skillDict: function(code,field){
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
-    getPreviousBackstory: function(this, phase){
+    getPreviousBackstory: function(sourceNode, phase){
+        return;
         //phDict = {2:'-1,1',3:'-1,1;-2,2'}
 
-        if (!phase || phase <2){
-            return '';
-        }
-        var username = this.getInheritedAttributes()['username'];
-        var pc_sheets = genro.getData('game.pc_sheets');
-        var index = pc_sheets.index(username);
-        var backstories = [];
-        var story;
-        var character;
-        var name;
-        while(phase>=2){
-            index = index > 0 ? index-1 : pc_sheets.len();
-            character = pc_sheets.getItem('#'+index);
-            name = pc_sheets.getItem('name');
-            story = character.getItem('aspects.ph'+phase+'.story');
-            backstories.push('<div>'+name+':'+story+'</div>');
-            phase--;
-        }
-        return backstories.join('')
-
-        
-
+       //if (!phase || phase <2){
+       //    return '';
+       //}
+       //var username = this.getInheritedAttributes()['username'];
+       //var pc_sheets = genro.getData('game.pc_sheets');
+       //var index = pc_sheets.index(username);
+       //var backstories = [];
+       //var story;
+       //var character;
+       //var name;
+       //while(phase>=2){
+       //    index = index > 0 ? index-1 : pc_sheets.len();
+       //    character = pc_sheets.getItem('#'+index);
+       //    name = pc_sheets.getItem('name');
+       //    story = character.getItem('aspects.ph'+phase+'.story');
+       //    backstories.push('<div>'+name+':'+story+'</div>');
+       //    phase--;
+       //}
+       //return backstories.join('')
 
     },
 

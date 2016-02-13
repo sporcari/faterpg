@@ -205,6 +205,7 @@ class ConfigurationForm(BaseComponent):
              configurable=False,
              addrow=True,
              delrow=True,
+             pbl_classes=True,
              viewResource='ViewCustomFromGame')
 
 
@@ -216,7 +217,7 @@ class ConfigurationForm(BaseComponent):
             r.cell('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
 
         pane.bagGrid(storepath='#FORM.record.stress_tracks',datapath='#FORM.stress',
-            title='Stress tracks',pbl_classes=True,
+            title='Stress tracks',pbl_classes=True,struct=struct,
                               grid_selfsubscribe_addrow="""genro.dlg.prompt('Add stress track', {
                                                     lbl:'Code',
                                                      action:function(value){
