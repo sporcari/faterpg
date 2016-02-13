@@ -24,7 +24,7 @@ body.tundra._common_d11{
 
 ._common_d11 .dojoxDockNode {
     -moz-border-radius: 3px 3px 3px 3px;
-    border: 1px solid #ADADAD;
+    border:0;
     cursor: pointer;
     float: left;
     height: 13px;
@@ -1004,10 +1004,121 @@ body.tundra._common_d11{
 }
 
 
+/* @end */
 
 
 
+/* @group multibutton */
 
+.multibutton_container{
+    padding-top:1px;
+    padding-bottom:1px;
+    line-height:3ex;
+    font-size: .9em;
+    font-variant:normal;
+    height: 19px;
+}
+
+.multibutton:last-child{
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right: 0px solid;
+}
+.multibutton:first-child{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.multibutton_selected.multibutton, .multibutton:active{
+    color: #fff;
+	 background:#002643;
+	-moz-box-shadow: inset 1px 1px 2px #222;
+    -webkit-box-shadow:inset 1px 1px 2px #222;
+}
+.multibutton_selected.multibutton:hover{
+	text-decoration:none;
+}
+.multibutton_selected.multibutton[disabled='true']{
+    opacity: 1;
+    cursor: not-allowed;
+}
+.multibutton_container .multibutton:active[disabled='true'],.multibutton_container .multibutton:active[disabled='disabled']{
+    color:white;
+    cursor: not-allowed;
+    opacity: .3;
+    box-shadow: none;
+}
+
+
+
+.multibutton{
+    position:relative;
+    display:inline-block;
+    padding-left:12px;
+    padding-right:12px;
+    cursor:pointer;
+    color:white;
+	background: transparent;
+    border: 0px solid white;
+    border-right: 0px;
+    /*line-height:20px;
+    font-size: 9pt;
+    font-variant:small-caps;*/
+}
+
+.multibutton.multibutton_closable{
+    padding-right: 18px;
+}
+
+.multibuttonsub.multibutton{
+	background: transparent;
+}
+
+.multibutton_closer{
+    position: absolute;
+    top:4px;
+    right:2px;
+    border-radius: 3px;
+
+}
+.multibutton_closer:hover{
+    background-color: rgba(245, 245, 245, 1);
+}
+
+._is_readonly_row .multibutton_closer, .multibutton_selected._is_readonly_row .multibutton_closer.deleteSelectedOnly{
+    visibility: hidden;
+}
+
+.multibutton_closer.deleteSelectedOnly{
+    position: absolute;
+    top:4px;
+    right:2px;
+    visibility: hidden;
+}
+
+.multibutton_selected .multibutton_closer.deleteSelectedOnly{
+    visibility: visible;
+}
+
+.multipage_add{
+    background: url(icons/base10/smalladd.png) no-repeat center center;
+    opacity: .5;
+    width: 10px;
+}
+
+.multipage_del{
+    background: url(icons/base10/smalldel.png) no-repeat center center;
+    opacity: .5;
+    width: 10px;
+}
+
+.pbl_roundedGroupLabel.slotbar_horizontal .multibutton_container{
+    /* height: 18px; */
+    font-variant: normal;
+    line-height: 20px;
+    font-size: .9em;
+    margin-top: -2px;
+}
 /* @end */
 
 

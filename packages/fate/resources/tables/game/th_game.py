@@ -50,7 +50,7 @@ class ViewFromPlayerDashboard(BaseComponent):
         return dict(condition='$current_player_game IS TRUE')
 
     def th_top_bar_custom(self,top):
-        bar = top.bar.replaceSlots('vtitle','sections@status')
+        bar = top.bar.replaceSlots('5,vtitle','20,sections@status')
         bar = bar.replaceSlots('addrow','newgame')
         bar.newgame.slotButton('New Game',action='frm.newrecord({__ins_user:user,ruleset:"CORE",use_approaches:false})',
                                 frm=self.newGameForm(bar).js_form,user=self.user,iconClass='iconbox add_row')
@@ -245,4 +245,4 @@ class ConfigurationForm(BaseComponent):
                                                         code='=#FORM.record.code')
 
     def th_options(self):
-        return dict(dialog_height='340px', dialog_width='640px', showtoolbar=False)
+        return dict(dialog_parentRatio=.8, showtoolbar=False)
