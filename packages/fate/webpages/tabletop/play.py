@@ -25,14 +25,22 @@ class GnrCustomWebPage(object):
                                                   shared_autoLoad=True,
                                                   shared_autoSave=True)
         root.data('main.game_skills', self.getGameSkills())
-        bc = root.borderContainer(datapath='main',design='sidebar')
+        root_bc = root.borderContainer()
+        self.gameHeader(root_bc.borderContainer(region='top',height='80px'))
+        bc = root_bc.borderContainer(datapath='main',design='sidebar',region='center')
         self.gameCharacters(bc)
         #self.gameCommon(bc)
         bc.data('game_record',self.game_record)
-        if self.game_record['status'] == 'CR':
-            self.gameCreation(bc)
-        else:
-            self.gamePlay(bc)
+        tc = bc.tabContainer(region='center',margin='2px')
+        self.gameCreation(tc.borderContainer(title='Game creation'))
+        self.gamePlay(tc.borderContainer(title='Game play'))
+        #if self.game_record['status'] == 'CR':
+        #    self.gameCreation(bc)
+        #else:
+        #    self.gamePlay(bc)
+
+    def gameHeader(self,bc):
+        bc.contentPane(region='left',width='300px').img(src='/_site/resources/images/fate_head.jpg',height='60px')
 
     def gameCharacters(self,bc):
         tc = bc.tabContainer(region='left',width='600px',margin='2px',drawer=True,datapath='main.pcsheets')

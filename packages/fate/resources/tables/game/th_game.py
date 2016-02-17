@@ -62,10 +62,8 @@ class ViewFromPlayerDashboard(BaseComponent):
         fb = form.center.contentPane(padding='5px',datapath='.record').formbuilder(cols=1,border_spacing='3px',dbtable='fate.game')
         fb.dataController('dlg.show();',formsubscribe_onLoaded=True,dlg=dlg.js_widget)
         fb.dataController('dlg.hide();',formsubscribe_onDismissed=True,dlg=dlg.js_widget)
-        fb.field('code',lbl='Code',width='4em',validate_nodup=True,
-                            validate_nodup_relative='__ins_user')
-        fb.field('title',lbl='!!Title',width='15em',validate_notnull=True)
-        fb.field('ruleset',lbl='!!Rulset',width='15em',validate_notnull=True)
+        fb.field('title',lbl='!!Title',width='18em',validate_notnull=True)
+        fb.field('ruleset',lbl='!!Rulset',width='18em',validate_notnull=True)
         fb.field('use_approaches',lbl='',label='!!Use approaches',row_hidden='^.ruleset?=#v=="FAE"')
         bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
         bar.cancel.slotButton('!!Cancel',action='this.form.abort()')

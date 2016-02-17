@@ -22,6 +22,7 @@ class AspectGrid(BaseComponent):
                             datapath='.%s'%frameCode, 
                             struct=self.ft_aspectStruct,
                             storepath=storepath, **kwargs)
+
         form = frame.grid.linkedForm(datapath='.form', _class='aspectForm',
                               frameCode='%s_form' % frameCode,
                               dialog_height='280px',

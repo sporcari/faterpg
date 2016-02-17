@@ -11,28 +11,30 @@ var Fate = {
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
     getPreviousBackstory: function(sourceNode, phase){
-        return;
-        //phDict = {2:'-1,1',3:'-1,1;-2,2'}
-
-       //if (!phase || phase <2){
-       //    return '';
-       //}
-       //var username = this.getInheritedAttributes()['username'];
-       //var pc_sheets = genro.getData('game.pc_sheets');
-       //var index = pc_sheets.index(username);
-       //var backstories = [];
-       //var story;
-       //var character;
-       //var name;
-       //while(phase>=2){
-       //    index = index > 0 ? index-1 : pc_sheets.len();
-       //    character = pc_sheets.getItem('#'+index);
-       //    name = pc_sheets.getItem('name');
-       //    story = character.getItem('aspects.ph'+phase+'.story');
-       //    backstories.push('<div>'+name+':'+story+'</div>');
-       //    phase--;
-       //}
-       //return backstories.join('')
+       if (!phase || phase <2){
+           return '';
+       }
+       var username = sourceNode.getInheritedAttributes()['username'];
+       var pc_sheets = genro.getData('game.pcsheets');
+       var index = pc_sheets.index(username);
+       var backstories = [];
+       var backstory;
+       var character;
+       var name;
+       var phrase;
+       var aspectrec;
+       while(phase>=2){
+           index = index > 0 ? index-1 : pc_sheets.len()-1;
+           character = pc_sheets.getItem('#'+index);
+           name = character.getItem('name');
+           phase=phase-1;
+           aspectrec = character.getItem('aspects.ph'+phase);
+           backstory = aspectrec.getItem('backstory');
+           phrase = aspectrec.getItem('phrase');
+           console.log(name,backstory,phrase)
+           backstories.push('<div>'+name+':'+backstory+'</div><br><b>'+phrase+'</b>');
+       }
+       return backstories.reverse().join('')
 
     },
 
