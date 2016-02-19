@@ -12,9 +12,5 @@
 <cc_address _T="NN"></cc_address>
 <bcc_address _T="NN"></bcc_address>
 <attachments _T="NN"></attachments></email></metadata>
-<content>&lt;div&gt;
-	$phrase&lt;/div&gt;
-</content>
-<compiled><main virtual_columns="" locale="it-IT" masks="{}::JS" dtypes='{"phrase": "T"}::JS' maintable="" columns="phrase" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div&gt;
-	$phrase&lt;/div&gt;
-&lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>
+<content>&lt;div class='txtLabel'&gt;$type_label&lt;/div&gt;&lt;div class='mainTxt'&gt;$phrase&lt;/div&gt;&lt;div class='aspect_description'&gt;$description&lt;/div&gt;</content>
+<compiled><main virtual_columns="" locale="it" masks="{}::JS" dtypes='{"phrase": "T"}::JS' maintable="" columns="phrase" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div class="txtLabel"&gt;$type_label&lt;/div&gt;&lt;div class="mainTxt"&gt;$phrase&lt;/div&gt;&lt;div class="aspect_description"&gt;$description&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>

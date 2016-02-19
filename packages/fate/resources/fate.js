@@ -10,6 +10,19 @@ var Fate = {
     skillDict: function(code,field){
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
+    characterAspectsForm:function(pane, kw){
+        var data = kw.rowDataNode.getValue();
+        var width = '20em'
+        
+        if (data.getItem('aspect_type')=='PH'){
+            pane._('div', {innerHTML:this.getPreviousBackstory(pane.getParentNode(),data.getItem('phase')),
+                            width:width})
+            pane._('simpleTextArea', {height:'60px',width:width, lbl:data.getItem('story_label')})
+        }
+        pane._('textbox',{value:'^.phrase', width:width,lbl:data.getItem('type_label')});
+        console.log('params',kw);
+    },
+
     getPreviousBackstory: function(sourceNode, phase){
        if (!phase || phase <2){
            return '';

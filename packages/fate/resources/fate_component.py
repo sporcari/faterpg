@@ -127,14 +127,18 @@ class CharacterSheet(BaseComponent):
             font_size='2em',border=0, wrp_height='60px',width='60px')
 
     def characterAspects(self, bc, username):
+        #fields = [dict(wdg='div', innerHTML='==Fate.getPreviousBackstory(this, _phase)', _phase='^.phase',_class='prev_backstory'),
+        #          dict(wdg='simpleTextArea', lbl='Story', placeholder='Crossing paths', hidden='.aspect_type?=#v!="PH"', height='90px'),
+        #          dict(value='^.phrase',lbl='Phrase')]
+
         bc.templateGrid(region='center',frameCode='%s_aspects' %username,
                            title='Aspects',
-                           default_aspect_type='CA',
                            addrow=False,
                            delrow=False,
+                           _class='aspectGrid',
                            storepath='game.pcsheets.%s.aspects'% username,
                            template_resource='tpl/aspect_CA',
-                           fields=[dict(value='^.phrase',lbl='Phrase')])
+                           contentCb='Fate.characterAspectsForm(pane, kw)')
 
     def characterSkills(self, bc, username):
         pane = bc.roundedGroup(title='Skills',region='top', height='130px', datapath='game.pcsheets.%s' %username)

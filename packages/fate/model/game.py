@@ -136,6 +136,7 @@ class Table(object):
     def prepareAspects(self, game_record):
         result = Bag()
         aspect_types = self.db.table('fate.aspect_type').query().fetchAsDict(key='__syscode')
+        story_labels = dict(PH1='Your Adventure', PH2='Crossing Paths', PH3='Crossing paths again')
         result['hc']= Bag(dict(aspect_type ='HC', _pkey='hc', 
                                 phrase=None,
                                 type_label=aspect_types['HC']['name']))
@@ -147,6 +148,8 @@ class Table(object):
                 p = i+1
                 result['ph%i'%p]= Bag(dict(aspect_type ='PH',
                                        phase=p,
+                                       type_label=aspect_types['P%i'%p]['name'],
+                                       story_label=story_labels['PH%i'%p],
                                        phrase=None,
                                        _pkey='ph%i'%p,
                                        story=None))
