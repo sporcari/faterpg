@@ -46,7 +46,7 @@ class GnrCustomWebPage(object):
         bc.contentPane(region='center').button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
 
     def gameCharacters(self,bc):
-        tc = bc.tabContainer(region='right',width='700px',margin='2px',datapath='main.pcsheets')
+        tc = bc.tabContainer(region='right',width='670px',margin='2px',datapath='main.pcsheets')
         game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $is_gm IS FALSE',
                                                     gid=self.game_record['id'],
                                                     columns="""$player_id,

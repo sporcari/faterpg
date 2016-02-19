@@ -28,20 +28,6 @@ class AspectGrid(BaseComponent):
                             """,
                             struct=self.ft_aspectStruct,
                             storepath=storepath, **kwargs)
-
-
-        #form = frame.grid.linkedForm(datapath='.form', _class='aspectForm',
-        #                      frameCode='%s_form' % frameCode,
-        #                      dialog_height='280px',
-        #                      store='memory',
-        #                      loadEvent='onRowDblClick',
-        #                      dialog_title=title,
-        #                      dialog_width='370px',
-        #                      default_aspect_type=aspect_type)
-        #getattr(self,'ft_aspectForm_%s' %aspect_type,self.ft_aspectForm_base)(form)
-        #bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
-        #bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
-        #bar.confirm.slotButton('!!Confirm',action='this.form.save({destPkey:"*dismiss*"})')
         return frame
 
 
@@ -102,9 +88,9 @@ class CharacterSheet(BaseComponent):
         self.characterAspects(top, username=username)
         self.characterSkills(center, username=username)
         self.characterStunts(center,username=username)
-        self.stressTracks(bottom.roundedGroup(region='left', width='50%',title='Stress Tracks',
+        self.stressTracks(bottom.roundedGroup(region='left', width='310px',title='Stress Tracks',
                                              datapath='game.pcsheets.%s.stress_tracks'% username))
-        self.consequences(bottom.contentPane(region='center'))
+        self.consequences(bottom.roundedGroup(region='center', title='Consequences'))
         
 
         #defaultbag =Bag()
@@ -220,8 +206,13 @@ class CharacterSheet(BaseComponent):
 
 
     def consequences(self, pane):
-        for i in range(4):
-            pane.div(lbl='', wrp_width='100%',wrp_display='block', height='30px', border='1px solid black')
+        st = pane.div(margin_right='10px').formbuilder(border_spacing='0',width='100%',colswidth='auto',lblvalign='middle')
+        cs = self.game_record['consequences_slots']
+        for c in cs:
+            c = c.getAttr()
+            if c['code']!='m2':
+                st.div(lbl='%s (%i)' % (c['label'],c['shifts']), 
+                      height='22px', border='1px solid black')
             
 
     def getGameSkills(self):
