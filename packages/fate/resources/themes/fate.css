@@ -228,12 +228,23 @@ body.tundra._common_d11{
     border-top-left-radius: 2px;
     border-top-right-radius: 2px; 
     font-size: 1em;
-    /*background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#1172BE), to(#0F5891));
-    background-image: -moz-linear-gradient(-90deg, #1172BE, #0F5891);*/
-    background: #0F5891;
+    /*background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#1172BE), to(#006CBF));
+    background-image: -moz-linear-gradient(-90deg, #1172BE, #006CBF);*/
+    background: #006CBF;
     color: white;
     text-indent: 5px;
 }
+.pbl_roundedGroupLabelLeft{
+    height: 100%;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px; 
+    background: #006CBF;
+    color: white;
+    text-indent: 5px;
+    display: inline-block;
+}
+
+
 .pbl_roundedGroupVertical {
     background-image: -webkit-gradient(linear, 0% 0%, 0% 0, from(#1172BD), to(#1172BD));
     background-image: -moz-linear-gradient(0deg, #1172BD, #1172BD);
@@ -337,7 +348,7 @@ body.tundra._common_d11{
     font-weight: normal;
     border-bottom: 0;
     font-size: .9em;
-    background: #006CBF;
+    background: #002643;
 }
 
 /* @group My Group */
@@ -427,7 +438,7 @@ body.tundra._common_d11{
     font-weight: plain;
     /*background-image:-webkit-gradient(linear, 0% 0%, 0% 90%, from(rgba(104,133,142,0.99)), to(rgba(223,223,223,0.99)));
   background-image:-moz-linear-gradient(top, bottom,from(rgba(104,133,142,0.99)), to(rgba(223,223,223,0.99)));*/
-    background: #0F5891
+    background: #006CBF;
 }
 
 ._common_d11 .dijitTabHover {
@@ -462,7 +473,7 @@ body.tundra._common_d11{
 }
 
 ._common_d11 .dijitTabLabels-top{
-    background: #0F5891;
+    background: #006CBF;
     top: 0px !important;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
@@ -1122,4 +1133,80 @@ body.tundra._common_d11{
 /* @end */
 
 
+
+/* @group tooltipDialog */
+._common_d11 .dijitTooltipConnector{
+	display: none;
+}
+._common_d11 .dijitTooltipBelow{
+	padding-top: 0;
+	padding-left: 10px;
+}
+
+._common_d11.tundra .dijitPopup{
+	border: 0;
+
+}
+
+._common_d11 .dijitTooltipDialog .dijitTooltipContainer{
+    /*border:0;*/
+    border-radius: 2px;
+
+}
+._common_d11 .quickTooltipContainer{
+	padding:2px;
+    background: #006CBF;
+    border-radius: 2px;
+}
+
+.quickTooltipContainer .innerLblWrapper{
+    display: block;
+}
+
+.quickTooltipContainer .innerLbl {
+    background: transparent;
+    font-size: 6pt;
+    font-style: italic;
+    color: white;
+    text-align: left;
+    margin-left: 1px;
+    margin-right: 1px;
+    font-size: 0.9em;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border: 0;
+}
+
+.tundra .quickTooltipContainer .innerLbl_top.innerLblWrapper .dijitTextBox, 
+.tundra .quickTooltipContainer .innerLbl_top.innerLblWrapper .dijitComboBox,
+.tundra .quickTooltipContainer .innerLbl_top.innerLblWrapper .dijitSpinner,
+.tundra .quickTooltipContainer .innerLbl_top.innerLblWrapper .dijitInlineEditor input, 
+.tundra .quickTooltipContainer .innerLbl_top.innerLblWrapper .dijitTextArea {
+    box-shadow: 0 2px 2px #DDDDDD inset;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top: 1px solid #B3B3B3;
+}
+
+.bs_prevstories{
+    padding: 2px;
+    background: white;
+    border-radius: 3px;
+    margin: 2px;
+    color: #444;
+}
+.bs_story{
+    font-style: italic;
+    font-size: .9em;
+}
+.bs_name{
+    font-weight: bold;
+    font-size: .9em;
+}
+.bs_phrase{
+    font-weight: bold;
+}
+/* @end */
 

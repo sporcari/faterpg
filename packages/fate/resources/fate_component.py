@@ -92,21 +92,26 @@ class CharacterSheet(BaseComponent):
     def ft_characterSheet(self, parent, username=None, **kwargs):
         parent.data('.%s.title' %username,username)
         bc = parent.contentPane(title='^.%s.title' %username, username=username, **kwargs).borderContainer()
-        top = bc.borderContainer(region='top',height='250px')
+        
+
+        top = bc.borderContainer(region='top',height='225px')
         center = bc.borderContainer(region='center')
-        bottom = bc.borderContainer(region='bottom', height='150px')
-        self.idGroup(top, username=username)
+        bottom = bc.borderContainer(region='bottom', height='120px')
+        self.idGroup(top,username=username)
+
         self.characterAspects(top, username=username)
         self.characterSkills(center, username=username)
         self.characterStunts(center,username=username)
-        self.stressTracks(bottom.contentPane(region='left', width='50%',
+        self.stressTracks(bottom.roundedGroup(region='left', width='50%',title='Stress Tracks',
                                              datapath='game.pcsheets.%s.stress_tracks'% username))
         self.consequences(bottom.contentPane(region='center'))
+        
+
         #defaultbag =Bag()
         #center.dataFormula()
 
     def idGroup(self, bc, username):
-        box = bc.roundedGroup(title='ID',region='left',width='50%', 
+        box = bc.roundedGroup(title='ID',region='left',width='310px', 
                              datapath='game.pcsheets.%s'%username,
                              wrp_border='1px solid #444',
                              lbl_background='transparent',
@@ -116,21 +121,43 @@ class CharacterSheet(BaseComponent):
                              overflow='hidden')
         t = box.table(border_spacing='2px').tbody()
         r = t.tr()
-        r.td(colspan=2).textbox(value='^.name',lbl='Name',width='160px',border='0px')
-        r.td(rowspan=3).div(lbl='Portrait', height='180px', wrp_width='100px')
+        r.td(colspan=2).textbox(value='^.name',lbl='Name',width='175px',border='0px')
+        r.td(rowspan=3).div(lbl='Portrait', height='161px', wrp_width='110px')
         t.tr().td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
-                            height='70px', width='160px',border=0)
+                            height='70px', width='175px',border=0)
         r = t.tr()
         r.td().numberTextBox(value='^.refresh', lbl='Refresh',
-            font_size='2em',border=0, wrp_height='60px',width='60px')
+            font_size='2em',border=0, wrp_height='45px',width='60px')
         r.td().numberTextBox(value='^.fate_points',lbl='Fate points',
-            font_size='2em',border=0, wrp_height='60px',width='60px')
+            font_size='2em',border=0, wrp_height='45px',width='60px')
+
+
+
+    def idGroup_z(self, bc, username):
+        box = bc.roundedGroup(title='ID',region='left',width='282px', 
+                             datapath='game.pcsheets.%s'%username,
+                             wrp_border='1px solid #444',
+                             lbl_background='transparent',
+                             #wrp_margin='2px',
+                             wrp_display='block',
+                             lbl_color='#444',lbl_border=0,
+                             overflow='hidden')
+        t = box.table(border_spacing='2px',width='100%').tbody()
+        t.tr().td(colspan=3).textbox(value='^.name',lbl='Name',#width='160px',
+                            border='0px')
+        r = t.tr()
+        r.td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
+                            height='55px', #width='160px',
+                            border=0)
+        r.td(rowspan=2).div(lbl='Portrait', height='130px', wrp_width='100px')
+
+        r = t.tr()
+        r.td().numberTextBox(value='^.refresh', lbl='Refresh',
+            font_size='2em',border=0, wrp_height='45px',width='60px')
+        r.td().numberTextBox(value='^.fate_points',lbl='Fate points',
+            font_size='2em',border=0, wrp_height='45px',width='60px')
 
     def characterAspects(self, bc, username):
-        #fields = [dict(wdg='div', innerHTML='==Fate.getPreviousBackstory(this, _phase)', _phase='^.phase',_class='prev_backstory'),
-        #          dict(wdg='simpleTextArea', lbl='Story', placeholder='Crossing paths', hidden='.aspect_type?=#v!="PH"', height='90px'),
-        #          dict(value='^.phrase',lbl='Phrase')]
-
         bc.templateGrid(region='center',frameCode='%s_aspects' %username,
                            title='Aspects',
                            addrow=False,
@@ -141,7 +168,7 @@ class CharacterSheet(BaseComponent):
                            contentCb='Fate.characterAspectsForm(pane, kw)')
 
     def characterSkills(self, bc, username):
-        pane = bc.roundedGroup(title='Skills',region='top', height='130px', datapath='game.pcsheets.%s' %username)
+        pane = bc.roundedGroup(title='Skills',region='top', height='140px', datapath='game.pcsheets.%s' %username)
         if self.user == username:
             pane.lightButton('==Fate.renderSkillsPyramid(_skills, _skill_cap)',
                                 _skills='^.skills',
@@ -175,15 +202,19 @@ class CharacterSheet(BaseComponent):
 
     def stressTracks(self, pane):
         for v in self.game_record['stress_tracks'].values():
-            st = pane.div(lbl=v['track_name'], wrp_width='100%',wrp_display='block',
-                     height='30px', border='1px solid black', datapath='.%s' % v['code'])
+            st = pane.div(margin_right='10px').formbuilder(datapath='.%s' % v['code'],margin='2px',border_spacing='0',width='100%',colswidth='auto',lblvalign='middle')
+            box = st.div(lbl=v['track_name'],padding='2px',width='100%',lbl_width='5em',lbl_font_size='10pt')
+            #fb = st.formbuilder(cols=1,border_spacing='0')
             for n in range(v['max_boxes']):
                 n=n+1
-                st.checkbox(value='^.boxes.b%s'%str(n), wrp_margin='2px', 
-                             wrp_display='inline block', wrp_width='30px',
-                             lbl=str(n), 
-                             disabled='==%s>n_boxes' % str(n), 
-                             n_boxes='^.n_boxes')
+                box.div(str(n),_class='stressbox',hidden='==%s>n_boxes' % str(n),n_boxes='^.n_boxes'
+                    )
+
+                #st.checkbox(value='^.boxes.b%s'%str(n), wrp_margin='2px', 
+                #             wrp_display='inline block', wrp_width='30px',
+                #             label=str(n), 
+                #             disabled='==%s>n_boxes' % str(n), 
+                #             n_boxes='^.n_boxes')
             #st.numberTextBox(value='^.n_boxes')
 
 

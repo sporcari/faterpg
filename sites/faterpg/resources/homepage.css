@@ -22,8 +22,8 @@ a:visited{
 }
 
 .home_bar{
-    background: #056EBC;
-    color:#EEF2F4;
+    background: #002643;
+    color:white;
     height: 25px;
     font-size: 14px;
     line-height: 25px;
@@ -59,7 +59,7 @@ a:visited{
 .mainpage_tc{
 }
 .mainpage_tc .dijitTabLabels-top{
-    background: #056EBC;
+    background: #002643;
     top: 0px !important;
 }
 .tundra .mainpage_tc .dijitTab {
@@ -90,7 +90,7 @@ a:visited{
 }
 
 .tundra .mainpage_tc .dijitTabHover {
-    color: #F9D100;
+    color: #FFF575;
 }
 
 .tundra .dijitTabInnerDiv {
@@ -104,8 +104,8 @@ a:visited{
 }
 
 .tundra .mainpage_tc .dijitAlignTop .dijitTabChecked.dijitTab {
-    background: #022742;
-    color: #F9D100;
+    background: #006CBF;
+    color: white;
 }
 
 .homepageTop{

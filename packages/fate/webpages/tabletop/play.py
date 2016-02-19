@@ -20,22 +20,22 @@ class GnrCustomWebPage(object):
         kw = self.getCallArgs('__ins_user','code')
         self.game_record = self.db.table('fate.game').record(**kw).output('bag')
         #root.data('game',Bag())
-        root.data('game', None, shared_id='game_%(__ins_user)s_%(code)s' %kw,
+        self.game_shared_id = 'game_%(__ins_user)s_%(code)s' %kw
+        root.data('game', None, shared_id=self.game_shared_id,
                                                   shared_expire=10000,
                                                   shared_autoLoad=True,
                                                   shared_autoSave=True)
         root.data('main.game_skills', self.getGameSkills())
-        root_bc = root.borderContainer()
+        root_bc = root.borderContainer(design='sidebar',datapath='main')
         self.gameHeader(root_bc.borderContainer(region='top',height='80px'))
-        bc = root_bc.borderContainer(datapath='main',design='sidebar',region='center')
-        self.gameCharacters(bc)
+        bc = root_bc.borderContainer(region='center')
+        self.gameCharacters(root_bc)
         #self.gameCommon(bc)
         bc.data('game_record',self.game_record)
-        tc = bc.tabContainer(region='center',margin='2px')
+        tc = root_bc.tabContainer(region='center',margin='2px')
         self.gameCreation(tc.borderContainer(title='Game creation'))
         self.gamePlay(tc.borderContainer(title='Game play'))
 
-        root_bc.tooltipPane(modifiers='no',nodeId='aspectSingle').div('ciao')
         #if self.game_record['status'] == 'CR':
         #    self.gameCreation(bc)
         #else:
@@ -43,9 +43,10 @@ class GnrCustomWebPage(object):
 
     def gameHeader(self,bc):
         bc.contentPane(region='left',width='300px').img(src='/_site/resources/images/fate_head.jpg',height='60px')
+        bc.contentPane(region='center').button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
 
     def gameCharacters(self,bc):
-        tc = bc.tabContainer(region='left',width='600px',margin='2px',drawer=True,datapath='main.pcsheets')
+        tc = bc.tabContainer(region='right',width='700px',margin='2px',datapath='main.pcsheets')
         game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $is_gm IS FALSE',
                                                     gid=self.game_record['id'],
                                                     columns="""$player_id,

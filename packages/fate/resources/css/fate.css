@@ -53,7 +53,7 @@
 }
 
 .aspectGrid .dojoxGrid-scrollbox{
-    margin-left: 5px;
+    margin-left: 2px;
 }
 
 .aspectGrid th{
@@ -81,21 +81,30 @@
 
 .aspectGrid .cellContent{
     color: #1173BF;
-    border-radius:5px;
+    border-radius:3px;
     margin-top:0;
     margin-right:0px;
-    padding-top:2px;
-    padding-bottom: 2px;
+    padding-top:1px;
+    padding-bottom: 1px;
     padding-left: 10px;
-    padding-bottom:2px;
     line-height:13px;
     font-size: 10pt;
     color:#333;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 90%, from(#FFF58B), to(#FFF47E));
     background-image: -moz-linear-gradient(-90deg, #FFF58B, #FFF47E);
     cursor:pointer;
-    margin:4px;
-    box-shadow: 2px 2px 2px #B2B2B2;
+    margin:3px;
+    box-shadow: 1px 1px 1px #B2B2B2;
+}
+
+.stressbox{
+    border: 1px ridge #444;
+    height: 20px;
+    width:40px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 3px;
+    margin-left: 5px;
 }
 
 .aspectGrid.grid_STUNT .cellContent{
@@ -137,8 +146,8 @@
     padding: 2px;
 }
 .mainTxt{
-    font-size:9pt;
+    font-size:8pt;
     text-align:left;
-    padding:2px;
+    padding:0;
 }
 /* @end */

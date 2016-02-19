@@ -12,12 +12,14 @@ var Fate = {
     },
     characterAspectsForm:function(pane, kw){
         var data = kw.rowDataNode.getValue();
-        var width = '20em'
+        var width = '25em'
         
         if (data.getItem('aspect_type')=='PH'){
-            pane._('div', {innerHTML:this.getPreviousBackstory(pane.getParentNode(),data.getItem('phase')),
-                            width:width})
-            pane._('simpleTextArea', {height:'60px',width:width, lbl:data.getItem('story_label')})
+            if(data.getItem('phase')>1){
+                pane._('div', {innerHTML:this.getPreviousBackstory(kw.grid.sourceNode,data.getItem('phase')),
+                            width:width,lbl:'Backstory',_class:'bs_prevstories'})
+            }
+            pane._('simpleTextArea', {height:'60px',width:width, lbl:data.getItem('story_label'),value:'^.backstory'})
         }
         pane._('textbox',{value:'^.phrase', width:width,lbl:data.getItem('type_label')});
         console.log('params',kw);
@@ -39,13 +41,13 @@ var Fate = {
        while(phase>=2){
            index = index > 0 ? index-1 : pc_sheets.len()-1;
            character = pc_sheets.getItem('#'+index);
-           name = character.getItem('name');
+           name = character.getItem('name') || '';
            phase=phase-1;
            aspectrec = character.getItem('aspects.ph'+phase);
-           backstory = aspectrec.getItem('backstory');
-           phrase = aspectrec.getItem('phrase');
+           backstory = aspectrec.getItem('backstory') || '';
+           phrase = aspectrec.getItem('phrase') || '';
            console.log(name,backstory,phrase)
-           backstories.push('<div>'+name+':'+backstory+'</div><br><b>'+phrase+'</b>');
+           backstories.push('<div class="bs_phase"><div class="bs_name">'+name+'</div><div class="bs_story">'+backstory+'</div><div class="bs_phrase">'+phrase+'</div></div>');
        }
        return backstories.reverse().join('')
 
