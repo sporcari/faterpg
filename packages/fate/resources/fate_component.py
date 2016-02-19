@@ -15,26 +15,33 @@ class AspectGrid(BaseComponent):
                      aspect_type=None,
                      storepath=None,
                      **kwargs):
+
         frame = pane.bagGrid(frameCode=frameCode , 
                             title=title,
                             _class='aspectGrid grid_%s' %(aspect_type or 'BASE'),
                             pbl_classes='*',
                             datapath='.%s'%frameCode, 
+                            connect_onRowDblClick="""
+                                console.log('aaa')
+                                genro.publish('aspectSingle_open',{evt:$1,
+                                    domNode:$1.target})
+                            """,
                             struct=self.ft_aspectStruct,
                             storepath=storepath, **kwargs)
 
-        form = frame.grid.linkedForm(datapath='.form', _class='aspectForm',
-                              frameCode='%s_form' % frameCode,
-                              dialog_height='280px',
-                              store='memory',
-                              loadEvent='onRowDblClick',
-                              dialog_title=title,
-                              dialog_width='370px',
-                              default_aspect_type=aspect_type)
-        getattr(self,'ft_aspectForm_%s' %aspect_type,self.ft_aspectForm_base)(form)
-        bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
-        bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
-        bar.confirm.slotButton('!!Confirm',action='this.form.save({destPkey:"*dismiss*"})')
+
+        #form = frame.grid.linkedForm(datapath='.form', _class='aspectForm',
+        #                      frameCode='%s_form' % frameCode,
+        #                      dialog_height='280px',
+        #                      store='memory',
+        #                      loadEvent='onRowDblClick',
+        #                      dialog_title=title,
+        #                      dialog_width='370px',
+        #                      default_aspect_type=aspect_type)
+        #getattr(self,'ft_aspectForm_%s' %aspect_type,self.ft_aspectForm_base)(form)
+        #bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
+        #bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
+        #bar.confirm.slotButton('!!Confirm',action='this.form.save({destPkey:"*dismiss*"})')
         return frame
 
 
@@ -78,7 +85,7 @@ class AspectGrid(BaseComponent):
                 width='100%')
 
 class CharacterSheet(BaseComponent):
-    py_requires='gnrcomponents/framegrid:FrameGrid,gnrcomponents/formhandler:FormHandler'
+    py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
     css_requires='fate'
 
     @struct_method
@@ -120,12 +127,14 @@ class CharacterSheet(BaseComponent):
             font_size='2em',border=0, wrp_height='60px',width='60px')
 
     def characterAspects(self, bc, username):
-        bc.aspectGrid(region='center',frameCode='%s_aspects' %username,
+        bc.templateGrid(region='center',frameCode='%s_aspects' %username,
                            title='Aspects',
-                           aspect_type='CA',
+                           default_aspect_type='CA',
                            addrow=False,
                            delrow=False,
-                           storepath='game.pcsheets.%s.aspects'% username)
+                           storepath='game.pcsheets.%s.aspects'% username,
+                           template_resource='tpl/aspect_CA',
+                           fields=[dict(value='^.phrase',lbl='Phrase')])
 
     def characterSkills(self, bc, username):
         pane = bc.roundedGroup(title='Skills',region='top', height='130px', datapath='game.pcsheets.%s' %username)

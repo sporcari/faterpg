@@ -34,6 +34,8 @@ class GnrCustomWebPage(object):
         tc = bc.tabContainer(region='center',margin='2px')
         self.gameCreation(tc.borderContainer(title='Game creation'))
         self.gamePlay(tc.borderContainer(title='Game play'))
+
+        root_bc.tooltipPane(modifiers='no',nodeId='aspectSingle').div('ciao')
         #if self.game_record['status'] == 'CR':
         #    self.gameCreation(bc)
         #else:
