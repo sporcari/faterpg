@@ -157,8 +157,8 @@ class ConfigurationForm(BaseComponent):
 
     def configOptions(self,bc):
 
-        self.stressTracksEditor(bc.contentPane(region='right', width='210px', margin='4px'))
-        self.consequencesEditor(bc.contentPane(region='bottom', height='150px'))
+        self.consequencesEditor(bc.contentPane(region='right', width='310px', margin='4px'))
+        self.stressTracksEditor(bc.contentPane(region='bottom', height='150px'))
         fb =bc.contentPane(region='center').div(margin='8px').formbuilder(cols=3,border_spacing='4px')
         fb.field('game_creation',lbl='', label='Coop Game creation', colspan=3)
         fb.field('use_phases', lbl='',label='Phases PC creation', colspan=3)       
@@ -180,11 +180,28 @@ class ConfigurationForm(BaseComponent):
     def consequencesEditor(self, pane):
         def struct(struct):
             r = struct.view().rows()
-            r.cell('shifts', dtype='I', name='Shifts',width='4em', edit=True)
-            r.cell('label', name='Label', width='100%', edit=True)
-            r.cell('code', dtype='I', name='Code',width='4em', edit=True)
+            r.cell('shifts', dtype='I', name='Shifts',width='4em', edit=dict(validate_notnull=True, validate_min=1))
+            r.cell('label', name='Label', width='100%', edit=dict(validate_notnull=True))
+            r.cell('skill', name='Skill', width='10em',
+                    hidden='^#FORM.record.use_approaches',
+                    edit=dict(tag='dbSelect', dbtable='fate.skill',exclude=True))
+            r.cell('lv', dtype='I', name='at rate', width='4em', edit=True, hidden='^#FORM.record.use_approaches')
+        
         pane.bagGrid(storepath='#FORM.record.consequences_slots',
-            title='Consequences',pbl_classes=True,margin='2px',struct=struct,datapath='#FORM.consequences')
+            title='Consequences',pbl_classes=True,
+            margin='2px',
+            struct=struct,
+            datapath='#FORM.consequences',
+            grid_selfsubscribe_addrow="""genro.dlg.prompt('Consequence slot', {
+                                                    lbl:'Code',
+                                                     action:function(value){
+                                                        genro.publish('newcons',{code:value})
+                                                     }
+                                                    });""")
+
+        pane.dataController('consequences.setItem(code,new gnr.GnrBag())', 
+                            subscribe_newcons=True, 
+                            consequences='=#FORM.record.consequences_slots')
 
 
 
@@ -197,22 +214,52 @@ class ConfigurationForm(BaseComponent):
                    cols='3',
                    table='fate.skill_set')
         skillpane = bc.contentPane(region='center', datapath='#FORM')
-        skillpane.plainTableHandler(relation='@custom_skills',
+        skillpane.dialogTableHandler(relation='@custom_skills',
              title='Custom skills',
              searchOn=False,
              configurable=False,
              addrow=True,
              delrow=True,
              pbl_classes=True,
+             formResource ='FormFromGame',
              viewResource='ViewCustomFromGame')
-
 
     def stressTracksEditor(self, pane):
         def struct(struct):
             r = struct.view().rows()
             r.cell('track_name', name='Track', width='100%', edit=True)
-            r.cell('n_boxes', dtype='I', name='Boxes',width='4em', edit=True)
-            r.cell('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
+            r.cell('n_boxes', dtype='I', name='Std. Boxes',width='6em', edit=True)
+            #r.cell('max_boxes', dtype='I', name='Max',width='4em', edit=dict(validate_min='=.n_boxes'))
+            r.cell('skill', name='Skill',
+                width='7em',
+                    hidden='^#FORM.record.use_approaches',
+                    edit=dict(tag='dbSelect', dbtable='fate.skill',exclude=True))
+            r.cell('extra_box_1', name='+1 at rate',
+                width='7em',
+                    hidden='^#FORM.record.use_approaches',
+                    dtype='I',
+                    edit=dict(tag='numbertextbox', validate_max=6, validate_min=1))
+            r.cell('extra_box_2', name='+2 at rate',
+                width='7em',
+                    hidden='^#FORM.record.use_approaches',
+                    dtype='I',
+                    edit=dict(tag='numbertextbox', validate_max=6, validate_min='^.extra_box_1'))
+            r.cell('extra_box_3', name='+3 at rate',
+                width='7em',
+                    hidden='^#FORM.record.use_approaches',
+                    dtype='I',
+                    edit=dict(tag='numbertextbox', validate_max=6, validate_min='^.extra_box_2'))
+
+            #r.cell('2', name='+2',
+            #        hidden='^.skill=!#v',
+            #        dtype='I',
+            #        width='3em',
+            #        edit=True)
+            #r.cell('3', name='+3',
+            #        hidden='^.skill=!#v',
+            #        dtype='I',
+            #        width='3em',
+            #        edit=True)
 
         pane.bagGrid(storepath='#FORM.record.stress_tracks',datapath='#FORM.stress',
             title='Stress tracks',pbl_classes=True,struct=struct,

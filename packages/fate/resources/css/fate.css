@@ -97,7 +97,7 @@
     box-shadow: 1px 1px 1px #B2B2B2;
 }
 
-.stressbox{
+.stressbox.stressbox{
     border: 1px ridge #444;
     height: 20px;
     width:40px;
@@ -105,6 +105,11 @@
     display: inline-block;
     margin-top: 3px;
     margin-left: 5px;
+}
+
+.stressbox.stressbox_marked{
+    color: white;
+    background-color: black;
 }
 
 .aspectGrid.grid_STUNT .cellContent{

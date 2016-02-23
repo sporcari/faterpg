@@ -24,7 +24,24 @@ var Fate = {
         pane._('textbox',{value:'^.phrase', width:width,lbl:data.getItem('type_label')});
         console.log('params',kw);
     },
-
+    stuntsForm:function(pane, kw){
+        pane._('textbox',{value:'^.name', width:'15em',lbl:'Name'});
+        pane._('simpleTextArea',{value:'^.description', width:'38em',lbl:'Description', height:'60px'});
+    },
+    /*skillsForStress:function(skills,stress_tracks,conditions, game_record){
+        var game_st = game_record.getItem('stress_tracks');
+        var st;
+        var sk;
+        game_st.forEach(function(n){
+            st = n.getValue();
+            sk = st.getItem('skill');
+            this.getSkillLevel(skills, sk);
+        })
+    },
+    getSkillLevel:function(skills, skill){
+        return
+    },
+    */
     getPreviousBackstory: function(sourceNode, phase){
        if (!phase || phase <2){
            return '';

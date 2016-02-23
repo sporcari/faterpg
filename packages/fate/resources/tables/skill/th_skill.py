@@ -82,19 +82,31 @@ class Form(BaseComponent):
     def th_options(self):
         return dict(dialog_height='400px', dialog_width='600px')
 
-class FormFromGame(BaseComponent):
+class FormFromGame(Form):
 
     def th_form(self, form):
         bc = form.center.borderContainer()
-        fb = bc.borderContainer(datapath='.record', region='top', height='350px').div(margin='10px').formbuilder(cols=1, border_spacing='4px', width='100%', fld_width='100%')
+        fb = bc.contentPane(datapath='.record', 
+                            region='top', 
+                            height='170px').div(margin_left='10px',margin_right='10px').formbuilder(cols=1, border_spacing='4px',
+                                                                            width='100%', 
+                                                                            fld_width='100%',
+                                                                            lblpos='T')
         fb.field('name')
-        fb.field('description', tag='simpletextarea', height='134px')
-        fb.field('special', tag='simpletextarea', height='134px')
-        bc.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@actions',
-                                                           viewResource='ViewFromSkill')
+        fb.field('description', tag='simpletextarea', height='70px')
+        #fb.field('special', tag='simpletextarea', height='134px')
+        #bc.contentPane(region='center', datapath='#FORM').inlineTableHandler(relation='@actions',
+        #                                                   viewResource='ViewFromSkill')
+        bc.contentPane(region='center').bagGrid(frameCode='actionsGrid',
+                                 title='!!Action types',
+                                 storepath='#FORM.record.action_types',
+                                 datapath='#FORM.actionsGrid',
+                                 pbl_classes=True,
+                                 margin='2px',
+                                 struct=self.actions_struct)
 
     def th_options(self):
-        return dict(dialog_height='550px', dialog_width='400px')
+        return dict(dialog_height='350px', dialog_width='400px', modal=True)
 
 
 

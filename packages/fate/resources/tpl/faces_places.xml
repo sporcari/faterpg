@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GenRoBag><varsbag><n_2276 _pkey="n_2276"><fieldname dtype="::NN" _loadedValue="::NN">name</fieldname>
+<varname _T="NN" dtype="::NN"></varname>
+<dtype _T="NN" dtype="::NN"></dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable></n_2276>
+<n_2287 _pkey="n_2287"><fieldname dtype="::NN" _loadedValue="::NN">description</fieldname>
+<varname _T="NN" dtype="::NN"></varname>
+<dtype _T="NN" dtype="::NN"></dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable></n_2287>
+<n_2298 _pkey="n_2298"><fieldname dtype="::NN" _loadedValue="::NN">phrase</fieldname>
+<varname _T="NN" dtype="::NN"></varname>
+<dtype _T="NN" dtype="::NN"></dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable></n_2298>
+<n_2308 _pkey="n_2308"><fieldname dtype="::NN" _loadedValue="::NN">image_url</fieldname>
+<varname _T="NN" dtype="::NN"></varname>
+<dtype _T="NN" dtype="::NN"></dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable></n_2308></varsbag>
+<metadata><email><subject _T="NN"></subject>
+<to_address _T="NN"></to_address>
+<from_address _T="NN"></from_address>
+<cc_address _T="NN"></cc_address>
+<bcc_address _T="NN"></bcc_address>
+<attachments _T="NN"></attachments></email></metadata>
+<content>&lt;div style="text-align: center;"&gt;
+	&lt;strong&gt;$name&lt;/strong&gt;&lt;/div&gt;
+&lt;div style="text-align: center;"&gt;
+	&lt;span style="font-size:12px;"&gt;$phrase&lt;/span&gt;&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	&lt;img alt="" src="$image_url" style="height: 90px;" /&gt;&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	$description&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	&amp;nbsp;&lt;/div&gt;
+</content>
+<compiled><main virtual_columns="" locale="it" masks="{}::JS" dtypes="{}::JS" maintable="" columns="name,description,phrase,image_url" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div style="text-align: center;"&gt;
+	&lt;strong&gt;$name&lt;/strong&gt;&lt;/div&gt;
+&lt;div style="text-align: center;"&gt;
+	&lt;span style="font-size:12px;"&gt;$phrase&lt;/span&gt;&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	&lt;img alt="" src="$image_url" style="height: 90px;"&gt;&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	$description&lt;/div&gt;
+&lt;div style="text-align: center;heigh:92px"&gt;
+	&amp;#160;&lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>

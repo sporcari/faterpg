@@ -5,70 +5,19 @@ from gnr.web.gnrbaseclasses import BaseComponent
 from gnr.web.gnrwebstruct import struct_method
 from gnr.core.gnrbag import Bag
 
-class AspectGrid(BaseComponent):
-    py_requires='gnrcomponents/framegrid:FrameGrid,gnrcomponents/formhandler:FormHandler'
+class GmTools(BaseComponent):
+    py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
     css_requires='fate'
 
     @struct_method
-    def ft_aspectGrid(self, pane, frameCode=None, 
-                     title=None, datapath=None,
-                     aspect_type=None,
-                     storepath=None,
-                     **kwargs):
+    def ft_gmTools(self, parent, username=None, **kwargs):
+        parent.contentPane(title='GM Tools')
 
-        frame = pane.bagGrid(frameCode=frameCode , 
-                            title=title,
-                            _class='aspectGrid grid_%s' %(aspect_type or 'BASE'),
-                            pbl_classes='*',
-                            datapath='.%s'%frameCode, 
-                            connect_onRowDblClick="""
-                                console.log('aaa')
-                                genro.publish('aspectSingle_open',{evt:$1,
-                                    domNode:$1.target})
-                            """,
-                            struct=self.ft_aspectStruct,
-                            storepath=storepath, **kwargs)
-        return frame
+    @struct_method
+    def ft_npcPage(self, parent, **kwargs):
+        parent.contentPane(title='NPCs')
 
 
-    def ft_aspectForm_base(self,form):
-        #bc = form.center.borderContainer()
-
-        fb = form.record.formbuilder(cols=1, fld_width='220px',lblpos='T')
-        fb.textbox(value='^.phrase', lbl='Phrase')
-        fb.simpleTextArea(value='^.description', lbl='Description', height='170px')
-        
-    def tf_aspectForm_SKILLS(self, form):
-        pass
-
-    def ft_aspectForm_FACES(self,form):
-        self._ft_aspectForm_FACES_PLACES(form)
-
-    def ft_aspectForm_PLACES(self,form):
-        self._ft_aspectForm_FACES_PLACES(form)
-
-    def _ft_aspectForm_FACES_PLACES(self,form):
-        fb = form.record.formbuilder(cols=1)
-        fb.textbox(value='^.name', lbl='Name')
-        fb.simpleTextArea(value='^.description', lbl='Description', height='170px')
-
-    def ft_aspectForm_STUNT(self,form):
-        fb = form.record.formbuilder(cols=1)
-        fb.textbox(value='^.name', lbl='Name')
-        fb.textbox(value='^.description', lbl='Description')
-
-    def ft_aspectForm_CA(self,form):
-        box = form.record.div(wrp_width='100%', wrp_display='block',wrp_margin='2px')
-        box.div('==Fate.getPreviousBackstory(this, _phase)', _phase='^.phase',_class='prev_backstory')
-        box.simpleTextArea('^.backstory', lbl='Backstory', height='90px', 
-                                wrp_hidden='^.aspect_type?=#v!="PH"')
-        box.textbox('^.phrase', lbl='Phrase',width='100%')
-
-
-    def ft_aspectStruct(self,struct):
-        r = struct.view().rows()
-        r.cell('aspect', _customGetter='function(row){return Fate.renderAspectRow(row);}',
-                width='100%')
 
 class CharacterSheet(BaseComponent):
     py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
@@ -90,7 +39,8 @@ class CharacterSheet(BaseComponent):
         self.characterStunts(center,username=username)
         self.stressTracks(bottom.roundedGroup(region='left', width='310px',title='Stress Tracks',
                                              datapath='game.pcsheets.%s.stress_tracks'% username))
-        self.consequences(bottom.roundedGroup(region='center', title='Consequences'))
+        self.consequences(bottom.roundedGroup(region='center', title='Consequences',
+                                              datapath='game.pcsheets.%s.consequences'% username))
         
 
         #defaultbag =Bag()
@@ -116,8 +66,6 @@ class CharacterSheet(BaseComponent):
             font_size='2em',border=0, wrp_height='45px',width='60px')
         r.td().numberTextBox(value='^.fate_points',lbl='Fate points',
             font_size='2em',border=0, wrp_height='45px',width='60px')
-
-
 
     def idGroup_z(self, bc, username):
         box = bc.roundedGroup(title='ID',region='left',width='282px', 
@@ -167,61 +115,91 @@ class CharacterSheet(BaseComponent):
                                 _skills='^.skills',
                                  _skill_cap = '=game_record.skill_cap',
                                 height='80px')
+        #pane.dataController("Fate.skillsForStress(skills,stress_tracks,consequences,game_record);", 
+        #                    skills='^.skills',_if='skills',
+        #                    stress_tracks='=.stress_tracks',
+        #                    consequences='=.consequences',
+        #                    game_record='=game_record')
 
     def characterStunts(self, bc, username):
-        frame = bc.aspectGrid(region='center',frameCode='%s_stunts' %username,
+        frame = bc.templateGrid(region='center',frameCode='%s_stunts' %username,
                            title='Stunts',
-                           aspect_type='STUNT',
-                           addrow=False,
-                           delrow=False,
-                           storepath='game.pcsheets.%s.stunts'% username)
-        
+                           _class='aspectGrid',
+                           storepath='game.pcsheets.%s.stunts'% username,
+                           template_resource='tpl/stunt',
+                           contentCb='Fate.stuntsForm(pane, kw)')
+                           #fields=[dict(value='^.name', wdg='textbox', lbl='Name', width='15em'),
+                           #        dict(value='^.description', wdg='simpleTextArea', lbl='Description', width='30em', height='40px')])
+#
+        frame.dataController("""var n_stunts = stuntsBag.len();
+                                var n_max_stunts = initial_stunts+refresh-1;
+                                var extra_stunts = n_stunts-initial_stunts;
+                                SET .max_stunts= (n_stunts==n_max_stunts);
+                                SET .refresh = refresh-Math.max(extra_stunts,0);
+                                """, 
+                            stuntsBag='^.stunts',
+                            initial_stunts='=game_record.initial_stunts',
+                            refresh='=game_record.refresh',
+                            datapath='game.pcsheets.%s' % username,
+                            _if='stuntsBag')
         if self.user==username:
-            bar = frame.top.bar.replaceSlots('#','#,stuntsPicker,addStunt,2')
+            bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')#, addrow_disabled='^game.pcsheets.%s.max_stunts' % username)
             bar.stuntsPicker.palettePicker(grid=frame.grid,
                 width='600px',height='350px',
                 table='fate.stunt',
                 viewResource='ViewPicker_skill',
                 checkbox=True,
-                autoInsert="genro.bp(true); Fate.copyStunts(grid,data)")
-
+                autoInsert=True,
+                relation_field='name',
+                defaults='name,description')
 
     def stressTracks(self, pane):
         for v in self.game_record['stress_tracks'].values():
-            st = pane.div(margin_right='10px').formbuilder(datapath='.%s' % v['code'],margin='2px',border_spacing='0',width='100%',colswidth='auto',lblvalign='middle')
-            box = st.div(lbl=v['track_name'],padding='2px',width='100%',lbl_width='5em',lbl_font_size='10pt')
-            #fb = st.formbuilder(cols=1,border_spacing='0')
-            for n in range(v['max_boxes']):
+            st = pane.div(margin_right='10px').formbuilder(datapath='.%s' % v['code'],margin='2px',border_spacing='2px',width='100%',colswidth='auto',lblvalign='middle')
+            box = st.div(lbl=v['track_name'],
+                         padding='2px',
+                        width='100%',
+                        lbl_width='5em',
+                        lbl_font_size='10pt')
+            n_boxes = v['n_boxes']
+            max_boxes = n_boxes
+            if v['skill']:
+                if v['extra_box_1']:
+                    max_boxes = n_boxes+1
+                if v['extra_box_2']:
+                    max_boxes = n_boxes+2
+                if v['extra_box_3']:
+                    max_boxes = n_boxes+3
+
+            for n in range(max_boxes):
                 n=n+1
-                box.div(str(n),_class='stressbox',hidden='==%s>n_boxes' % str(n),n_boxes='^.n_boxes'
-                    )
-
-                #st.checkbox(value='^.boxes.b%s'%str(n), wrp_margin='2px', 
-                #             wrp_display='inline block', wrp_width='30px',
-                #             label=str(n), 
-                #             disabled='==%s>n_boxes' % str(n), 
-                #             n_boxes='^.n_boxes')
-            #st.numberTextBox(value='^.n_boxes')
-
-
+                box.lightButton(str(n),
+                    #_class='==Fate.switchStressBox(current)',
+                    _class='stressbox',
+                    hidden='==%s>n_boxes' % str(n),
+                    n_boxes='^.n_boxes',
+                    action="""console.log(current);
+                              current = !current;
+                              console.log(current);
+                              SET .boxes.b%i = current;
+                              genro.dom.setClass(this,'stressbox_marked',current)
+                              """% n, 
+                    current='=.boxes.b%i' % n)
 
     def consequences(self, pane):
-        st = pane.div(margin_right='10px').formbuilder(border_spacing='0',width='100%',colswidth='auto',lblvalign='middle')
+        st = pane.div(margin_right='10px').formbuilder(border_spacing='2px',width='100%',colswidth='auto',lblvalign='middle')
         cs = self.game_record['consequences_slots']
         for c in cs:
             c = c.getAttr()
-            if c['code']!='m2':
-                st.div(lbl='%s (%i)' % (c['label'],c['shifts']), 
-                      height='22px', border='1px solid black')
-            
+            st.textbox(value='^.%s.phrase' % c['code'],
+                       lbl='%s-%i' % (c['label'],c['shifts']),
+                       hidden='^.%s.available?=!#v' % c['code'])     
 
     def getGameSkills(self):
         return Bag(self.db.table('fate.skill').query(columns="""$name,$description,$code,
                                                      $skill_set,$action_types,
                                                      $stresstrack_changes""",
                                                      bagField=True).fetchAsDict(key='code'))
-
-
 
     @struct_method
     def ft_skillsPicker(self, pane):

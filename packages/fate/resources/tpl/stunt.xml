@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GenRoBag><varsbag><n_2170 _pkey="n_2170"><fieldname dtype="::NN" _loadedValue="::NN">name</fieldname>
+<varname dtype="::NN" _loadedValue="::NN">Name</varname>
+<dtype _displayedValue="Text" dtype="::NN" _loadedValue="::NN">T</dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable>
+<table _T="NN"></table></n_2170>
+<n_2193 _pkey="n_2193"><fieldname dtype="::NN" _loadedValue="::NN">description</fieldname>
+<varname dtype="::NN" _loadedValue="::NN">Description</varname>
+<dtype _displayedValue="Text" dtype="::NN" _loadedValue="::NN">T</dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable>
+<table _T="NN"></table></n_2193></varsbag>
+<metadata><email><subject _T="NN"></subject>
+<to_address _T="NN"></to_address>
+<from_address _T="NN"></from_address>
+<cc_address _T="NN"></cc_address>
+<bcc_address _T="NN"></bcc_address>
+<attachments _T="NN"></attachments></email></metadata>
+<content>&lt;div&gt;
+	&lt;span style="font-size:10px;"&gt;&lt;strong&gt;$name&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div&gt;
+	&lt;span style="font-size:11px;"&gt;$description&lt;/span&gt;&lt;/div&gt;
+</content>
+<compiled><main virtual_columns="" locale="it" masks="{}::JS" dtypes='{"Name": "T", "Description": "T"}::JS' maintable="" columns="Name,Description" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div&gt;
+	&lt;span style="font-size:10px;"&gt;&lt;strong&gt;$name&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div&gt;
+	&lt;span style="font-size:11px;"&gt;$description&lt;/span&gt;&lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>

@@ -55,8 +55,11 @@ class GnrCustomWebPage(object):
         if my_rec:
             tc.characterSheet(self.user, detachable=True)
             bc.skillsPicker()
+        elif self.game_record['gm_id'] == self.rootenv['player_id']:
+            tc.gmTools(self.user)
         for username in sorted(game_players.keys()):
             tc.characterSheet(username, detachable=True)
+        tc.npcPage()
 
     def gameCommon(self,main_bc):
         bc = main_bc.borderContainer(region='top',height='160px')
@@ -110,32 +113,47 @@ class GnrCustomWebPage(object):
     def gameCreation(self,main_bc):
         top = main_bc.borderContainer(region='top', height='300px')
         center = main_bc.borderContainer(region='center')
-
-        top.aspectGrid(region='left',
+        width='22em'
+        height='40px'
+        top.templateGrid(region='left',
                             width='50%',
                            frameCode='currentIssues',
                            title='Current Issues',
-                           aspect_type='CURRISS',
-                           storepath='game.game_sheet.issues.current')
-        top.aspectGrid(region='center',
-                           frameCode='impendingIssues',
+                           _class='aspectGrid',
+                           storepath='game.game_sheet.game_creation.current',
+                           template_resource='tpl/game_issues',
+                           fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width=width),
+                                   dict(value='^.description', wdg='simpleTextArea', lbl='Description',
+                                                width=width, height=height)])
+        top.templateGrid(region='center',        
+                            frameCode='impendingIssues',
                            title='Impending Issues',
-                           aspect_type='IMPISS',
-                           storepath='game.game_sheet.issues.impending')
-        center.aspectGrid(region='left',
+                           _class='aspectGrid',
+                          storepath='game.game_sheet.game_creation.impending',
+                           template_resource='tpl/game_issues',
+                           fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect',width=width),
+                                   dict(value='^.description', wdg='simpleTextArea', lbl='Description',width=width, height=height)])
+        center.templateGrid(region='left',
                             width='50%',
-                           frameCode='settingFaces',
+                           frameCode='faces',
                            title='Faces',
-                           aspect_type='FACES',
-                           storepath='game.game_sheet.faces')
-        center.aspectGrid(region='center',
-                           frameCode='settingPlaces',
+                           _class='aspectGrid',
+                           storepath='game.game_sheet.game_creation.faces',
+                           template_resource='tpl/faces_places',
+                           fields=[dict(value='^.name', wdg='textbox', lbl='Name',width=width),
+                                   dict(value='^.description', wdg='simpleTextArea', lbl='Description',width=width, height=height),
+                                   dict(value='^.phrase', wdg='textbox', lbl='Aspect',width=width),
+                                   dict(value='^.image_url',wdg='textbox', lbl='Image Url',width=width)])
+        center.templateGrid(region='center',
+                           frameCode='places',
                            title='Places',
-                           aspect_type='PLACES',
-                           storepath='game.game_sheet.places')
-
-
-
+                           _class='aspectGrid',
+                           storepath='game.game_sheet.game_creation.places',
+                           template_resource='tpl/faces_places',
+                           fields=[dict(value='^.name', wdg='textbox', lbl='Name',width=width),
+                                   dict(value='^.description', wdg='simpleTextArea', lbl='Description',width=width, height=height),
+                                   dict(value='^.phrase', wdg='textbox', lbl='Aspect',width=width),
+                                   dict(value='^.image_url',wdg='textbox', lbl='Image Url',width=width)])
     def xxx(self,main_bc):
 
         top = main_bc.contentPane()

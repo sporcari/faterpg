@@ -54,8 +54,20 @@ class Table(object):
 
     def configDefault_CORE(self, record=None):
         stressbag = record['stress_tracks']
-        stressbag['p'] = Bag(dict(track_name='Phisical',n_boxes=2, max_boxes=4, code='p'))
-        stressbag['m'] = Bag(dict(track_name='Mental',n_boxes=2, max_boxes=4, code='m'))
+        stressbag['p'] = Bag(dict(track_name='Phisical',
+                          n_boxes=2, code='p', 
+                          skill='PHISIQUE', 
+                          extra_box_1=1,
+                          extra_box_2=3,
+                          extra_box_3=None))
+        stressbag['m'] = Bag(dict(track_name='Mental',
+                              n_boxes=2, 
+                              code='m', 
+                              skill='WILL',
+                              extra_box_1=1,
+                              extra_box_2=3,
+                              extra_box_3=None))
+
         record.update(dict(pc_phases=3,
                      game_creation=True,
                      use_phases=True))
@@ -64,7 +76,11 @@ class Table(object):
             record.update(dict( approach_set='STD'))
         else:
             consequences_slots = Bag(record['consequences_slots'])
-            consequences_slots.setItem('mild2', None, code='m2', shifts=2, label='Mild', available=False)
+            consequences_slots.setItem('mild2', None, code='m2', 
+                                      shifts=2, label='Mild opt.', 
+                                      skill='PHISIQUE',
+                                      lv=5,
+                                      _position=1)
             record.update(dict(stunt_sets='STD',
                                 skill_sets='STD',
                                  skill_cap=4,
@@ -72,7 +88,7 @@ class Table(object):
 
     def configDefault_FAE(self, record=None):
         stressbag = record['stress_tracks']
-        stressbag['s'] = Bag(dict(track_name='Stress',n_boxes=3, max_boxes=3, code='s'))
+        stressbag['s'] = Bag(dict(track_name='Stress',n_boxes=3, code='s'))
         record.update(dict(use_approaches=True,
                              approach_set='STD',
                              game_creation=False,
@@ -93,15 +109,22 @@ class Table(object):
     def prepareStressTrack(self, stress_tracks):
         result = Bag()
         for k,v in stress_tracks.items():
-            result[k] = Bag(dict(n_boxes = v['n_boxes'], boxes=None))
-        return result
-
-    def prepareConsequences(self):
-        result = Bag()
-        result.setItem('mi', None)
-        result.setItem('m2', None)
-        result.setItem('mo', None)
-        result.setItem('se', None)
+            n_boxes = v['n_boxes']
+            max_boxes = n_boxes
+            boxesBag = Bag([('b%i' % (i+1), None) for i in range(n_boxes)])
+            if v['skill']:
+                if v['extra_box_1']:
+                    max_boxes = n_boxes+1
+                    boxesBag.setItem('b%i'% (n_boxes+1), None)
+                if v['extra_box_2']:
+                    max_boxes = n_boxes+2
+                    boxesBag.setItem('b%i'% (n_boxes+2), None)
+                if v['extra_box_3']:
+                    max_boxes = n_boxes+3
+                    boxesBag.setItem('b%i'% (n_boxes+3), None)
+            result[k] = Bag(dict(n_boxes = v['n_boxes'],
+                                 boxes=boxesBag,
+                                 max_boxes=max_boxes))
         return result
 
     def prepareApproaches(self, game_record):
@@ -123,15 +146,16 @@ class Table(object):
         return result
 
     def prepareStunts(self, game_record):
-        result = Bag()
-        for s in range(game_record['initial_stunts']):
-            s =s+1
-            stunt_key= 'st%i'%s
-            result[stunt_key] = Bag(dict(name=None,
-                                          description=None,
-                                          _pkey=stunt_key,
-                                          aspect_type='STUNT'))
-        return result
+        return
+        #result = Bag()
+        #for s in range(game_record['initial_stunts']):
+        #    s =s+1
+        #    stunt_key= 'st%i'%s
+        #    result[stunt_key] = Bag(dict(name=None,
+        #                                  description=None,
+        #                                  _pkey=stunt_key,
+        #                                  aspect_type='STUNT'))
+        #return result
 
     def prepareAspects(self, game_record):
         result = Bag()
@@ -160,6 +184,17 @@ class Table(object):
                                        phrase=None,
                                        _pkey='a%i'%i))
         return result
+
+    def prepareConsequences(self, consequences_slots):
+        result = Bag()
+        for n in consequences_slots:
+            c_attributes = n.getAttr()
+
+            result.setItem(c_attributes['code'],
+                           Bag(dict(phrase=None,
+                            available=c_attributes['available'])),
+                           _attributes = c_attributes)
+        return result
                
     def createEmptySheet(self, game_record):
         pcSheet = Bag()
@@ -167,8 +202,9 @@ class Table(object):
         pcSheet['fate_points'] = pcSheet['refresh']
         pcSheet['skill_cap'] = game_record['skill_cap']
         pcSheet['n_stunts'] = game_record['initial_stunts']
+        pcSheet['max_stunts'] = False
         pcSheet['stress_tracks'] = self.prepareStressTrack(game_record['stress_tracks'])
-
+        #pcSheet['consequences'] = self.prepareConsequences(game_record['consequences_slots'])
         if game_record['use_approaches']:
             pcSheet['approaches'] = self.prepareApproaches(game_record)
         else:
@@ -176,7 +212,6 @@ class Table(object):
         pcSheet['stunts'] = self.prepareStunts(game_record)
         pcSheet['aspects'] = self.prepareAspects(game_record)
         return pcSheet
-
 
     def trigger_onInserting(self,record=None):
         getattr(self,'configDefault_%(ruleset)s' %record)(record=record)
@@ -187,11 +222,7 @@ class Table(object):
     def trigger_onInserted(self,record=None):
         self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id')))
 
-
-
-
-
-
-
-
+    def trigger_onDeleted(self, record=None):
+        pass
+        #self.wsk.som.deleteShared(record['code'])
 
