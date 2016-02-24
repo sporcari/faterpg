@@ -199,12 +199,11 @@ class ConfigurationForm(BaseComponent):
                                                      }
                                                     });""")
 
-        pane.dataController('consequences.setItem(code,new gnr.GnrBag())', 
+        pane.dataController("""var b = new gnr.GnrBag();
+                               b.setItem('code',code);
+                               consequences.setItem(code,b);""", 
                             subscribe_newcons=True, 
                             consequences='=#FORM.record.consequences_slots')
-
-
-
 
     def skillPreferences(self, bc):
         top = bc.roundedGroup(title='Skill sets' ,height='80px', region='top')
@@ -250,16 +249,6 @@ class ConfigurationForm(BaseComponent):
                     dtype='I',
                     edit=dict(tag='numbertextbox', validate_max=6, validate_min='^.extra_box_2'))
 
-            #r.cell('2', name='+2',
-            #        hidden='^.skill=!#v',
-            #        dtype='I',
-            #        width='3em',
-            #        edit=True)
-            #r.cell('3', name='+3',
-            #        hidden='^.skill=!#v',
-            #        dtype='I',
-            #        width='3em',
-            #        edit=True)
 
         pane.bagGrid(storepath='#FORM.record.stress_tracks',datapath='#FORM.stress',
             title='Stress tracks',pbl_classes=True,struct=struct,
@@ -269,7 +258,10 @@ class ConfigurationForm(BaseComponent):
                                                         genro.publish('newtrack',{code:value})
                                                      }
                                                     });""")
-        pane.dataController('stress_tracks.setItem(code,new gnr.GnrBag())', subscribe_newtrack=True, stress_tracks='=.stress_tracks')
+        pane.dataController("""var b = new gnr.GnrBag();
+                               b.setItem('code',code);
+                               stress_tracks.setItem(code,b);""", 
+                               subscribe_newtrack=True, stress_tracks='=.stress_tracks')
 
 
 

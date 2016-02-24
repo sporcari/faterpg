@@ -115,11 +115,9 @@ class CharacterSheet(BaseComponent):
                                 _skills='^.skills',
                                  _skill_cap = '=game_record.skill_cap',
                                 height='80px')
-        #pane.dataController("Fate.skillsForStress(skills,stress_tracks,consequences,game_record);", 
-        #                    skills='^.skills',_if='skills',
-        #                    stress_tracks='=.stress_tracks',
-        #                    consequences='=.consequences',
-        #                    game_record='=game_record')
+        pane.dataController("Fate.onSkillsUpdate(this, skills,game_record);", 
+                            skills='^.skills',_if='skills',
+                            game_record='=game_record')
 
     def characterStunts(self, bc, username):
         frame = bc.templateGrid(region='center',frameCode='%s_stunts' %username,
@@ -157,7 +155,7 @@ class CharacterSheet(BaseComponent):
         for v in self.game_record['stress_tracks'].values():
             st = pane.div(margin_right='10px').formbuilder(datapath='.%s' % v['code'],margin='2px',border_spacing='2px',width='100%',colswidth='auto',lblvalign='middle')
             box = st.div(lbl=v['track_name'],
-                         padding='2px',
+                         padding='1px',
                         width='100%',
                         lbl_width='5em',
                         lbl_font_size='10pt')
@@ -187,13 +185,12 @@ class CharacterSheet(BaseComponent):
                     current='=.boxes.b%i' % n)
 
     def consequences(self, pane):
-        st = pane.div(margin_right='10px').formbuilder(border_spacing='2px',width='100%',colswidth='auto',lblvalign='middle')
+        st = pane.div(margin_right='10px').formbuilder(border_spacing='1px',width='100%',colswidth='auto',lblvalign='middle', fld_width='80%')
         cs = self.game_record['consequences_slots']
-        for c in cs:
-            c = c.getAttr()
+        for c in cs.values():
             st.textbox(value='^.%s.phrase' % c['code'],
-                       lbl='%s-%i' % (c['label'],c['shifts']),
-                       hidden='^.%s.available?=!#v' % c['code'])     
+                       lbl='%s (%i)' % (c['label'],c['shifts']),
+                       hidden='^.%s.is_hidden'% c['code'])     
 
     def getGameSkills(self):
         return Bag(self.db.table('fate.skill').query(columns="""$name,$description,$code,

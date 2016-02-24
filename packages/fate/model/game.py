@@ -40,9 +40,9 @@ class Table(object):
 
     def defaultValues(self):
         consequences_slots=Bag()
-        consequences_slots.setItem('mild', None, code='mi', shifts=2, label='Mild', available=True)
-        consequences_slots.setItem('moderate', None, code='mo', shifts=4, label='Moderate', available=True)
-        consequences_slots.setItem('severe', None, code='se', shifts=6, label='Severe',available=True)
+        consequences_slots.setItem('mild', Bag(dict(code='mi', shifts=2, label='Mild')))
+        consequences_slots.setItem('moderate', Bag(dict(code='mo', shifts=4, label='Moderate')))
+        consequences_slots.setItem('severe', Bag(dict(code='se', shifts=6, label='Severe')))
 
         return dict( refresh=3,
                      pc_phases=3,
@@ -54,9 +54,9 @@ class Table(object):
 
     def configDefault_CORE(self, record=None):
         stressbag = record['stress_tracks']
-        stressbag['p'] = Bag(dict(track_name='Phisical',
+        stressbag['p'] = Bag(dict(track_name='Physical',
                           n_boxes=2, code='p', 
-                          skill='PHISIQUE', 
+                          skill='PHYSIQUE', 
                           extra_box_1=1,
                           extra_box_2=3,
                           extra_box_3=None))
@@ -76,10 +76,10 @@ class Table(object):
             record.update(dict( approach_set='STD'))
         else:
             consequences_slots = Bag(record['consequences_slots'])
-            consequences_slots.setItem('mild2', None, code='m2', 
+            consequences_slots.setItem('mild2', Bag(dict(code='m2', 
                                       shifts=2, label='Mild opt.', 
-                                      skill='PHISIQUE',
-                                      lv=5,
+                                      skill='PHYSIQUE',
+                                      lv=5)),
                                       _position=1)
             record.update(dict(stunt_sets='STD',
                                 skill_sets='STD',
@@ -146,7 +146,7 @@ class Table(object):
         return result
 
     def prepareStunts(self, game_record):
-        return
+        return Bag()
         #result = Bag()
         #for s in range(game_record['initial_stunts']):
         #    s =s+1
@@ -187,13 +187,13 @@ class Table(object):
 
     def prepareConsequences(self, consequences_slots):
         result = Bag()
-        for n in consequences_slots:
-            c_attributes = n.getAttr()
-
-            result.setItem(c_attributes['code'],
+        for cs in consequences_slots.values():
+            result.setItem(cs['code'],
                            Bag(dict(phrase=None,
-                            available=c_attributes['available'])),
-                           _attributes = c_attributes)
+                                    shifts=cs['shifts'],
+                                    code=cs['code'],
+                                    label=cs['label'],
+                                    is_hidden=(cs['skill'] != None))))
         return result
                
     def createEmptySheet(self, game_record):
@@ -204,7 +204,7 @@ class Table(object):
         pcSheet['n_stunts'] = game_record['initial_stunts']
         pcSheet['max_stunts'] = False
         pcSheet['stress_tracks'] = self.prepareStressTrack(game_record['stress_tracks'])
-        #pcSheet['consequences'] = self.prepareConsequences(game_record['consequences_slots'])
+        pcSheet['consequences'] = self.prepareConsequences(game_record['consequences_slots'])
         if game_record['use_approaches']:
             pcSheet['approaches'] = self.prepareApproaches(game_record)
         else:
