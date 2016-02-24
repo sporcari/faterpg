@@ -42,8 +42,8 @@ class GnrCustomWebPage(object):
         #    self.gamePlay(bc)
 
     def gameHeader(self,bc):
-        bc.contentPane(region='left',width='300px').img(src='/_site/resources/images/fate_head.jpg',height='60px')
-        bc.contentPane(region='center').button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
+        bc.contentPane(region='center').img(src='/_site/resources/images/fate_head.jpg',height='60px')
+        #bc.contentPane(region='center').button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
 
     def gameCharacters(self,bc):
         tc = bc.tabContainer(region='right',width='670px',margin='2px',datapath='main.pcsheets')

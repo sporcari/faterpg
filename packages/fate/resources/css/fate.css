@@ -155,4 +155,8 @@
     text-align:left;
     padding:0;
 }
+.gamecell_tbl{
+    background-image: url("$banner_url")
+    color:white;
+}
 /* @end */

@@ -28,10 +28,9 @@ class View(BaseComponent):
 class ViewFromPlayerDashboard(BaseComponent):
 
     def th_hiddencolumns(self):
-        return '$code,$title,$description,$setting_tags,$ruleset,$__ins_user'
+        return '$code,$title,$description,$setting_tags,$ruleset,$__ins_user,$banner_img,$banner_url'
 
     def th_struct(self,struct):
-
         r = struct.view().rows()
         r.fieldcell('template_game',width='100%', name='-')
         r.cell('join_game',name="Join Game",calculated=True,width='6em',
@@ -63,7 +62,7 @@ class ViewFromPlayerDashboard(BaseComponent):
         fb.dataController('dlg.show();',formsubscribe_onLoaded=True,dlg=dlg.js_widget)
         fb.dataController('dlg.hide();',formsubscribe_onDismissed=True,dlg=dlg.js_widget)
         fb.field('title',lbl='!!Title',width='18em',validate_notnull=True)
-        fb.field('ruleset',lbl='!!Rulset',width='18em',validate_notnull=True)
+        fb.field('ruleset',lbl='!!Ruleset',width='18em',validate_notnull=True)
         fb.field('use_approaches',lbl='',label='!!Use approaches',row_hidden='^.ruleset?=#v=="FAE"')
         bar = form.bottom.slotBar('*,cancel,confirm,2',_class='slotbar_dialog_footer')
         bar.cancel.slotButton('!!Cancel',action='this.form.abort()')
@@ -122,7 +121,7 @@ class ConfigurationForm(BaseComponent):
                 _fired='^#FORM.controller.loaded')
 
     def gameInfo(self, bc):
-        top = bc.contentPane(region='top', height='80px').div(margin='10px')
+        top = bc.contentPane(region='top', height='75px').div(margin='10px')
         fb = top.formbuilder(cols=1, border_spacing='4px')
         fb.field('title', width='40em')
         fb.field('setting_tags', tag='checkBoxText', 
@@ -133,9 +132,17 @@ class ConfigurationForm(BaseComponent):
                    width='40em')
         center = bc.borderContainer(region='center')
         note = center.contentPane(region='center').roundedGroupFrame(title='Abstract')
-        note.simpleTextArea(value='^.description',editor=True,speech=True)
+        note.simpleTextArea(value='^.description', editor=True)
         self.playersGrid(center.contentPane(region='right', width='280px', datapath='#FORM'))
-
+        bc.roundedGroup(region='bottom',height='120px', title='Game Banner').img(src='^.banner_url', 
+                        crop_width='690px',crop_height='80px',
+                        upload_folder='site:img/game/banner',edit=True,
+                        upload_filename='=#FORM.record.id',
+                        placeholder=True,
+                        crop_border='2px solid #ddd',
+                        crop_rounded=8,crop_margin='5px',
+                        crop_margin_left='10px',
+                        zoomWindow=True)
 
     def playersGrid(self, pane):
         pane.inlineTableHandler(relation='@players',
@@ -157,9 +164,9 @@ class ConfigurationForm(BaseComponent):
 
     def configOptions(self,bc):
 
-        self.consequencesEditor(bc.contentPane(region='right', width='310px', margin='4px'))
+        self.consequencesEditor(bc.contentPane(region='right', width='300px'))
         self.stressTracksEditor(bc.contentPane(region='bottom', height='150px'))
-        fb =bc.contentPane(region='center').div(margin='8px').formbuilder(cols=3,border_spacing='4px')
+        fb =bc.roundedGroup(title='Options',region='center').div(margin='8px').formbuilder(cols=3,border_spacing='4px')
         fb.field('game_creation',lbl='', label='Coop Game creation', colspan=3)
         fb.field('use_phases', lbl='',label='Phases PC creation', colspan=3)       
         fb.field('approach_set', hidden='^.use_approaches?=!#v', colspan=3,width='100%', lbl='Appr.Set')
@@ -271,10 +278,17 @@ class ConfigurationForm(BaseComponent):
         box = bar.confirm.div()
         box.slotButton('!!Create Empty Sheets',action="""SET #FORM.record.status = game_creation_status;
                                                         var that = this;
-                                                        this.form.save({onReload:function(){
+                                                        if(this.form.changed){
+                                                            this.form.save({onReload:function(){
                                                                 that.fireEvent('#FORM.prepareEmptySheets',true);
                                                             }});
-                                                        """,game_creation_status = 'CR')#,hidden='^#FORM.record.status?=#v!="CO"')
+                                                        }else{
+                                                            FIRE #FORM.prepareEmptySheets;
+            
+                                                        }
+                                                        
+                                                        """,game_creation_status = 'CR',
+                                                        hidden='^#FORM.record.status?=#v!="CO"')
         box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
                                                         """,
                                                         hidden='^#FORM.record.status?=#v=="CO"',
@@ -282,4 +296,4 @@ class ConfigurationForm(BaseComponent):
                                                         code='=#FORM.record.code')
 
     def th_options(self):
-        return dict(dialog_parentRatio=.8, showtoolbar=False)
+        return dict(height='420px',width='740px',showtoolbar=False)

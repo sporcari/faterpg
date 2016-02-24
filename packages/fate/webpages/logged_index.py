@@ -20,13 +20,3 @@ class GnrCustomWebPage(object):
         tc.contentPane(title='Friends')
         tc.contentPane(title='Docs')
         #first
-
-    def playerProfile(self, pane):
-        form = pane.thFormHandler(table='fate.player',
-                                  startKey=self.rootenv['player_id'],
-                                  datapath='.player')
-
-    def playerGames(self, pane):
-        gamesth = pane.dialogTableHandler(table='fate.game',
-                                            view_store_onStart=True,
-                                           viewResource='ViewFromPlayerDashboard')

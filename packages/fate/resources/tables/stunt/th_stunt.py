@@ -36,12 +36,12 @@ class ViewPicker_skill(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('skill_code',name='Skill', width='8em')
+        r.fieldcell('skill_code',name='Skill', width='6em')
         r.fieldcell('name', width='17em')
         r.fieldcell('description',width='100%')
         r.fieldcell('action_type',name='Action', width='11em')
         r.fieldcell('stunt_type', name='Type', width='14em')
-        r.fieldcell('bonus',name='Bonus', width='9em')
+        #r.fieldcell('bonus',name='Bonus', width='9em')
 
     def th_order(self):
         return 'skill_code,name'

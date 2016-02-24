@@ -209,7 +209,7 @@ class Table(object):
             pcSheet['approaches'] = self.prepareApproaches(game_record)
         else:
             pcSheet['skills'] = self.prepareSkills(game_record)
-        pcSheet['stunts'] = self.prepareStunts(game_record)
+        pcSheet['stunts'] = Bag()
         pcSheet['aspects'] = self.prepareAspects(game_record)
         return pcSheet
 

@@ -26,16 +26,15 @@ class View(BaseComponent):
 class Form(BaseComponent):
 
     def th_form(self, form):
-        
         bc = form.center.borderContainer(datapath='.record')
         fb = bc.contentPane(region='center', margin='4px').formbuilder(cols=1, border_spacing='4px')
-        fb.field('@user_id.email', )
-        fb.field('@user_id.username',)
+        fb.field('@user_id.email', validate_notnull=True)
+        fb.field('@user_id.username', disabled=True)
         fb.field('@user_id.firstname')
         fb.field('@user_id.lastname')
         fb.field('nickname')
-
-        bc.contentPane(region='right',width='150px', margin='4px').img(src='^.avatar_img', crop_width='110px',crop_height='110px',
+        bc.contentPane(region='right',width='160px', margin='4px').img(src='^.avatar_url', 
+                        crop_width='110px',crop_height='120px',
                         placeholder=self.getResourceUri('images/missing_photo.png'),
                         upload_folder='site:img/player/avatar',edit=True,
                         rowspan=2,
@@ -46,3 +45,8 @@ class Form(BaseComponent):
         
     def th_options(self):
         return dict(dialog_height='200px', dialog_width='500px')
+
+class FormProfile(Form):
+
+    def th_options(self):
+        return dict(autoSave=True,showtoolbar=False,showfooter=False)

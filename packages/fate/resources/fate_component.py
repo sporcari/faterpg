@@ -102,20 +102,19 @@ class CharacterSheet(BaseComponent):
                            contentCb='Fate.characterAspectsForm(pane, kw)')
 
     def characterSkills(self, bc, username):
-        pane = bc.roundedGroup(title='Skills',region='top', height='140px', datapath='game.pcsheets.%s' %username)
+        frame = bc.roundedGroupFrame(title='Skills',region='top', height='140px', datapath='game.pcsheets.%s' %username)
         if self.user == username:
-            pane.lightButton('==Fate.renderSkillsPyramid(_skills, _skill_cap)',
-                                _skills='^.skills',
-                                _skill_cap = '=game_record.skill_cap',
-                                height='80px',
+            bar = frame.top.bar.replaceSlots('#','#,skillsButton,2')
+            bar.skillsButton.slotButton('View Skills',
+                                iconClass='iconbox app',
                                 action='PUBLISH openSkillsPicker = {username:username}',
                                 username=username)
-        else:
-            pane.div('==Fate.renderSkillsPyramid(_skills, _skill_cap)',
+        
+        frame.div('==Fate.renderSkillsPyramid(_skills, _skill_cap)',
                                 _skills='^.skills',
                                  _skill_cap = '=game_record.skill_cap',
                                 height='80px')
-        pane.dataController("Fate.onSkillsUpdate(this, skills,game_record);", 
+        frame.dataController("Fate.onSkillsUpdate(this, skills,game_record);", 
                             skills='^.skills',_if='skills',
                             game_record='=game_record')
 
