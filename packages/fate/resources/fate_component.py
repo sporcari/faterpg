@@ -192,9 +192,12 @@ class CharacterSheet(BaseComponent):
                        hidden='^.%s.is_hidden'% c['code'])     
 
     def getGameSkills(self):
+        game_id = self.game_record['id']
         return Bag(self.db.table('fate.skill').query(columns="""$name,$description,$code,
                                                      $skill_set,$action_types,
                                                      $stresstrack_changes""",
+                                                     where='$game_id IS NULL or $game_id=:game_id',
+                                                     game_id=game_id,
                                                      bagField=True).fetchAsDict(key='code'))
 
     @struct_method
@@ -206,11 +209,11 @@ class CharacterSheet(BaseComponent):
                                                          """)
         pickerStorePath = 'game.pcsheets.%s.skills'% self.user
         th = dlg.plainTableHandler(table='fate.skill',
-            height='470px', width='290px',
+            height='490px', width='290px',
             nodeId='skillsPickerGrid',
                         condition='$skill_set IN :sets OR $game_id= :game_id',
                         condition_sets='^game_record.skill_sets?=#v?#v.split(","):[]',
-                        condition_game_id='=game_record.game_id',
+                        condition_game_id='=game_record.id',
                         configurable=False,
                         viewResource='ViewPicker',
                         view_store_onStart=True,

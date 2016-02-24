@@ -287,8 +287,8 @@ class ConfigurationForm(BaseComponent):
             
                                                         }
                                                         
-                                                        """,game_creation_status = 'CR',
-                                                        hidden='^#FORM.record.status?=#v!="CO"')
+                                                        """,game_creation_status = 'CR')
+                                                        #hidden='^#FORM.record.status?=#v!="CO"')
         box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
                                                         """,
                                                         hidden='^#FORM.record.status?=#v=="CO"',
