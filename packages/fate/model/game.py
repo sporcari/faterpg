@@ -30,7 +30,11 @@ class Table(object):
         tbl.column('initial_stunts',dtype='I',name_long='Initial stunts',name_short='N.Stunts')
         tbl.column('stress_tracks', dtype='X', name_long='Stress tracks',name_short='Stress tracks')
         tbl.column('consequences_slots', dtype='X', name_long='Consequences slots',name_short='Cons. slots')
-        tbl.column('status',size='2',values='CO:Configuration,CR:Creating,IP:In play,EN:Ended')
+        #tbl.column('status',size='2',values='CO:Configuration,CR:Creating,IP:In play,EN:Ended')
+        tbl.column('play_data_id', size='22', name_long='Play data id').relation('sys.shared_object.id',
+                                                                                  relation_name='games',
+                                                                                   mode='foreignkey',
+                                                                                   onDelete='cascade')
 
         tbl.formulaColumn('banner_img', "banner_url" ,dtype='P',name_long='!!Banner image',name_short='Banner', cell_format='auto:.5')
         tbl.formulaColumn('current_player_game', '(@players.player_id=:env_player_id)', dtype='B')
@@ -49,7 +53,7 @@ class Table(object):
                       pc_aspects=5,initial_stunts=3,
                      gm_id=self.db.currentEnv.get('player_id'),
                      stress_tracks=Bag(),
-                     status='CO',
+                     #status='CO',
                      consequences_slots=consequences_slots)
 
     def configDefault_CORE(self, record=None):
@@ -95,7 +99,22 @@ class Table(object):
                              use_phases=False))
 
     @public_method
-    def createCharacterSheets(self, game_id, **kwargs):
+    def createNewPlayData(self, game_id, user, code, **kwargs):
+        result = Bag()
+        result['pcsheets'] = self.createCharacterSheets(game_id)
+        result['world_aspects'] = Bag(dict(impending=Bag(),
+                                           current = Bag(),
+                                           faces=Bag(),
+                                           places=Bag()))
+        result['gm_tools'] = Bag()
+        so_record= dict(description='%s_%s' % (user, code), data=result, backup=None, linked_table='fate.game')
+        self.db.table('sys.shared_object').insertOrUpdate(so_record)
+        with self.recordToUpdate(game_id) as record:
+            record['play_data_id'] = so_record['id']
+        self.db.commit()
+        return result
+
+    def createCharacterSheets(self, game_id):
         game_player_tbl = self.db.table('fate.game_player')
         game_record = self.record(game_id).output('bag')
         players = game_player_tbl.query(columns='$player_id,$username',
@@ -223,6 +242,7 @@ class Table(object):
         self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id')))
 
     def trigger_onDeleted(self, record=None):
-        pass
-        #self.wsk.som.deleteShared(record['code'])
+        if record['play_data_id']:
+            self.db.table('sys.shared_object').delete(record['play_data_id'])
+
 

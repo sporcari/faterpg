@@ -1,29 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<GenRoBag><varsbag><n_2175 _pkey="n_2175"><fieldname dtype="::NN" _loadedValue="::NN">phrase</fieldname>
+<GenRoBag><varsbag><n_2492 _pkey="n_2492"><fieldname dtype="::NN" _loadedValue="name">phrase</fieldname>
 <varname _T="NN" dtype="::NN"></varname>
 <dtype _T="NN" dtype="::NN"></dtype>
 <format _T="NN" dtype="::NN"></format>
 <mask _T="NN" dtype="::NN"></mask>
-<editable _T="NN" dtype="::NN"></editable></n_2175>
-<n_2187 _pkey="n_2187"><fieldname dtype="::NN" _loadedValue="::NN">description</fieldname>
+<editable _T="NN" dtype="::NN"></editable></n_2492>
+<n_2503 _pkey="n_2503"><fieldname dtype="::NN" _loadedValue="::NN">description</fieldname>
 <varname _T="NN" dtype="::NN"></varname>
 <dtype _T="NN" dtype="::NN"></dtype>
 <format _T="NN" dtype="::NN"></format>
 <mask _T="NN" dtype="::NN"></mask>
-<editable _T="NN" dtype="::NN"></editable></n_2187></varsbag>
+<editable _T="NN" dtype="::NN"></editable></n_2503></varsbag>
 <metadata><email><subject _T="NN"></subject>
 <to_address _T="NN"></to_address>
 <from_address _T="NN"></from_address>
 <cc_address _T="NN"></cc_address>
 <bcc_address _T="NN"></bcc_address>
 <attachments _T="NN"></attachments></email></metadata>
-<content>&lt;div&gt;
-	$phrase&amp;nbsp;&lt;/div&gt;
+<content>&lt;div style="margin:5px"&gt;
+	&lt;strong&gt;&lt;span style="font-size:11px;"&gt;$phrase&amp;nbsp;&lt;/span&gt;&lt;/strong&gt;
+	&lt;div&gt;
+		&lt;span style="font-size:10px;"&gt;$description&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
 &lt;div&gt;
-	$description&lt;/div&gt;
+	&amp;nbsp;&lt;/div&gt;
 </content>
-<compiled><main virtual_columns="" locale="it" masks="{}::JS" dtypes="{}::JS" maintable="" columns="phrase,description" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div&gt;
-	$phrase&amp;#160;&lt;/div&gt;
+<compiled><main virtual_columns="" locale="it" masks="{}::JS" dtypes="{}::JS" maintable="" columns="phrase,description" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;div style="margin:5px"&gt;
+	&lt;strong&gt;&lt;span style="font-size:11px;"&gt;$phrase&amp;#160;&lt;/span&gt;&lt;/strong&gt;
+	&lt;div&gt;
+		&lt;span style="font-size:10px;"&gt;$description&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
 &lt;div&gt;
-	$description&lt;/div&gt;
+	&amp;#160;&lt;/div&gt;
 &lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>

@@ -5,19 +5,73 @@ from gnr.web.gnrbaseclasses import BaseComponent
 from gnr.web.gnrwebstruct import struct_method
 from gnr.core.gnrbag import Bag
 
+
+class PlayManager(BaseComponent):
+
+    @struct_method
+    def ft_playPage(self,parent,**kwargs):
+        parent.contentPane(**kwargs).div('Play')
+
 class GmTools(BaseComponent):
     py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
     css_requires='fate'
 
     @struct_method
     def ft_gmTools(self, parent, username=None, **kwargs):
-        parent.contentPane(title='GM Tools')
+        bc = parent.borderContainer(title='GM Tools', datapath='main.gm_tools')
+        top_pane = bc.contentPane(region='top', height='80px')
+        top_pane.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
+        top_pane.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
+        #top_pane.dataRpc('dummy', self.db.table('fate.game').savePlayData, 
+        #                 _fired='^savePlayData',
+        #                 game_id='=game_record.id',
+        #                 play_data='=play_data')
+        #top_pane.dataController("""SET play_data = game_play_data.deepCopy();""",
+        #         game_play_data='=game_record.play_data', _fired='^loadPlayData')
+
+        tc = bc.tabContainer(region='center')
+        self.scenesMaker(tc.contentPane(region='center', title='Scenes'))
+        self.npcMaker(tc.contentPane(region='center', title='NPCs'))
+        #pane.button('Start game')
+        #pane.button('New scene')
+        
+
+
 
     @struct_method
     def ft_npcPage(self, parent, **kwargs):
         parent.contentPane(title='NPCs')
 
+    def scenesMaker(self, pane):
+        pane.dialogTableHandler(table='fate.scene',
+                                view_store_onStart=True,
+                                condition='$game_id=:game_id',
+                                condition_game_id ='=game_record.id',
+                                default_game_id= '=game_record.id',
+                                viewResource='ViewFromGmTools',
+                                margin='2px',
+                                searchOn=False,
+                                datapath='.scenes',
+                                formResource='Form',
+                                configurable=False)
+    def npcMaker(self, pane):
+        f = self.db.table('fate.npc_type').query().fetch()
+        addrowDict=[(r['name'],dict(npc_type=r['code'])) for r in f]
 
+        pane.dialogTableHandler(table='fate.npc',
+                                view_store_onStart=True,
+                                condition='$game_id=:game_id',
+                                condition_game_id ='=game_record.id',
+                                default_game_id= '=game_record.id',
+                                viewResource='ViewFromGmTools',
+                                margin='2px',
+                                searchOn=False,
+                                #title='NPCs:',
+                                addrow=addrowDict,
+                                datapath='.npcs',
+                                formResource='Form',
+                                configurable=False)
+                                #pbl_classes=True)
 
 class CharacterSheet(BaseComponent):
     py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
@@ -38,9 +92,9 @@ class CharacterSheet(BaseComponent):
         self.characterSkills(center, username=username)
         self.characterStunts(center,username=username)
         self.stressTracks(bottom.roundedGroup(region='left', width='310px',title='Stress Tracks',
-                                             datapath='game.pcsheets.%s.stress_tracks'% username))
+                                             datapath='play_data.pcsheets.%s.stress_tracks'% username))
         self.consequences(bottom.roundedGroup(region='center', title='Consequences',
-                                              datapath='game.pcsheets.%s.consequences'% username))
+                                              datapath='play_data.pcsheets.%s.consequences'% username))
         
 
         #defaultbag =Bag()
@@ -48,7 +102,7 @@ class CharacterSheet(BaseComponent):
 
     def idGroup(self, bc, username):
         box = bc.roundedGroup(title='ID',region='left',width='310px', 
-                             datapath='game.pcsheets.%s'%username,
+                             datapath='play_data.pcsheets.%s'%username,
                              wrp_border='1px solid #444',
                              lbl_background='transparent',
                              #wrp_margin='2px',
@@ -69,7 +123,7 @@ class CharacterSheet(BaseComponent):
 
     def idGroup_z(self, bc, username):
         box = bc.roundedGroup(title='ID',region='left',width='282px', 
-                             datapath='game.pcsheets.%s'%username,
+                             datapath='play_data.pcsheets.%s'%username,
                              wrp_border='1px solid #444',
                              lbl_background='transparent',
                              #wrp_margin='2px',
@@ -96,13 +150,14 @@ class CharacterSheet(BaseComponent):
                            title='Aspects',
                            addrow=False,
                            delrow=False,
+                           datapath='.%s.aspects' %username,
                            _class='aspectGrid',
-                           storepath='game.pcsheets.%s.aspects'% username,
+                           storepath='play_data.pcsheets.%s.aspects'% username,
                            template_resource='tpl/aspect_CA',
                            contentCb='Fate.characterAspectsForm(pane, kw)')
 
     def characterSkills(self, bc, username):
-        frame = bc.roundedGroupFrame(title='Skills',region='top', height='140px', datapath='game.pcsheets.%s' %username)
+        frame = bc.roundedGroupFrame(title='Skills',region='top', height='140px', datapath='play_data.pcsheets.%s' %username)
         if self.user == username:
             bar = frame.top.bar.replaceSlots('#','#,skillsButton,2')
             bar.skillsButton.slotButton('View Skills',
@@ -122,12 +177,11 @@ class CharacterSheet(BaseComponent):
         frame = bc.templateGrid(region='center',frameCode='%s_stunts' %username,
                            title='Stunts',
                            _class='aspectGrid',
-                           storepath='game.pcsheets.%s.stunts'% username,
+                           datapath='.%s.stunts' %username,
+                           storepath='play_data.pcsheets.%s.stunts'% username,
                            template_resource='tpl/stunt',
                            contentCb='Fate.stuntsForm(pane, kw)')
-                           #fields=[dict(value='^.name', wdg='textbox', lbl='Name', width='15em'),
-                           #        dict(value='^.description', wdg='simpleTextArea', lbl='Description', width='30em', height='40px')])
-#
+        
         frame.dataController("""var n_stunts = stuntsBag.len();
                                 var n_max_stunts = initial_stunts+refresh-1;
                                 var extra_stunts = n_stunts-initial_stunts;
@@ -137,10 +191,12 @@ class CharacterSheet(BaseComponent):
                             stuntsBag='^.stunts',
                             initial_stunts='=game_record.initial_stunts',
                             refresh='=game_record.refresh',
-                            datapath='game.pcsheets.%s' % username,
+                            datapath='play_data.pcsheets.%s' % username,
                             _if='stuntsBag')
+        
         if self.user==username:
-            bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')#, addrow_disabled='^game.pcsheets.%s.max_stunts' % username)
+            bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')
+            #, addrow_disabled='^play_data.pcsheets.%s.max_stunts' % username)
             bar.stuntsPicker.palettePicker(grid=frame.grid,
                 width='600px',height='350px',
                 table='fate.stunt',
@@ -207,7 +263,7 @@ class CharacterSheet(BaseComponent):
                           datapath='main.pickers.skills_picker',
                           subscribe_openSkillsPicker="""this.widget.show();
                                                          """)
-        pickerStorePath = 'game.pcsheets.%s.skills'% self.user
+        pickerStorePath = 'play_data.pcsheets.%s.skills'% self.user
         th = dlg.plainTableHandler(table='fate.skill',
             height='490px', width='290px',
             nodeId='skillsPickerGrid',

@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from gnr.web.gnrbaseclasses import BaseComponent
-from gnr.core.gnrdecorator import public_method
+from gnr.core.gnrdecorator import public_method,metadata
 
 class View(BaseComponent):
 
@@ -48,8 +48,17 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_condition(self):
         return dict(condition='$current_player_game IS TRUE')
 
+    @metadata(variable_struct=False, isMain=True)
+    def th_sections_gamestatus(self):
+
+        l = [dict(code='all',caption='All'),
+             dict(code='config', caption='Configurating', condition="$play_data_id IS NULL"),
+             dict(code='creation', caption='Game Creation', condition="$play_data_id IS NOT NULL")]
+        return l
+
+
     def th_top_bar_custom(self,top):
-        bar = top.bar.replaceSlots('5,vtitle','20,sections@status')
+        bar = top.bar.replaceSlots('5,vtitle','20,sections@gamestatus')
         bar = bar.replaceSlots('addrow','newgame')
         bar.newgame.slotButton('New Game',action='frm.newrecord({__ins_user:user,ruleset:"CORE",use_approaches:false})',
                                 frm=self.newGameForm(bar).js_form,user=self.user,iconClass='iconbox add_row')
@@ -104,21 +113,12 @@ class ConfigurationForm(BaseComponent):
         self.configOptions(tc.borderContainer(region='center', title='Rules settings'))
         self.skillPreferences(tc.borderContainer(region='bottom',  datapath='#FORM', title='Skills', hidden='^#FORM.record.use_approaches'))
         form.dataRpc('#FORM.pcsheets',
-                        self.db.table('fate.game').createCharacterSheets,
+                        self.db.table('fate.game').createNewPlayData,
                                  game_id='=#FORM.record.id',
-                                 _fired='^#FORM.prepareEmptySheets',
-                                 _onResult="""var shared_id = 'game_'+kwargs._user+'_'+kwargs._code;
-                                                var path = 'shared_game_data.'+shared_id;
-                                                genro.setData(path,new gnr.GnrBag({'pcsheets':result}));
-                                                
-                            """,_user='=#FORM.record.__ins_user',_code='=#FORM.record.code')
-        form.dataController("""
-            var shared_id = 'game_'+user+'_'+code;
-            var path = 'shared_game_data.'+shared_id;
-            genro.som.registerSharedObject(path,shared_id,{expire:10000, saveOnClose:true, autoLoad:true});
-            """,user='=#FORM.record.__ins_user',
-               code='=#FORM.record.code',
-                _fired='^#FORM.controller.loaded')
+                                 _onResult="genro.childBrowserTab('/tabletop/play/'+kwargs.user+'/'+kwargs.code);",
+                                 _fired='^#FORM.createPlayData',
+                                user='=#FORM.record.__ins_user',
+                                 code='=#FORM.record.code')
 
     def gameInfo(self, bc):
         top = bc.contentPane(region='top', height='75px').div(margin='10px')
@@ -149,7 +149,8 @@ class ConfigurationForm(BaseComponent):
             viewResource='ViewFromGame',
             searchOn=False,
             margin='2px',
-            title='Players',pbl_classes='*')
+            title='Players',
+            pbl_classes=True)
 
     def imagePane(self, pane):
         pane.img(src='^.banner_url', #crop_width='110px',crop_height='110px',
@@ -270,30 +271,35 @@ class ConfigurationForm(BaseComponent):
                                stress_tracks.setItem(code,b);""", 
                                subscribe_newtrack=True, stress_tracks='=.stress_tracks')
 
-
-
     def th_bottom_custom(self,bottom):
         bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px')
         bar.back.button('!!Cancel',action='this.form.abort();')
         box = bar.confirm.div()
-        box.slotButton('!!Create Empty Sheets',action="""SET #FORM.record.status = game_creation_status;
-                                                        var that = this;
-                                                        if(this.form.changed){
-                                                            this.form.save({onReload:function(){
-                                                                that.fireEvent('#FORM.prepareEmptySheets',true);
-                                                            }});
-                                                        }else{
-                                                            FIRE #FORM.prepareEmptySheets;
-            
-                                                        }
-                                                        
-                                                        """,game_creation_status = 'CR')
-                                                        #hidden='^#FORM.record.status?=#v!="CO"')
-        box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
-                                                        """,
-                                                        hidden='^#FORM.record.status?=#v=="CO"',
-                                                        user='=#FORM.record.__ins_user',
-                                                        code='=#FORM.record.code')
+        box.button('!!Save',
+                    iconClass='fh_semaphore',
+                    action='this.form.publish("save")')
+        box.slotButton('!!Join Game',
+                        action="""var that = this;
+                                  if(!play_data_id){
+                                      if(this.form.changed){
+                                              this.form.save({onReload:function(){
+                                                  that.fireEvent('#FORM.createPlayData',true);
+                                              }});
+                                      }else{
+                                              FIRE #FORM.createPlayData;
+                                      }
+                                  }else{
+                                      genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
+                                  }
+                                  """,
+                                  play_data_id='=#FORM.record.play_data_id',
+                                  user='=#FORM.record.__ins_user',
+                                  code='=#FORM.record.code')
+        #box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
+        #                                                """,
+        #                                                hidden='^#FORM.record.status?=#v=="CO"',
+        #                                                user='=#FORM.record.__ins_user',
+        #                                                code='=#FORM.record.code')
 
     def th_options(self):
         return dict(height='420px',width='740px',showtoolbar=False)
