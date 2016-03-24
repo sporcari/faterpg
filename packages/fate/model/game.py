@@ -110,9 +110,6 @@ class Table(object):
                                            faces=Bag(),
                                            places=Bag()))
         result['gm_tools'] = Bag()
-
-        #so_record= dict(description='%s_%s' % (user, code), data=result, backup=None, linked_table='fate.game')
-        #self.db.table('sys.shared_object').insertOrUpdate(so_record)
         with self.recordToUpdate(game_id) as record:
             record['shared_data'] = result
         self.db.commit()

@@ -20,22 +20,20 @@ class GnrCustomWebPage(object):
         kw = self.getCallArgs('__ins_user','code')
         self.game_tbl = self.db.table('fate.game')
         self.game_record = self.game_tbl.record(**kw).output('bag')
-        #root.data('game',Bag())
         self.game_shared_id = self.game_record['id']
+        self.isGm = (self.game_record['gm_id'] == self.rootenv['player_id'])
         root.data('play_data', None, shared_id=self.game_shared_id,
                                      shared_autoLoad=True,
                                      shared_autoSave=True,
                                      shared_dbSaveKw=dict(table='fate.game', backup=4))
         
-
-        #root.data('current_scene', None, shared_id='^main.current_scene_id',
-        #                             shared_autoLoad=True,
-        #                             shared_autoSave=True,
-        #                             shared_dbSaveKw=dict(table='fate.scene', data_column='data'))
         root.dataController("""var old_scene_id = _triggerpars.kw.oldvalue;
-                              if (scene_id){genro.som.unregisterSharedObject(old_scene_id);};
-                               genro.som.registerSharedObject('current_scene', scene_id,{autoSave:true,autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
-                             """,scene_id='^main.current_scene_id',
+                              if (old_scene_id){
+                               console.log('unregister', old_scene_id)
+                               genro.som.unregisterSharedObject(old_scene_id);};
+                               genro.som.registerSharedObject('current_scene', scene_id,{autoSave:true,
+                                                            autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
+                             """,scene_id='^play_data.current_scene_id',
                              _if='scene_id')
 
 
@@ -46,20 +44,10 @@ class GnrCustomWebPage(object):
         self.gameCharacters(root_bc)
         #self.gameCommon(bc)
         bc.data('game_record',self.game_record)
-        #root.dataController("""if(!loaded){
-        #        SET play_data = game_play_data.deepCopy();
-        #        SET play_data.loaded=true;
-        #    }""", loaded='=play_data.loaded',
-        #         game_play_data='=game_record.play_data',
-        #         _onStart=1)
+
         tc = root_bc.tabContainer(region='center',margin='2px')
         self.gameCreation(tc.borderContainer(title='Game creation'))
         tc.playPage(title='Play')
-
-        #if self.game_record['status'] == 'CR':
-        #    self.gameCreation(bc)
-        #else:
-        #    self.gamePlay(bc)
 
     def gameHeader(self,bc):
         center = bc.contentPane(region='center').img(src='/_site/resources/images/fate_head.jpg',height='60px')
@@ -75,7 +63,7 @@ class GnrCustomWebPage(object):
         if my_rec:
             tc.characterSheet(self.user, detachable=True)
             bc.skillsPicker()
-        elif self.game_record['gm_id'] == self.rootenv['player_id']:
+        elif self.isGm:
             tc.gmTools(self.user)
         for username in sorted(game_players.keys()):
             tc.characterSheet(username, detachable=True)

@@ -19,16 +19,19 @@ class PlayManager(BaseComponent):
         self.npcsInScene(center.contentPane(region='center'))
 
     def currentSceneAspects(self, pane):
-        pane.templateGrid(title='Situation aspects',
+        frame = pane.templateGrid(title='Situation aspects',
                            frameCode='currentSceneAspects',
                            datapath='#FORM.current_scene_aspects',
                             _class='aspectGrid',
-                            addrow=True,
-                            delrow=True,
+                           readOnly=not self.isGm,
                            storepath='current_scene.situation_aspects',
                            template_resource='tpl/game_issues',
                            fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width='24em'),
                                    dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
+        if self.isGm:
+            r =frame.grid.struct.getItem('#0.#0')
+            r.checkboxcell('hidden')
+
     def npcsInScene(self, pane):
         pane.div('aaa')
         #pane.templateGrid(title='Npcs in scene',
@@ -54,7 +57,7 @@ class GmTools(BaseComponent):
         top_pane = bc.contentPane(region='top', height='80px')
         top_pane.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
         top_pane.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
-        top_pane.dbSelect(value='^main.current_scene_id', dbtable='fate.scene', rowcaption='$title')
+        top_pane.dbSelect(value='^play_data.current_scene_id', dbtable='fate.scene', rowcaption='$title')
         #top_pane.dataRpc('dummy', self.db.table('fate.game').savePlayData, 
         #                 _fired='^savePlayData',
         #                 game_id='=game_record.id',
@@ -144,43 +147,21 @@ class CharacterSheet(BaseComponent):
                              overflow='hidden')
         t = box.table(border_spacing='2px').tbody()
         r = t.tr()
-        r.td(colspan=2).textbox(value='^.name',lbl='Name',width='175px',border='0px')
+        r.td(colspan=2).textbox(value='^.name',lbl='Name',width='175px',border='0px', disabled=not (username==self.user))
         r.td(rowspan=3).div(lbl='Portrait', height='161px', wrp_width='110px')
         t.tr().td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
-                            height='70px', width='175px',border=0)
+                            height='70px', width='175px',border=0, disabled=not (username==self.user))
         r = t.tr()
         r.td().numberTextBox(value='^.refresh', lbl='Refresh',
-            font_size='2em',border=0, wrp_height='45px',width='60px')
+            font_size='2em',border=0, wrp_height='45px',width='60px', disabled=not (username==self.user))
         r.td().numberTextBox(value='^.fate_points',lbl='Fate points',
-            font_size='2em',border=0, wrp_height='45px',width='60px')
+            font_size='2em',border=0, wrp_height='45px',width='60px', disabled=not (username==self.user))
 
-    def idGroup_z(self, bc, username):
-        box = bc.roundedGroup(title='ID',region='left',width='282px', 
-                             datapath='play_data.pcsheets.%s'%username,
-                             wrp_border='1px solid #444',
-                             lbl_background='transparent',
-                             #wrp_margin='2px',
-                             wrp_display='block',
-                             lbl_color='#444',lbl_border=0,
-                             overflow='hidden')
-        t = box.table(border_spacing='2px',width='100%').tbody()
-        t.tr().td(colspan=3).textbox(value='^.name',lbl='Name',#width='160px',
-                            border='0px')
-        r = t.tr()
-        r.td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
-                            height='55px', #width='160px',
-                            border=0)
-        r.td(rowspan=2).div(lbl='Portrait', height='130px', wrp_width='100px')
-
-        r = t.tr()
-        r.td().numberTextBox(value='^.refresh', lbl='Refresh',
-            font_size='2em',border=0, wrp_height='45px',width='60px')
-        r.td().numberTextBox(value='^.fate_points',lbl='Fate points',
-            font_size='2em',border=0, wrp_height='45px',width='60px')
-
+    
     def characterAspects(self, bc, username):
         bc.templateGrid(region='center',frameCode='%s_aspects' %username,
                            title='Aspects',
+                           readOnly= not (username == self.user),
                            addrow=False,
                            delrow=False,
                            datapath='.%s.aspects' %username,
@@ -210,6 +191,7 @@ class CharacterSheet(BaseComponent):
         frame = bc.templateGrid(region='center',frameCode='%s_stunts' %username,
                            title='Stunts',
                            _class='aspectGrid',
+                           readOnly= not (username == self.user),
                            datapath='.%s.stunts' %username,
                            storepath='play_data.pcsheets.%s.stunts'% username,
                            template_resource='tpl/stunt',
