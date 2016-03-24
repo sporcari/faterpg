@@ -10,7 +10,39 @@ class PlayManager(BaseComponent):
 
     @struct_method
     def ft_playPage(self,parent,**kwargs):
-        parent.contentPane(**kwargs).div('Play')
+        bc = parent.borderContainer( **kwargs)
+        top = bc.contentPane(region='top', height='50px', datapath='current_scene.metadata')
+        top.div('^.title')
+        top.div('^.description')
+        center = bc.borderContainer(region='center')
+        self.currentSceneAspects(center.contentPane(region='left', width='50%'))
+        self.npcsInScene(center.contentPane(region='center'))
+
+    def currentSceneAspects(self, pane):
+        pane.templateGrid(title='Situation aspects',
+                           frameCode='currentSceneAspects',
+                           datapath='#FORM.current_scene_aspects',
+                            _class='aspectGrid',
+                            addrow=True,
+                            delrow=True,
+                           storepath='current_scene.situation_aspects',
+                           template_resource='tpl/game_issues',
+                           fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width='24em'),
+                                   dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
+    def npcsInScene(self, pane):
+        pane.div('aaa')
+        #pane.templateGrid(title='Npcs in scene',
+        #                   frameCode='currentSceneAspects',
+        #                   datapath='#FORM.current_scene_aspects',
+        #                    _class='aspectGrid',
+        #                    addrow=True,
+        #                    delrow=True,
+        #                   storepath='current_scene.situation_aspects',
+        #                   template_resource='tpl/game_issues',
+        #                   fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width='24em'),
+        #                           dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
+
+
 
 class GmTools(BaseComponent):
     py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'
@@ -22,6 +54,7 @@ class GmTools(BaseComponent):
         top_pane = bc.contentPane(region='top', height='80px')
         top_pane.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
         top_pane.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
+        top_pane.dbSelect(value='^main.current_scene_id', dbtable='fate.scene', rowcaption='$title')
         #top_pane.dataRpc('dummy', self.db.table('fate.game').savePlayData, 
         #                 _fired='^savePlayData',
         #                 game_id='=game_record.id',

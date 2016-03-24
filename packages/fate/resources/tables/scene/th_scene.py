@@ -45,7 +45,7 @@ class Form(BaseComponent):
         fb.field('description', lbl='Description',colspan=2, height='50px', width='35em')
         tc =bc.tabContainer(region='center', datapath='#FORM')
         self.situationAspects(tc)
-        self.npcs(tc)
+        #self.npcs(tc)
 
     def situationAspects(self, tc):
         tc.templateGrid(title='Situation aspects',
@@ -74,4 +74,4 @@ class Form(BaseComponent):
 
 
     def th_options(self):
-        return dict(dialog_height='400px', dialog_width='600px')
+        return dict(dialog_height='400px', dialog_width='600px', modal=True)

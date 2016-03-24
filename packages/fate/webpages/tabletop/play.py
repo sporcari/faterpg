@@ -21,11 +21,22 @@ class GnrCustomWebPage(object):
         self.game_tbl = self.db.table('fate.game')
         self.game_record = self.game_tbl.record(**kw).output('bag')
         #root.data('game',Bag())
-        self.game_shared_id = self.game_record['play_data_id']
+        self.game_shared_id = self.game_record['id']
         root.data('play_data', None, shared_id=self.game_shared_id,
                                      shared_autoLoad=True,
                                      shared_autoSave=True,
-                                     shared_dbSaveKw=dict(table='sys.shared_object', backup=4))
+                                     shared_dbSaveKw=dict(table='fate.game', backup=4))
+        
+
+        #root.data('current_scene', None, shared_id='^main.current_scene_id',
+        #                             shared_autoLoad=True,
+        #                             shared_autoSave=True,
+        #                             shared_dbSaveKw=dict(table='fate.scene', data_column='data'))
+        root.dataController("""var old_scene_id = _triggerpars.kw.oldvalue;
+                              if (scene_id){genro.som.unregisterSharedObject(old_scene_id);};
+                               genro.som.registerSharedObject('current_scene', scene_id,{autoSave:true,autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
+                             """,scene_id='^main.current_scene_id',
+                             _if='scene_id')
 
 
         root.data('main.game_skills', self.getGameSkills())

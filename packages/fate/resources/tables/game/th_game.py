@@ -52,8 +52,8 @@ class ViewFromPlayerDashboard(BaseComponent):
     def th_sections_gamestatus(self):
 
         l = [dict(code='all',caption='All'),
-             dict(code='config', caption='Configurating', condition="$play_data_id IS NULL"),
-             dict(code='creation', caption='Game Creation', condition="$play_data_id IS NOT NULL")]
+             dict(code='config', caption='Configurating', condition="$shared_data IS NULL"),
+             dict(code='creation', caption='Game Creation', condition="$shared_data IS NOT NULL")]
         return l
 
 
@@ -280,7 +280,8 @@ class ConfigurationForm(BaseComponent):
                     action='this.form.publish("save")')
         box.slotButton('!!Join Game',
                         action="""var that = this;
-                                  if(!play_data_id){
+                                  console.log(shared_data);
+                                  if(!shared_data || shared_data.len()==0){
                                       if(this.form.changed){
                                               this.form.save({onReload:function(){
                                                   that.fireEvent('#FORM.createPlayData',true);
@@ -292,7 +293,7 @@ class ConfigurationForm(BaseComponent):
                                       genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
                                   }
                                   """,
-                                  play_data_id='=#FORM.record.play_data_id',
+                                  shared_data='=#FORM.record.shared_data',
                                   user='=#FORM.record.__ins_user',
                                   code='=#FORM.record.code')
         #box.slotButton('!!Join Game',action="""genro.childBrowserTab('/tabletop/play/'+user+'/'+code);

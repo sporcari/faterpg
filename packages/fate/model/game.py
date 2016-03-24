@@ -30,11 +30,14 @@ class Table(object):
         tbl.column('initial_stunts',dtype='I',name_long='Initial stunts',name_short='N.Stunts')
         tbl.column('stress_tracks', dtype='X', name_long='Stress tracks',name_short='Stress tracks')
         tbl.column('consequences_slots', dtype='X', name_long='Consequences slots',name_short='Cons. slots')
+
         #tbl.column('status',size='2',values='CO:Configuration,CR:Creating,IP:In play,EN:Ended')
-        tbl.column('play_data_id', size='22', name_long='Play data id').relation('sys.shared_object.id',
-                                                                                  relation_name='games',
-                                                                                   mode='foreignkey',
-                                                                                   onDelete='cascade')
+        #tbl.column('play_data_id', size='22', name_long='Play data id').relation('sys.shared_object.id',
+        #                                                                          relation_name='games',
+        #                                                                           mode='foreignkey',
+        #                                                                           onDelete='cascade')
+        tbl.column('shared_data', dtype='X')
+        tbl.column('shared_backup', dtype='X')
 
         tbl.formulaColumn('banner_img', "banner_url" ,dtype='P',name_long='!!Banner image',name_short='Banner', cell_format='auto:.5')
         tbl.formulaColumn('current_player_game', '(@players.player_id=:env_player_id)', dtype='B')
@@ -107,10 +110,11 @@ class Table(object):
                                            faces=Bag(),
                                            places=Bag()))
         result['gm_tools'] = Bag()
-        so_record= dict(description='%s_%s' % (user, code), data=result, backup=None, linked_table='fate.game')
-        self.db.table('sys.shared_object').insertOrUpdate(so_record)
+
+        #so_record= dict(description='%s_%s' % (user, code), data=result, backup=None, linked_table='fate.game')
+        #self.db.table('sys.shared_object').insertOrUpdate(so_record)
         with self.recordToUpdate(game_id) as record:
-            record['play_data_id'] = so_record['id']
+            record['shared_data'] = result
         self.db.commit()
         return result
 
@@ -241,8 +245,8 @@ class Table(object):
     def trigger_onInserted(self,record=None):
         self.db.table('fate.game_player').insert(dict(game_id=record['id'],player_id=self.db.currentEnv.get('player_id')))
 
-    def trigger_onDeleted(self, record=None):
-        if record['play_data_id']:
-            self.db.table('sys.shared_object').delete(record['play_data_id'])
-
+    #def trigger_onDeleted(self, record=None):
+    #    if record['play_data_id']:
+    #        self.db.table('sys.shared_object').delete(record['play_data_id'])
+#
 
