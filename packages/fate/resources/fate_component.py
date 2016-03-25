@@ -35,6 +35,22 @@ class PlayManager(BaseComponent):
         if self.isGm:
             r =frame.grid.struct.getItem('#0.#0')
             r.checkboxcell('hidden',width='2em')
+        else:
+            frame.grid.attributes.update(excludeListCb="""
+                                   var result = [];
+                                   this.store.getData().forEach(function(n){
+                                           var v = n.getValue();
+                                           if(v.getItem('hidden')){
+                                               result.push(v.getItem('phrase'))
+                                           }
+                                   },'static');
+                                   return result;
+                                   """,
+                                   excludeCol='phrase')
+            frame.dataController("""if(_node.label=='hidden'){
+                    grid.filterToRebuild(true);
+                    grid.updateRowCount('*');
+                }""",store='^current_scene.situation_aspects',grid=frame.grid.js_widget)
 
     def npcsInScene(self, pane):
         pane.templateGrid(title='Npcs in scene',

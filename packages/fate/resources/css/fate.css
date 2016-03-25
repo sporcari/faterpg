@@ -78,7 +78,7 @@
 .tundra._common_d11 .aspectGrid .dojoxGrid-cell{
     padding-top:0px !important;
 }
-.tundra._common_d11  .dojoxGrid-cell.row_checker{
+._common_d11.tundra  .aspectGrid .dojoxGrid-row .dojoxGrid-cell.row_checker{
     vertical-align: middle;
 }
 .aspectGrid .tplcell .cellContent{

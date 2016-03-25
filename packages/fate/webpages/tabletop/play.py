@@ -36,14 +36,16 @@ class GnrCustomWebPage(object):
                              """,scene_id='^play_data.current_scene_id',
                              _if='scene_id')
         #controller che imposta gli shared npcs
-        root.dataController("""
+        root.dataController("""if(!npcs) {
+                                  npcs = new gnr.GnrBag();
+                                  SET npcs = npcs;
+                                }
                                npc_pkeys = npc_pkeys? npc_pkeys.split(',') : [];
                                var current_pkeys= npcs? npcs.keys() : [];
                                if (npcs){
                                     current_pkeys.forEach(
                                          function(pkey){
                                              if (npc_pkeys.indexOf(pkey)<0){
-                                                 console.log('tolgo personaggio',pkey);
                                                  genro.som.unregisterSharedObject(pkey);
                                                  npcs.popNode(pkey);
                                              }
@@ -52,7 +54,6 @@ class GnrCustomWebPage(object):
                                npc_pkeys.forEach(
                                     function(pkey){
                                         if (npcs.index(pkey)<0){
-                                            console.log('aggiungo personaggio', pkey);
                                             var path='npcs.'+pkey;
                                             genro.som.registerSharedObject(path, pkey,
                                                                           {autoSave:true,
