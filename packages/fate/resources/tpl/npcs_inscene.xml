@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GenRoBag><varsbag><n_6457 _pkey="n_6457"><fieldname dtype="::NN" _loadedValue="name">metadata.name</fieldname>
+<varname _T="NN" dtype="::NN" _loadedValue="metadata.name"></varname>
+<dtype _T="NN" dtype="::NN"></dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable></n_6457>
+<n_6473 _pkey="n_6473"><fieldname dtype="::NN">aspects</fieldname>
+<varname _T="NN" dtype="::NN" _loadedValue="aspects"></varname>
+<dtype dtype="::NN">X</dtype>
+<format _T="NN" dtype="::NN"></format>
+<mask _T="NN" dtype="::NN"></mask>
+<editable _T="NN" dtype="::NN"></editable>
+<table _T="NN"></table></n_6473></varsbag>
+<metadata><email><subject _T="NN"></subject>
+<to_address _T="NN"></to_address>
+<from_address _T="NN"></from_address>
+<cc_address _T="NN"></cc_address>
+<bcc_address _T="NN"></bcc_address>
+<attachments _T="NN"></attachments></email></metadata>
+<content>&lt;table border="0" cellpadding="1" cellspacing="1" style="border-collapse:collapse;"&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td rowspan="2" style="width: 42px;"&gt;
+				&lt;img alt="" src="$metadata.image_url" style="width: 30px; height: 40px;" /&gt;&lt;/td&gt;
+			&lt;td style="text-align: center;"&gt;
+				&lt;em&gt;&lt;strong&gt;$metadata.name&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;
+				&lt;table cellpadding="1" cellspacing="1" row_datasource="aspects" style="border-collapse:collapse;"&gt;
+					&lt;tbody&gt;
+						&lt;tr&gt;
+							&lt;td&gt;
+								&lt;span style="font-size:10px;"&gt;&lt;em&gt;$phrase&lt;/em&gt;&lt;/span&gt;&lt;/td&gt;
+						&lt;/tr&gt;
+					&lt;/tbody&gt;
+				&lt;/table&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+</content>
+<compiled><aspects>&lt;tr&gt;
+							&lt;td&gt;
+								&lt;span style="font-size:10px;"&gt;&lt;em&gt;$phrase&lt;/em&gt;&lt;/span&gt;&lt;/td&gt;
+						&lt;/tr&gt;
+					</aspects>
+<main virtual_columns="" locale="it" masks="{}::JS" dtypes='{"aspects": "X"}::JS' maintable="" columns="metadata.name,aspects" formats="{}::JS" editcols="{}::JS" df_templates="{}::JS">&lt;html&gt;&lt;body&gt;&lt;table border="0" cellpadding="1" cellspacing="1" style="border-collapse:collapse;"&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td rowspan="2" style="width: 42px;"&gt;
+				&lt;img alt="" src="$metadata.image_url" style="width: 30px; height: 40px;"&gt;&lt;/td&gt;
+			&lt;td style="text-align: center;"&gt;
+				&lt;em&gt;&lt;strong&gt;$metadata.name&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;
+				&lt;table cellpadding="1" cellspacing="1" row_datasource="aspects" style="border-collapse:collapse;"&gt;
+					&lt;tbody&gt;
+						
+$aspects
+&lt;/tbody&gt;
+				&lt;/table&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</main></compiled></GenRoBag>

@@ -11,12 +11,16 @@ class PlayManager(BaseComponent):
     @struct_method
     def ft_playPage(self,parent,**kwargs):
         bc = parent.borderContainer( **kwargs)
-        top = bc.contentPane(region='top', height='50px', datapath='current_scene.metadata')
+        top = bc.contentPane(region='top', height='30px', datapath='current_scene.metadata')
         top.div('^.title')
         top.div('^.description')
         center = bc.borderContainer(region='center')
         self.currentSceneAspects(center.contentPane(region='left', width='50%'))
         self.npcsInScene(center.contentPane(region='center'))
+        self.actionManager(bc.borderContainer(region='bottom', height='250px', border_top='1px solid gray'))
+
+    def actionManager(sekf, bc):
+        bc.contentPane(region='center').div('aa')
 
     def currentSceneAspects(self, pane):
         frame = pane.templateGrid(title='Situation aspects',
@@ -30,20 +34,19 @@ class PlayManager(BaseComponent):
                                    dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
         if self.isGm:
             r =frame.grid.struct.getItem('#0.#0')
-            r.checkboxcell('hidden')
+            r.checkboxcell('hidden',width='2em')
 
     def npcsInScene(self, pane):
-        pane.div('aaa')
-        #pane.templateGrid(title='Npcs in scene',
-        #                   frameCode='currentSceneAspects',
-        #                   datapath='#FORM.current_scene_aspects',
-        #                    _class='aspectGrid',
-        #                    addrow=True,
-        #                    delrow=True,
-        #                   storepath='current_scene.situation_aspects',
-        #                   template_resource='tpl/game_issues',
-        #                   fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width='24em'),
-        #                           dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
+        pane.templateGrid(title='Npcs in scene',
+                           frameCode='currentSceneNpcs',
+                           datapath='#FORM.current_scene_npcs',
+                            _class='aspectGrid',
+                            addrow=False,
+                            delrow=False,
+                           storepath='npcs',
+                           template_resource='tpl/npcs_inscene')
+                           #fields=[dict(value='^.phrase', wdg='textbox', lbl='Aspect', width='24em'),
+                           #        dict(value='^.hidden', wdg='checkbox', lbl='Hidden')])
 
 
 
@@ -108,6 +111,7 @@ class GmTools(BaseComponent):
                                 formResource='Form',
                                 configurable=False)
                                 #pbl_classes=True)
+
 
 class CharacterSheet(BaseComponent):
     py_requires='gnrcomponents/framegrid:TemplateGrid,gnrcomponents/formhandler:FormHandler'

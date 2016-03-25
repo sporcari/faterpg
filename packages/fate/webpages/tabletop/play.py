@@ -26,7 +26,7 @@ class GnrCustomWebPage(object):
                                      shared_autoLoad=True,
                                      shared_autoSave=True,
                                      shared_dbSaveKw=dict(table='fate.game', backup=4))
-        
+        #controller che imposta la shared scene
         root.dataController("""var old_scene_id = _triggerpars.kw.oldvalue;
                               if (old_scene_id){
                                console.log('unregister', old_scene_id)
@@ -35,6 +35,36 @@ class GnrCustomWebPage(object):
                                                             autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
                              """,scene_id='^play_data.current_scene_id',
                              _if='scene_id')
+        #controller che imposta gli shared npcs
+        root.dataController("""
+                               npc_pkeys = npc_pkeys? npc_pkeys.split(',') : [];
+                               var current_pkeys= npcs? npcs.keys() : [];
+                               if (npcs){
+                                    current_pkeys.forEach(
+                                         function(pkey){
+                                             if (npc_pkeys.indexOf(pkey)<0){
+                                                 console.log('tolgo personaggio',pkey);
+                                                 genro.som.unregisterSharedObject(pkey);
+                                                 npcs.popNode(pkey);
+                                             }
+                                         })
+                               }
+                               npc_pkeys.forEach(
+                                    function(pkey){
+                                        if (npcs.index(pkey)<0){
+                                            console.log('aggiungo personaggio', pkey);
+                                            var path='npcs.'+pkey;
+                                            genro.som.registerSharedObject(path, pkey,
+                                                                          {autoSave:true,
+                                                                          autoLoad:true,
+                                                                          dbSaveKw:{table:"fate.npc", data_column:"data"} 
+                                                                          });
+                                        }
+                                    })
+                               """, 
+                              npc_pkeys='^current_scene.npc_pkeys',
+                              npcs = '=npcs')
+
 
 
         root.data('main.game_skills', self.getGameSkills())

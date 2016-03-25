@@ -78,8 +78,10 @@
 .tundra._common_d11 .aspectGrid .dojoxGrid-cell{
     padding-top:0px !important;
 }
-
-.aspectGrid .cellContent{
+.tundra._common_d11  .dojoxGrid-cell.row_checker{
+    vertical-align: middle;
+}
+.aspectGrid .tplcell .cellContent{
     color: #1173BF;
     border-radius:3px;
     margin-top:0;

@@ -34,24 +34,31 @@ class ViewFromGmTools(BaseComponent):
         r.fieldcell('npc_type')
         r.fieldcell('name', width='12em')
         r.fieldcell('description', width='100%')
-        r.fieldcell('image_img')
-        
+        r.checkboxcolumn('set_in_scene', name='In Scene', width='6em', checkedId='current_scene.npc_pkeys')
 
 class Form(BaseComponent):
 
     def th_form(self, form):
         bc = form.center.borderContainer(datapath='.record')
+        bar = form.bottom.bar.replaceSlots('#','#,clearSC')
+        bar.clearSC.slotButton('Clear Stress & Cons', action="""SET #FORM.record.data.stress_tracks =null;
+                                                                SET #FORM.record.data.consequences =null;""")
+
+
         top = bc.borderContainer(region='top', height='140px')
-        fb = top.contentPane(region='center').formbuilder(cols=4,width='94%',
+        fb = top.contentPane(region='center').formbuilder(cols=5,width='94%',
                 border_spacing='4px',lbl_width='6em', colswidth='auto',
                 fld_width='100%')
         
         fb.field('name', lbl='Name', colspan=2)
         fb.field('npc_type', lbl='Type', colspan=1, validate_onAccept='if(value!="NL"){SET .mob=null;}')
         fb.field('mob' , lbl='Is Mob', hidden='^.@npc_type.can_be_mob?=!#v')
+        fb.field('mob_size' , lbl='Mob size', hidden='^.mob?=!#v', validate_notnull='^.mob', width='4em')
 
-        fb.field('high_concept', lbl='High Concept',colspan=4, validate_notnull=True)
-        fb.field('description', lbl='Description',colspan=4, height='64px')
+        fb.field('high_concept', lbl='High Concept',colspan=5, validate_notnull=True)
+        fb.field('image_url', lbl='Img Url',colspan=5)
+
+        #fb.field('description', lbl='Description',colspan=5, height='64px')
         
         image_pane = top.contentPane(region='left',width='130px')
         image_pane.img(src='^.image_url', margin_right='10px',
@@ -61,8 +68,8 @@ class Form(BaseComponent):
                         rowspan=2,
                         upload_filename='=#FORM.record.id',crop_border='2px solid #ddd',
                         crop_rounded=8,crop_margin='5px',
-                        crop_margin_left='10px',
-                        zoomWindow=True)
+                        crop_margin_left='10px')
+
         center = bc.borderContainer(region='center', datapath='.data')
         grid = self.aspects(center.contentPane(region='left', width='30%'))
         grid.dataController('grid.storebag().setItem("hc.phrase",hc, {_protect_delete:true})', hc='^#FORM.setHC', grid=grid.js_widget)
@@ -80,7 +87,7 @@ class Form(BaseComponent):
                            title='Stunts',
                            _class='aspectGrid',
                            datapath='#FORM.stunts',
-                           storepath='.data.stunts',
+                           storepath='#FORM.record.data.stunts',
                            template_resource='tpl/stunt',
                            contentCb='Fate.stuntsForm(pane, kw)')
 
@@ -165,7 +172,7 @@ class Form(BaseComponent):
         def struct(struct):
             r = struct.view().rows()
             r.cell('shifts', dtype='I', name='Shifts',width='4em', edit=dict(validate_notnull=True, validate_min=1, tag='combobox', values='2,4,6,8'))
-            r.cell('cons_type', name='Type', width='100%', edit=dict(validate_notnull=True, tag='combobox', values='Mild,Mild2,Moderate,Severe'))
+            r.cell('label', name='Type', width='100%', edit=dict(validate_notnull=True, tag='combobox', values='Mild,Mild2,Moderate,Severe'))
 
         frame = pane.bagGrid(storepath='#FORM.record.consequences_slots',
             title='Consequence slots',
@@ -182,10 +189,10 @@ class Form(BaseComponent):
                         #'FIRE .grid.addTrack=$1.code',
                         #hiddenItemCb=hiddenItemCb,
                         parentForm=True)
-        menu.menuLine('Mild', code='mild', name='Mild', shifts=2)
-        menu.menuLine('Moderate', code='moderate', name='Moderate', shifts=4)
-        menu.menuLine('Severe', code='severe', name='Severe', shifts=6)
-        menu.menuLine('Other', code='other', name='Other', shift=1)
+        menu.menuLine('Mild', code='mi', name='Mild', shifts=2)
+        menu.menuLine('Moderate', code='mo', name='Moderate', shifts=4)
+        menu.menuLine('Severe', code='se', name='Severe', shifts=6)
+        menu.menuLine('Other', code='m2', name='Mild Opt', shift=2)
         grid = frame.grid
         grid.dataController("""
                         var consBag = grid.storebag();
