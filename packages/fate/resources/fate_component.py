@@ -81,8 +81,8 @@ class PlayManager(BaseComponent):
 
     def act_character_dialog(self,pane):
         dlg = pane.dialog(title='^.phase.name',datapath='current_scene.current_action',closable=True)
-        frame = dlg.framePane(height='160px',width='300px')
-        fb = frame.formbuilder(cols=1,border_spacing='3px',lbl_width='6em',datapath='.phase',margin='5px')
+        frame = dlg.framePane(height='200px',width='320px')
+        fb = frame.formbuilder(cols=1,border_spacing='3px',lbl_width='6em',datapath='.phase',margin='15px')
         fb.filteringSelect(value='^.action_type',
                             validate_onAccept="""SET .target_id=null;""",
                             hidden='^.action_type_hidden',disabled='^.action_type_disabled',
