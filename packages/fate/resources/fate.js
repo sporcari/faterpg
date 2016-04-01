@@ -12,14 +12,13 @@ var Fate = {
     },
     characterAspectsForm:function(pane, kw){
         var data = kw.rowDataNode.getValue();
-        var width = '25em'
-        
+        var width = '25em';
         if (data.getItem('aspect_type')=='PH'){
             if(data.getItem('phase')>1){
                 pane._('div', {innerHTML:this.getPreviousBackstory(kw.grid.sourceNode,data.getItem('phase')),
-                            width:width,lbl:'Backstory',_class:'bs_prevstories'})
+                            width:width,lbl:'Backstory',_class:'bs_prevstories'});
             }
-            pane._('simpleTextArea', {height:'60px',width:width, lbl:data.getItem('story_label'),value:'^.backstory'})
+            pane._('simpleTextArea', {height:'60px',width:width, lbl:data.getItem('story_label'),value:'^.backstory'});
         }
         pane._('textbox',{value:'^.phrase', width:width,lbl:data.getItem('type_label')});
     },
@@ -29,8 +28,8 @@ var Fate = {
     },
     onSkillsUpdate:function(sourceNode, skills, game_record){
         var skilldict = this.getSkillLevelDict(skills);
-        this.updateStressTracks(sourceNode, game_record.getItem('stress_tracks'), skilldict)
-        this.updateConsequences(sourceNode, game_record.getItem('consequences_slots'), skilldict)
+        this.updateStressTracks(sourceNode, game_record.getItem('stress_tracks'), skilldict);
+        this.updateConsequences(sourceNode, game_record.getItem('consequences_slots'), skilldict);
     },
     updateConsequences: function(sourceNode, consequences_slots, skilldict){
         var cons_code;
@@ -104,7 +103,7 @@ var Fate = {
            return '';
        }
        var username = sourceNode.getInheritedAttributes()['username'];
-       var pc_sheets = genro.getData('game.pcsheets');
+       var pc_sheets = genro.getData('play_data.pcsheets');
        var index = pc_sheets.index(username);
        var backstories = [];
        var backstory;
