@@ -18,7 +18,10 @@ class Table(object):
 
 
     def shared_onLoading(self, record):
-        record['data.metadata'] = Bag(title=record['title'], description=record['description'])
+        data = record['data']
+        data['metadata'] = Bag(title=record['title'], description=record['description'])
+
+
 
     #def shared_onSaving(self, record, shared_data):
     #    print record

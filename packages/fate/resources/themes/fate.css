@@ -977,7 +977,7 @@ body.tundra._common_d11{
 /* @group ICONS RETINA OVERRIDE */
 
 ._common_d11 .app{
-    background: url(icons/book.svg) no-repeat center center;
+    background: url(icons/book_white.svg) no-repeat center center;
 }
 ._common_d11 .add_record{
 	background: url(icons/addrow.svg) no-repeat center center;

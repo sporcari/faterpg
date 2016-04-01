@@ -3,6 +3,7 @@
 
 from gnr.web.gnrbaseclasses import BaseComponent
 from gnr.web.gnrwebstruct import struct_method
+from gnr.core.gnrdecorator import public_method
 from gnr.core.gnrbag import Bag
 
 
@@ -10,17 +11,251 @@ class PlayManager(BaseComponent):
 
     @struct_method
     def ft_playPage(self,parent,**kwargs):
-        bc = parent.borderContainer( **kwargs)
+        frame = parent.roundedGroupFrame(**kwargs)
+        bar = frame.top.slotBar('5,ftitle,*',_class='pbl_roundedGroupLabel')
+        bar.ftitle.div('^current_scene.metadata.title')
+        bc = frame.center.borderContainer()
         top = bc.contentPane(region='top', height='30px', datapath='current_scene.metadata')
-        top.div('^.title')
-        top.div('^.description')
-        center = bc.borderContainer(region='center')
-        self.currentSceneAspects(center.contentPane(region='left', width='50%'))
-        self.npcsInScene(center.contentPane(region='center'))
-        self.actionManager(bc.borderContainer(region='bottom', height='250px', border_top='1px solid gray'))
+        top.div('^.description',_class='scene_desc')
+        sc = bc.stackContainer(region='center')
+        bc.dataController("status = status || 'no_action'; sc.switchPage((status=='no_action' || status=='action' || status=='waiting_active_player')?0:1)",sc=sc.js_widget,status='^current_scene.action_status')
+        bc.dataController("""
+            Fate.setAvailableCharacters(pcsheets,npcs,gm_id);
+            """,npcs='^npcs',gm_id=self.game_record['gm_id'],pcsheets='=play_data.pcsheets',
+            _delay=100)
+        bc.dataController("""
+            SET current_scene.current_action.phase = new gnr.GnrBag(_subscription_kwargs);
+            """,subscribe_player_phase=True)
+        dlg = self.act_character_dialog(bc)
+        self.aspect_picker(bc)
 
-    def actionManager(sekf, bc):
-        bc.contentPane(region='center').div('aa')
+        bc.dataController("""
+            if(!pars.getItem('player_id')){
+                return;
+            }
+            if(player_id==pars.getItem('player_id')){
+                dlg.show();
+            }
+            """,pars='^current_scene.current_action.phase',_if='pars',player_id=self.rootenv['player_id'],
+            dlg=dlg.js_widget)
+        
+        no_action = sc.borderContainer(region='center')
+        self.currentSceneAspects(no_action.contentPane(region='left', width='50%'))
+        self.npcsInScene(no_action.contentPane(region='center'))
+        self.act_actionViewer(sc.borderContainer(datapath='.current_action'))
+
+
+    def aspect_picker(self,pane):
+        dlg = pane.dialog(title='Aspects',datapath='main.aspect_picker',
+                            subscribe_aspect_picker="""SET .store = Fate.prepareAspectPickerData();this.widget.show();
+                                                       SET .exit_mode = $1.reason;
+                                                       SET .caller = $1.caller; 
+                                                        """,
+                            closable=True)
+        frame = dlg.framePane(width='400px',height='450px')
+
+        frame.center.contentPane(overflow='auto',padding='5px').tree(storepath='.store',hideValues=True,excludeRoot=True,
+                         labelAttribute='caption',selectedLabelClass='selectedAspect',
+                         connect_ondblclick="""function(e){
+                            var wdg = dijit.getEnclosingWidget(e.target);
+                            var item = wdg.item;
+                            if(item.attr.phrase){
+                                this.fireEvent('.invoked_aspect',item.attr.phrase);
+                            }
+                         }""")
+        frame.dataController("""
+            dlg.hide();
+            if(exit_mode=='get_bonus'){
+                Fate.writeActionStep(caller,new gnr.GnrBag({description:'Invoked '+invoked_aspect+' to increase modifiers',modifier:2}),{aspect:true});
+            }else{
+                Fate.writeActionStep(caller,new gnr.GnrBag({description:'Invoked aspect '+invoked_aspect +' to roll again' ,modifier:0}),{aspect:true});
+                genro.setData('current_scene.current_action.active_player.rolled',false);
+            }
+            """,invoked_aspect='^.invoked_aspect',exit_mode='=.exit_mode',dlg=dlg.js_widget,caller='=.caller')
+
+
+    def act_character_dialog(self,pane):
+        dlg = pane.dialog(title='^.phase.name',datapath='current_scene.current_action',closable=True)
+        frame = dlg.framePane(height='200px',width='300px')
+        fb = frame.formbuilder(cols=1,border_spacing='3px',lbl_width='6em',datapath='.phase')
+        fb.filteringSelect(value='^.action_type',
+                            validate_onAccept="""SET .target_id=null;""",
+                            hidden='^.action_type_hidden',disabled='^.action_type_disabled',
+                          values=self.db.table('fate.action_type').actionTypes(),
+
+                        cursor='pointer',lbl='Action')
+        fb.callbackSelect(value='^.target_id',callback="""function(kw){
+                return Fate.getAvailableCharacterSelector(kw);
+            }""",lbl='Target',
+            blacklist='=.character_id',
+            selected_name='.target_name',
+            selected_image_url='.target_image_url',
+            hidden='^.action_type?=!(#v=="CA" || #v=="AT")',
+            hasDownArrow=True)
+        fb.callbackSelect(value='^.skill',callback="""function(kw){
+                return Fate.skillSelectValues(kw);
+            }""",auxColumns='skillname,level',
+            selected_level='.modifier',
+            action_type='=.action_type',
+            character_skills='=.character_skills',
+            lbl='Skill',hasDownArrow=True)
+        fb.numberTextBox(value='^.modifier',lbl='Modifier')
+        fb.simpleTextArea(value='^.details',lbl='Details')
+        bar = frame.bottom.slotBar('*,confirm,2')
+        bar.confirm.slotButton('Confirm',action="""Fate.actionPhaseConfirmed(data,status);
+                                                  dlg.hide();""",
+            dlg=dlg.js_widget,data='=.phase',status='=current_scene.action_status',
+            character_id='=.character_id')
+        return dlg
+
+
+    def act_activeStruct(self,struct):
+        r = struct.view().rows()
+        r.cell('description',width='100%')
+        r.cell('modifier',width='2em',dtype='I',totalize='current_scene.current_action.active_player.modifiers',
+                cellClasses='modifier_cell')
+
+    def act_opponentStruct(self,struct):
+        r = struct.view().rows()
+        r.cell('description',width='100%')
+        r.cell('modifier',width='2em',dtype='I',totalize='current_scene.current_action.opponent_player.modifiers',
+                cellClasses='modifier_cell')
+
+
+
+    def act_actionViewer(self, bc):
+
+
+        active = bc.borderContainer(region='left',_class='active_box',width='50%')
+        opponent = bc.borderContainer(region='center',_class='opponent_box')
+        frame = active.bagGrid(storepath='current_scene.current_action.active_steps',
+                                addrow=False,pbl_classes='*',
+                                struct=self.act_activeStruct,datapath='main.action_viewer_active',
+                                margin='2px',region='center')
+        
+        bar = frame.top.bar.replaceSlots('#','2,avt,*,vtitle,*',_class='action_log_bar')
+        bar.vtitle.div('^#active_player.name')
+        bar.avt.div(padding='2px').img(src='^#active_player.image_url',height='60px')
+        frame = opponent.bagGrid(storepath='current_scene.current_action.opposition_steps',addrow=False,delrow=False,pbl_classes='*',
+                                struct=self.act_opponentStruct,margin='2px',region='center')
+        
+        bar = frame.top.bar.replaceSlots('#','*,vtitle,*,avt,2',_class='action_log_bar')
+        bar.vtitle.div('^#opponent_player.name')
+        bar.avt.img(src='^#opponent_player.image_url',height='60px',margin_top='2px')
+        self.act_finalActive(active.roundedGroup(region='bottom',height='200px',datapath='current_scene.current_action.active_player',nodeId='active_player'))
+        self.act_finalOpposition(opponent.roundedGroup(region='bottom',height='200px',datapath='current_scene.current_action.opponent_player',nodeId='opponent_player'))
+        
+        end_action = bc.contentPane(height='50px',border_top='1px solid silver',region='bottom')
+
+        end_action.dataController("""
+                            var delta = active_overall-opponent_overall;
+                            var result;
+                            SET current_scene.current_action.final_delta = delta;
+                            if(delta<0){
+                                result = 'Fail';
+                            }else if(delta==0){
+                                result = 'Tie';
+                            }else if(delta>0 && delta<3){
+                                result = 'Success';
+                            }else{
+                                result = 'Success with style'
+                            }
+                            SET current_scene.current_action.final_result = result;
+                            """,
+                        active_overall='^#active_player.overall',
+                        opponent_overall='^#opponent_player.overall')
+
+        end_action.div('^current_scene.current_action.final_result',font_size='22px',text_align='center',
+                        color='#006AC2',margin='3px')
+#
+        bc.dataController("""opponent.setRegionVisible('bottom',action_status=='roll_dice');
+                             active.setRegionVisible('bottom',action_status=='roll_dice');
+                             mainbc.setRegionVisible('bottom',action_status=='roll_dice');""",
+                        opponent = opponent.js_widget,
+                        active = active.js_widget,
+                        mainbc = bc.js_widget,
+                        action_status='^current_scene.action_status')
+
+    def act_finalActive(self,pane):
+        tr = pane.table(width='100%').tbody().tr()
+        tr.td('Invoke aspect',_class='rolled_value')
+        tr.td().lightButton('+2',action="""
+                        genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
+                    """,_class='dice_button',caller='active')
+        tr.td().lightButton('Re Roll',
+                    action="""
+                        genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
+                    """,
+                        _class='dice_button',caller='active')
+        self.roller(pane)
+        
+
+ 
+
+    def act_finalOpposition(self,pane):
+        tr = pane.table(width='100%').tbody().tr()
+        tr.td('Invoke aspect',_class='rolled_value')
+        tr.td().lightButton('+2',action="""
+                        genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
+                    """,_class='dice_button',caller='opposition')
+        tr.td().lightButton('Re Roll',
+                    action="""
+                        genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
+                    """,_class='dice_button',caller='opposition',disabled='^.passive')
+        self.roller(pane)
+
+
+    def roller(self,pane,hidden=None,**kwargs):
+        table = pane.table(width='100%').tbody()
+        tr = table.tr()
+        rollbtn = tr.td().div('Roll',connect_mousedown="FIRE .rolling=true",
+                      connect_mouseup="FIRE .rolling=false;",
+                      connect_mouseout="FIRE .rolling=false;",
+                      _class='dice_button dice_roller',
+                      disabled='^.rolled')
+
+        pane.dataController("""if(run){
+                                    if(!rolled){
+                                        SET .timer=0.01;
+                                        SET .roll_started = true;
+                                        genro.dom.setClass(rollbtn,'dice_pressing',true)
+                                    }
+                                }else{
+                                    SET .timer=0;
+                                    if(roll_started){
+                                        SET .rolled = true;
+                                        SET .roll_started = false;
+                                    }
+                                    genro.dom.setClass(rollbtn,'dice_pressing',false)
+                                }
+                                """,
+                               run='^.rolling',rolled='=.rolled',roll_started='=.roll_started',
+                               rollbtn = rollbtn.js_domNode,
+                               ##_userChanges=True
+                               )
+        pane.dataController("""
+            var tot = 0;
+            var v;
+            for (var i=0;i<4;i++){
+                v = Math.floor(Math.random() *3)-1;
+                this.setRelativeData('.dices.d_'+i,v);
+                tot+=v;
+            }
+            SET .rolled_value = tot;
+            var that = this;
+            """,_timing='^.timer')
+        box = tr.td()
+        for k in range(4):
+            box.div(innerHTML="""==Fate.diceContent(_dice_value);""",
+                    _dice_value='^.dices.d_%s' %k,display='inline-block')
+        tr.td().div('^.rolled_value',_class='rolled_value',width='22px',
+                        text_align='right')
+        tr = table.tr()
+        tr.td(colspan=2).div('Result',_class='rolled_value',text_align='right')
+        pane.dataFormula('.overall','(modifiers || 0)+(rolled_value || 0)',
+                        rolled_value='^.rolled_value',modifiers='^.modifiers')
+        tr.td().div('^.overall',_class='rolled_value',width='22px',
+                        text_align='right')
 
     def currentSceneAspects(self, pane):
         frame = pane.templateGrid(title='Situation aspects',
@@ -73,10 +308,6 @@ class GmTools(BaseComponent):
     @struct_method
     def ft_gmTools(self, parent, username=None, **kwargs):
         bc = parent.borderContainer(title='GM Tools', datapath='main.gm_tools')
-        top_pane = bc.contentPane(region='top', height='80px')
-        top_pane.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
-        top_pane.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
-        top_pane.dbSelect(value='^play_data.current_scene_id', dbtable='fate.scene', rowcaption='$title')
         #top_pane.dataRpc('dummy', self.db.table('fate.game').savePlayData, 
         #                 _fired='^savePlayData',
         #                 game_id='=game_record.id',
@@ -84,14 +315,77 @@ class GmTools(BaseComponent):
         #top_pane.dataController("""SET play_data = game_play_data.deepCopy();""",
         #         game_play_data='=game_record.play_data', _fired='^loadPlayData')
 
-        tc = bc.tabContainer(region='center')
-        self.scenesMaker(tc.contentPane(region='center', title='Scenes'))
-        self.npcMaker(tc.contentPane(region='center', title='NPCs'))
-        #pane.button('Start game')
-        #pane.button('New scene')
+        bc = bc.borderContainer(region='center')
+        self.scenesMaker(bc.contentPane(region='top', height='150px'))
+        self.npcMaker(bc.contentPane(region='center'))
+        bottom = bc.framePane(region='bottom',height='150px')
+        bar = bottom.top.slotBar("2,vtitle,*,reset,2",_class='pbl_roundedGroupLabel toolbar')
+        bar.reset.button('Reset',action=""" SET current_scene.action_status = 'no_action';
+                                            SET current_scene.current_action = new gnr.GnrBag();""")
+        bar.vtitle.div('Action manager')
+        sc = bottom.center.stackContainer(selectedPage='^current_scene.action_status',datapath='current_scene.current_action.data')
+        no_action_pane = sc.contentPane(pageName='no_action')
+        no_action_pane.button('New action',action="""Fate.loadAction();""")
+        self.act_chooseCharacter(sc.contentPane(pageName='action'))
+        sc.contentPane(pageName='waiting_active_player').div('waiting_active_player')
+        self.act_chooseOpposition(sc.contentPane(pageName='opposition'))
+        sc.contentPane(pageName='waiting_opposition').div('waiting_opposition')
+        sc.contentPane(pageName='roll_dice').button('Close action',
+                                                    action="""
+                                                        if(!action_log){
+                                                            action_log = new gnr.GnrBag();
+                                                            SET current_scene.action_log = action_log
+                                                        }
+                                                        action_log.setItem('r_'+action_log.len(),current_action);
+                                                        SET current_scene.current_action = new gnr.GnrBag();
+                                                        SET current_scene.action_status = 'no_action';
+                                                    """,
+                                                current_action='=current_scene.current_action',
+                                                action_log='=current_scene.action_log')
+
+
+    def act_chooseOpposition(self,pane):
+        fb = pane.formbuilder(cols=3,border_spacing='3px')
+        #fb.div('^.description')
+        fb.button('^.target_name?=#v + " defends"',
+                action="""var kw = Fate.characterPars(target_id);
+                          kw['action_type'] = 'DF';
+                          kw['action_type_disabled'] = true;
+                          genro.setData('current_scene.action_status','waiting_opposition');
+                          genro.publish('player_phase',kw);""",
+                target_id='=.target_id',
+                hidden='^.target_id?=!#v')
+        fb.br()
         
+        fb.callbackSelect(value='^.opponent_id',callback="""function(kw){
+                return Fate.getAvailableCharacterSelector(kw);
+            }""",lbl='Opponent',
+            hasDownArrow=True,
+            blacklist='=.opponent_blacklist')
+        fb.button('Confirm',action="""var kw = Fate.characterPars(opponent_id);
+                          kw['action_type'] = null;
+                          kw['action_type_hidden'] = true;
+                          genro.setData('current_scene.action_status','waiting_opposition');
+                          genro.publish('player_phase',kw);""",
+                opponent_id='=.opponent_id')
+        fb.br()
+        fb.textbox(value='^.passive_opposition',lbl='Opposition reason')
+        fb.numberTextBox(value='^.passive_modifier',lbl='Modifier',width='5em')
+        fb.button('Confirm',action="Fate.actionPhaseConfirmed(new gnr.GnrBag({modifier:passive_modifier,passive_opposition:passive_opposition || 'Obstacle',passive:true}),'waiting_opposition','Opposition $passive_opposition');",
+                    passive_opposition='=.passive_opposition',
+                    passive_modifier='=.passive_modifier')
 
 
+    def act_chooseCharacter(self,pane):
+        fb = pane.formbuilder(cols=2,border_spacing='3px')
+        fb.callbackSelect(value='^.character_id',callback="""function(kw){
+                return Fate.getAvailableCharacterSelector(kw);
+            }""",lbl='Choose character',hasDownArrow=True,selected_name='.character_name',
+                )
+        fb.button('Confirm',action="""var kw = Fate.characterPars(character_id);
+                                      genro.setData('current_scene.action_status','waiting_active_player');
+                                      genro.publish('player_phase',kw);""",
+                        character_id='=.character_id')
 
     @struct_method
     def ft_npcPage(self, parent, **kwargs):
@@ -108,11 +402,8 @@ class GmTools(BaseComponent):
                                 searchOn=False,
                                 datapath='.scenes',
                                 formResource='Form',
-                                configurable=False)
+                                configurable=False,pbl_classes=True)
     def npcMaker(self, pane):
-        f = self.db.table('fate.npc_type').query().fetch()
-        addrowDict=[(r['name'],dict(npc_type=r['code'])) for r in f]
-
         pane.dialogTableHandler(table='fate.npc',
                                 view_store_onStart=True,
                                 condition='$game_id=:game_id',
@@ -122,10 +413,10 @@ class GmTools(BaseComponent):
                                 margin='2px',
                                 searchOn=False,
                                 #title='NPCs:',
-                                addrow=addrowDict,
+                                addrow=True,
                                 datapath='.npcs',
                                 formResource='Form',
-                                configurable=False)
+                                configurable=False,pbl_classes=True)
                                 #pbl_classes=True)
 
 
@@ -135,11 +426,11 @@ class CharacterSheet(BaseComponent):
 
     @struct_method
     def ft_characterSheet(self, parent, username=None, **kwargs):
-        parent.data('.%s.title' %username,username)
+        parent.data('.%s.title' %username,username.capitalize())
         bc = parent.contentPane(title='^.%s.title' %username, username=username, **kwargs).borderContainer()
         
 
-        top = bc.borderContainer(region='top',height='225px')
+        top = bc.borderContainer(region='top',height='212px')
         center = bc.borderContainer(region='center')
         bottom = bc.borderContainer(region='bottom', height='120px')
         self.idGroup(top,username=username)
@@ -168,7 +459,11 @@ class CharacterSheet(BaseComponent):
         t = box.table(border_spacing='2px').tbody()
         r = t.tr()
         r.td(colspan=2).textbox(value='^.name',lbl='Name',width='175px',border='0px', disabled=not (username==self.user))
-        r.td(rowspan=3).div(lbl='Portrait', height='161px', wrp_width='110px')
+        box = r.td(rowspan=3).div(height='172px',width='104px',border='1px solid #444',padding='2px')
+        box.img(src='^.image_url',height='100%',width='100%',
+                            placeholder=self.getResourceUri('css/images/social.svg'),
+                             upload_folder='site:img/%s/pg' %self.game_record['id'],
+                             upload_filename=username,edit=True)
         t.tr().td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
                             height='70px', width='175px',border=0, disabled=not (username==self.user))
         r = t.tr()
@@ -191,7 +486,7 @@ class CharacterSheet(BaseComponent):
                            contentCb='Fate.characterAspectsForm(pane, kw)')
 
     def characterSkills(self, bc, username):
-        frame = bc.roundedGroupFrame(title='Skills',region='top', height='140px', datapath='play_data.pcsheets.%s' %username)
+        frame = bc.roundedGroupFrame(title='Skills',region='top', height='120px', datapath='play_data.pcsheets.%s' %username)
         if self.user == username:
             bar = frame.top.bar.replaceSlots('#','#,skillsButton,2')
             bar.skillsButton.slotButton('View Skills',

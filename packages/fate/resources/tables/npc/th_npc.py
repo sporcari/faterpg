@@ -27,7 +27,8 @@ class View(BaseComponent):
 class ViewFromGmTools(BaseComponent):
 
     def th_top_bar_custom(self,top):
-        top.bar.replaceSlots('5,vtitle','5,vtitle,*,sections@npc_type')
+        bar = top.bar.replaceSlots('5,vtitle','5,npctitle,*,sections@npc_type')
+        bar.npctitle.div('NPCS')
 
     def th_struct(self,struct):
         r = struct.view().rows()
@@ -61,14 +62,10 @@ class Form(BaseComponent):
         #fb.field('description', lbl='Description',colspan=5, height='64px')
         
         image_pane = top.contentPane(region='left',width='130px')
-        image_pane.img(src='^.image_url', margin_right='10px',
-                        crop_width='110px',crop_height='120px',
-                        placeholder=self.getResourceUri('images/missing_photo.png'),
-                        upload_folder='site:img/npc/avatar',edit=True,
-                        rowspan=2,
-                        upload_filename='=#FORM.record.id',crop_border='2px solid #ddd',
-                        crop_rounded=8,crop_margin='5px',
-                        crop_margin_left='10px')
+        image_pane.div(width='110px',height='120px',margin_right='10px',margin='5px',margin_left='10px',rowspan=2
+                    ).img(src='^.image_url',placeholder=self.getResourceUri('css/images/social.svg'),
+                            upload_folder='site:img/npc/avatar',height='100%',width='100%',edit=True,
+                            upload_filename='=#FORM.record.id')
 
         center = bc.borderContainer(region='center', datapath='.data')
         grid = self.aspects(center.contentPane(region='left', width='30%'))

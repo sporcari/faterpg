@@ -158,7 +158,121 @@
     padding:0;
 }
 .gamecell_tbl{
-    background-image: url("$banner_url")
+    background-image: url("$banner_url");
     color:white;
 }
+
+._common_d11 .menuButtonDiv{
+    background: transparent;
+    padding-right: 0;
+    cursor: pointer;
+    text-decoration: underline;
+}
 /* @end */
+
+
+.dice_button{
+    line-height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin:3px;
+    border:1px solid #efefef;
+    cursor: pointer;
+    display: inline-block;
+    color:white;
+    font-size: 15px;
+    border-radius: 4px;
+}
+
+.dice_roller{
+    box-shadow: 3px 3px 5px #666;
+}
+.active_box .rolled_value{
+    color: #217B1F;
+    font-size: 22px;
+    margin-right: 12px;
+}
+.opponent_box .rolled_value{
+    color: #C22531;
+    font-size: 22px;
+    margin-right: 12px;
+}
+
+.dice_roller.dice_pressing{
+    box-shadow: 1px 1px 2px #666;
+}
+
+.active_box .dice_button{
+    background: #217B1F;
+}
+.opponent_box .dice_button{
+    background: #C22531;
+}
+.dice_box{
+    height: 30px;
+    width: 30px;
+    border:1px solid #efefef;
+    border-radius: 4px;
+    display: inline-block;
+    margin:3px;
+}
+
+.active_box .dice_blank{
+    background: transparent url(images/dice/blank_green.svg) no-repeat center center;
+}
+
+.opponent_box .dice_blank{
+    background: transparent url(images/dice/blank_red.svg) no-repeat center center;
+}
+
+.active_box .dice_plus{
+    background: transparent url(images/dice/plus_green.svg) no-repeat center center;
+}
+
+.opponent_box .dice_plus{
+    background: transparent url(images/dice/plus_red.svg) no-repeat center center;
+}
+
+.active_box .dice_minus{
+    background: transparent url(images/dice/minus_green.svg) no-repeat center center;
+}
+
+.opponent_box .dice_minus{
+    background: transparent url(images/dice/minus_red.svg) no-repeat center center;
+}
+.action_log_bar{
+    color: white;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-size: 16px;
+    height: 66px;
+}
+.active_box .action_log_bar{
+    background: #217B1F;
+}
+
+.opponent_box .action_log_bar{
+    background: #C22531;
+    color: white;
+}
+
+
+.dojoxGrid-row .dojoxGrid-cell.modifier_cell{
+    border-color: transparent;
+    font-size: 22px;
+    vertical-align: middle;
+}
+
+.opponent_box .dojoxGrid-row .dojoxGrid-cell.modifier_cell{
+    color:#C22531;
+}
+
+.active_box .dojoxGrid-row .dojoxGrid-cell.modifier_cell{
+    color:#217B1F;
+}
+
+.selectedAspect{
+    font-weight: bolder;
+    background: yellow;
+    padding-right: 3px;
+}

@@ -123,7 +123,7 @@ class Table(object):
                                         game_id=game_id).fetch()
         result=Bag()
         for p in players:
-            result[p['username']] = self.createEmptySheet(game_record)
+            result.setItem(p['username'],self.createEmptySheet(game_record),player_id=p['player_id'])
         return result
 
     def prepareStressTrack(self, stress_tracks):

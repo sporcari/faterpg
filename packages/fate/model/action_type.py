@@ -36,3 +36,7 @@ class Table(object):
                               description='Defend')
 
 
+    def actionTypes(self):
+        return ','.join(['%(code)s:%(name)s' %r for r in self.query().fetch()])
+
+

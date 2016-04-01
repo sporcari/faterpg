@@ -69,23 +69,30 @@ class GnrCustomWebPage(object):
 
 
         root.data('main.game_skills', self.getGameSkills())
-        root_bc = root.borderContainer(design='sidebar',datapath='main')
-        self.gameHeader(root_bc.borderContainer(region='top',height='80px'))
+        root_bc = root.borderContainer(datapath='main')
+        self.gameHeader(root_bc.borderContainer(region='top',height='40px'))
         bc = root_bc.borderContainer(region='center')
         self.gameCharacters(root_bc)
         #self.gameCommon(bc)
         bc.data('game_record',self.game_record)
 
-        tc = root_bc.tabContainer(region='center',margin='2px')
-        self.gameCreation(tc.borderContainer(title='Game creation'))
-        tc.playPage(title='Play')
+        sc = root_bc.stackContainer(region='center')
+        root_bc.dataController("sc.switchPage(scene_id?1:0);",sc=sc.js_widget,scene_id='^play_data.current_scene_id')
+        #self.gameCreation(tc.borderContainer(title='Game creation'))
+        sc.contentPane().div('!!Missing scene')
+        sc.playPage()
 
     def gameHeader(self,bc):
-        center = bc.contentPane(region='center').img(src='/_site/resources/images/fate_head.jpg',height='60px')
+        center = bc.contentPane(region='center',overflow='hidden').img(src='/_site/resources/images/fate_head.jpg',height='40px')
         center.button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
-
+        right = bc.contentPane(region='right',width='50%')
+        if self.isGm:
+            right.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
+            right.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
+            right.dbSelect(value='^play_data.current_scene_id', dbtable='fate.scene', rowcaption='$title')
+            
     def gameCharacters(self,bc):
-        tc = bc.tabContainer(region='right',width='670px',margin='2px',datapath='main.pcsheets')
+        tc = bc.tabContainer(region='left',width='670px',margin='2px',datapath='main.pcsheets')
         game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $is_gm IS FALSE',
                                                     gid=self.game_record['id'],
                                                     columns="""$player_id,
@@ -99,6 +106,7 @@ class GnrCustomWebPage(object):
         for username in sorted(game_players.keys()):
             tc.characterSheet(username, detachable=True)
         tc.npcPage()
+        self.gameCreation(tc.borderContainer(title='World aspects',datapath='main'))
 
     #def gameCommon(self,main_bc):
     #    bc = main_bc.borderContainer(region='top',height='160px')
