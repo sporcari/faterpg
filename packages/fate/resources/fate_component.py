@@ -69,15 +69,20 @@ class PlayManager(BaseComponent):
                 Fate.writeActionStep(caller,new gnr.GnrBag({description:'Invoked '+invoked_aspect+' to increase modifiers',modifier:2}),{aspect:true});
             }else{
                 Fate.writeActionStep(caller,new gnr.GnrBag({description:'Invoked aspect '+invoked_aspect +' to roll again' ,modifier:0}),{aspect:true});
-                genro.setData('current_scene.current_action.active_player.rolled',false);
+                if(caller=='opposition'){
+                    genro.setData('current_scene.current_action.opponent_player.rolled',false);
+                }else{
+                    genro.setData('current_scene.current_action.active_player.rolled',false);
+                }
+                
             }
             """,invoked_aspect='^.invoked_aspect',exit_mode='=.exit_mode',dlg=dlg.js_widget,caller='=.caller')
 
 
     def act_character_dialog(self,pane):
         dlg = pane.dialog(title='^.phase.name',datapath='current_scene.current_action',closable=True)
-        frame = dlg.framePane(height='200px',width='300px')
-        fb = frame.formbuilder(cols=1,border_spacing='3px',lbl_width='6em',datapath='.phase')
+        frame = dlg.framePane(height='160px',width='300px')
+        fb = frame.formbuilder(cols=1,border_spacing='3px',lbl_width='6em',datapath='.phase',margin='5px')
         fb.filteringSelect(value='^.action_type',
                             validate_onAccept="""SET .target_id=null;""",
                             hidden='^.action_type_hidden',disabled='^.action_type_disabled',
@@ -128,6 +133,16 @@ class PlayManager(BaseComponent):
 
         active = bc.borderContainer(region='left',_class='active_box',width='50%')
         opponent = bc.borderContainer(region='center',_class='opponent_box')
+
+        bc.dataController("""
+            genro.dom.setClass(opponent,'is_owner',opponent_player_id==player_id);
+            """,opponent_player_id='^#opponent_player.player_id',
+                player_id=self.rootenv['player_id'],opponent=opponent)
+        bc.dataController("""
+            genro.dom.setClass(active,'is_owner',active_player_id==player_id);
+            """,active_player_id='^#active_player.player_id',player_id=self.rootenv['player_id'],
+                active=active)
+
         frame = active.bagGrid(storepath='current_scene.current_action.active_steps',
                                 addrow=False,pbl_classes='*',
                                 struct=self.act_activeStruct,datapath='main.action_viewer_active',
@@ -163,7 +178,15 @@ class PlayManager(BaseComponent):
                             SET current_scene.current_action.final_result = result;
                             """,
                         active_overall='^#active_player.overall',
-                        opponent_overall='^#opponent_player.overall')
+                        active_rolled='^#active_player.rolled',
+                        opponent_rolled='^#opponent_player.rolled',
+                        active_rolling='^#active_player.rolling',
+                        opponent_rolling='^#opponent_player.rolling',
+                        opponent_overall='^#opponent_player.overall',
+                        _if='(opponent_rolled&&active_rolled) && !(active_rolling || opponent_rolling)',
+                        _else="""
+                            SET current_scene.current_action.final_result = null;
+                        """)
 
         end_action.div('^current_scene.current_action.final_result',font_size='22px',text_align='center',
                         color='#006AC2',margin='3px')
@@ -177,7 +200,7 @@ class PlayManager(BaseComponent):
                         action_status='^current_scene.action_status')
 
     def act_finalActive(self,pane):
-        tr = pane.table(width='100%').tbody().tr()
+        tr = pane.table(width='100%').tbody().tr(_class='owner_only')
         tr.td('Invoke aspect',_class='rolled_value')
         tr.td().lightButton('+2',action="""
                         genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
@@ -187,13 +210,13 @@ class PlayManager(BaseComponent):
                         genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
                     """,
                         _class='dice_button',caller='active')
-        self.roller(pane)
+        self.roller(pane,'active')
         
 
  
 
     def act_finalOpposition(self,pane):
-        tr = pane.table(width='100%').tbody().tr()
+        tr = pane.table(width='100%').tbody().tr(_class='owner_only')
         tr.td('Invoke aspect',_class='rolled_value')
         tr.td().lightButton('+2',action="""
                         genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
@@ -202,37 +225,32 @@ class PlayManager(BaseComponent):
                     action="""
                         genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
                     """,_class='dice_button',caller='opposition',disabled='^.passive')
-        self.roller(pane)
+        self.roller(pane,'opponent')
 
 
-    def roller(self,pane,hidden=None,**kwargs):
+    def roller(self,pane,mode=None,**kwargs):
         table = pane.table(width='100%').tbody()
         tr = table.tr()
-        rollbtn = tr.td().div('Roll',connect_mousedown="FIRE .rolling=true",
-                      connect_mouseup="FIRE .rolling=false;",
-                      connect_mouseout="FIRE .rolling=false;",
-                      _class='dice_button dice_roller',
+        table.data('%s.timer' %mode,0)
+        rollbtn = tr.td().div('Roll',connect_mousedown="FIRE %s.roll_run" %mode,
+                      connect_mouseup="FIRE %s.roll_stop;" %mode,
+                      connect_mouseout="""FIRE %s.roll_stop;""" %mode,
+                      _class='dice_button dice_roller owner_only',
                       disabled='^.rolled')
 
-        pane.dataController("""if(run){
-                                    if(!rolled){
-                                        SET .timer=0.01;
-                                        SET .roll_started = true;
-                                        genro.dom.setClass(rollbtn,'dice_pressing',true)
-                                    }
-                                }else{
-                                    SET .timer=0;
-                                    if(roll_started){
-                                        SET .rolled = true;
-                                        SET .roll_started = false;
-                                    }
-                                    genro.dom.setClass(rollbtn,'dice_pressing',false)
-                                }
-                                """,
-                               run='^.rolling',rolled='=.rolled',roll_started='=.roll_started',
-                               rollbtn = rollbtn.js_domNode,
-                               ##_userChanges=True
-                               )
+        pane.dataController("""
+                             SET %s.timer=0.01;
+                             genro.dom.setClass(rollbtn,'dice_pressing',true)
+                             """ %mode,
+                             _fired='^%s.roll_run' %mode,rollbtn=rollbtn,
+                             rolled='=.rolled',_if='!rolled')
+        
+        pane.dataController("""SET %s.timer=0;
+                              genro.dom.setClass(rollbtn,'dice_pressing',false);
+                              SET .rolled = true;
+                             """ %mode,
+                             _fired='^%s.roll_stop' %mode,rollbtn=rollbtn,timer='=%s.timer' %mode,
+                             _if='timer')
         pane.dataController("""
             var tot = 0;
             var v;
@@ -243,7 +261,7 @@ class PlayManager(BaseComponent):
             }
             SET .rolled_value = tot;
             var that = this;
-            """,_timing='^.timer')
+            """,_timing='^%s.timer' %mode)
         box = tr.td()
         for k in range(4):
             box.div(innerHTML="""==Fate.diceContent(_dice_value);""",
@@ -327,9 +345,9 @@ class GmTools(BaseComponent):
         no_action_pane = sc.contentPane(pageName='no_action')
         no_action_pane.button('New action',action="""Fate.loadAction();""")
         self.act_chooseCharacter(sc.contentPane(pageName='action'))
-        sc.contentPane(pageName='waiting_active_player').div('waiting_active_player')
+        sc.contentPane(pageName='waiting_active_player').div('Waiting active player',margin='20px',color='#217B1F',font_size='20px',text_align='center')
         self.act_chooseOpposition(sc.contentPane(pageName='opposition'))
-        sc.contentPane(pageName='waiting_opposition').div('waiting_opposition')
+        sc.contentPane(pageName='waiting_opposition').div('Waiting opposition player',margin='20px',color='#C22531',font_size='20px',text_align='center')
         sc.contentPane(pageName='roll_dice').button('Close action',
                                                     action="""
                                                         if(!action_log){

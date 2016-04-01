@@ -253,7 +253,6 @@
 
 .opponent_box .action_log_bar{
     background: #C22531;
-    color: white;
 }
 
 
@@ -287,4 +286,12 @@
     left:2px; 
     right:2px; 
     overflow: auto;
+}
+
+.owner_only{
+    visibility: hidden;
+}
+
+.is_owner .owner_only{
+    visibility: visible;
 }

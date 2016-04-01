@@ -121,7 +121,7 @@ var Fate = {
            phrase = aspectrec.getItem('phrase') || '';
            backstories.push('<div class="bs_phase"><div class="bs_name">'+name+'</div><div class="bs_story">'+backstory+'</div><div class="bs_phrase">'+phrase+'</div></div>');
        }
-       return backstories.reverse().join('')
+       return backstories.reverse().join('');
 
     },
 
@@ -256,6 +256,7 @@ var Fate = {
             current_action.setItem('data.opponent_blacklist',blacklist.join(','));
             current_action.setItem('active_player.name',d.getItem('name'));
             current_action.setItem('active_player.image_url',d.getItem('image_url'));
+            current_action.setItem('active_player.player_id',d.getItem('player_id'));
             current_action.setItem('active_player.rolled',false);
             genro.setData('current_scene.action_status','opposition');
             steps.setItem('r_'+steps.len(),d);
@@ -275,6 +276,7 @@ var Fate = {
                 current_action.setItem('opponent_player.passive',true);
                 current_action.setItem('opponent_player.rolled',true);
             }
+            current_action.setItem('opponent_player.player_id',d.getItem('player_id'));
             current_action.setItem('opponent_player.image_url',d.getItem('image_url'));
             genro.setData('current_scene.action_status','roll_dice');
             steps.setItem('r_'+steps.len(),d);
@@ -353,7 +355,6 @@ var Fate = {
     },
 
     diceContent:function(dice_value){
-        console.log('dice_value',dice_value);
         var dice_class = 'dice_box ';
         if(dice_value!==null){
             dice_class =dice_class +['dice_minus','dice_blank','dice_plus'][dice_value+1];

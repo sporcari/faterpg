@@ -37,7 +37,7 @@ class ViewFromPlayerDashboard(BaseComponent):
                     cellClasses='cellbutton',
                     format_buttonclass='icon48 arrow_right iconbox',
                     format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
-                                                           genro.childBrowserTab('/tabletop/play/'+row['__ins_user']+'/'+row['code']);""")
+                                                           genro.openBrowserTab('/tabletop/play/'+row['__ins_user']+'/'+row['code']);""")
 
         #r.fieldcell('weekday')
         #r.fieldcell('image')

@@ -61,12 +61,11 @@ class Form(BaseComponent):
         fb.field('title', lbl='Title', width='17tem')
         fb.field('description', lbl='Description',colspan=2, height='50px', width='35em')
         fb.field('closed',html_label=True)
-        tc =bc.tabContainer(region='center', datapath='#FORM')
-        self.situationAspects(tc)
+        self.situationAspects(bc)
         #self.npcs(tc)
 
-    def situationAspects(self, tc):
-        tc.templateGrid(title='Situation aspects',
+    def situationAspects(self, bc):
+        bc.templateGrid(title='Situation aspects',region='center',
                            frameCode='situationAspects',
                            datapath='#FORM.situation_aspects',
                             _class='aspectGrid',

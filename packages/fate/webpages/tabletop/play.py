@@ -29,7 +29,6 @@ class GnrCustomWebPage(object):
         #controller che imposta la shared scene
         root.dataController("""var old_scene_id = _triggerpars.kw.oldvalue;
                               if (old_scene_id){
-                               console.log('unregister', old_scene_id)
                                genro.som.unregisterSharedObject(old_scene_id);};
                                genro.som.registerSharedObject('current_scene', scene_id,{autoSave:true,
                                                             autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
@@ -79,7 +78,7 @@ class GnrCustomWebPage(object):
         sc = root_bc.stackContainer(region='center')
         root_bc.dataController("sc.switchPage(scene_id?1:0);",sc=sc.js_widget,scene_id='^play_data.current_scene_id')
         #self.gameCreation(tc.borderContainer(title='Game creation'))
-        sc.contentPane().div('!!Missing scene')
+        sc.contentPane().div()
         sc.playPage()
 
     def gameHeader(self,bc):

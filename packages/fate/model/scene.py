@@ -3,7 +3,7 @@ from gnr.core.gnrbag import Bag
 
 class Table(object):
     def config_db(self,pkg):
-        tbl =  pkg.table('scene',pkey='id',name_long='Scene',name_plural='Scenes',caption_field='id')
+        tbl =  pkg.table('scene',pkey='id',name_long='Scene',name_plural='Scenes',caption_field='title')
         self.sysFields(tbl,counter='game_id')
         tbl.column('game_id',size='22',name_long='Game',name_short='Game').relation('fate.game.id',
                                                                 mode='foreignkey',
