@@ -84,13 +84,13 @@ class GnrCustomWebPage(object):
 
     def gameHeader(self,bc):
         center = bc.contentPane(region='center',overflow='hidden').img(src='/_site/resources/images/fate_head.jpg',height='40px')
-        center.button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
-        right = bc.contentPane(region='right',width='50%')
-        if self.isGm:
-            right.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
-            right.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
-            right.dbSelect(value='^play_data.current_scene_id', dbtable='fate.scene', rowcaption='$title')
-            
+       #center.button('Save',action="genro.som.saveSharedObject(shared_id);",shared_id=self.game_shared_id)
+       #right = bc.contentPane(region='right',width='50%')
+       #if self.isGm:
+       #    right.button('SAVE', action="genro.som.saveSharedObject(shared_id);", shared_id=self.game_shared_id)
+       #    right.button('LOAD PLAY DATA', action="genro.som.loadSharedObject(shared_id);", shared_id=self.game_shared_id)
+       #    right.dbSelect(value='^play_data.current_scene_id', dbtable='fate.scene', rowcaption='$title')
+
     def gameCharacters(self,bc):
         tc = bc.tabContainer(region='left',width='670px',margin='2px',datapath='main.pcsheets')
         game_players = self.db.table('fate.game_player').query(where='$game_id=:gid AND $is_gm IS FALSE',

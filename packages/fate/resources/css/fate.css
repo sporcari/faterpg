@@ -276,3 +276,15 @@
     background: yellow;
     padding-right: 3px;
 }
+
+.scene_desc{
+    padding:5px;
+    color:#002544;
+    font-style: italic;
+    position: absolute;
+    top:2px; 
+    bottom:2px; 
+    left:2px; 
+    right:2px; 
+    overflow: auto;
+}

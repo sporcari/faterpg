@@ -21,14 +21,31 @@ class ViewFromGmTools(BaseComponent):
 
     def th_struct(self,struct):
         r = struct.view().rows()
-        r.fieldcell('_row_count', name='N.')
+        r.fieldcell('_row_count', name='N.',hidden=True)
         r.fieldcell('scene_type',name='Type', width='6em')
         r.fieldcell('title',name='Title', width='13em')
         r.fieldcell('description',name='Description', width='100%')
+        r.cell('play_scene',name="Play scene",calculated=True,width='6em',
+                    cellClasses='cellbutton',
+                    format_buttonclass='icon48 arrow_right iconbox',
+                    format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
+                                                           this.widget.sourceNode.setRelativeData('play_data.current_scene_id',row['_pkey'])
+                                                            """)
         #r.fieldcell('template_scene',width='100%', name='-')
 
     def th_order(self):
         return '_row_count'
+
+    def th_top_custom(self,top):
+        top.bar.replaceSlots('vtitle','sections@is_closed')
+
+    def th_sections_is_closed(self):
+
+        l = [dict(code='config', caption='Scenes to play', condition="$closed IS NOT TRUE"),
+             dict(code='creation', caption='Closed scenes', condition="$closed IS TRUE"),
+             dict(code='all',caption='All')]
+        return l
+
 
 
 
@@ -43,6 +60,7 @@ class Form(BaseComponent):
         fb.field('scene_type', lbl='Type', width='8em')
         fb.field('title', lbl='Title', width='17tem')
         fb.field('description', lbl='Description',colspan=2, height='50px', width='35em')
+        fb.field('closed',html_label=True)
         tc =bc.tabContainer(region='center', datapath='#FORM')
         self.situationAspects(tc)
         #self.npcs(tc)
