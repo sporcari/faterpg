@@ -186,6 +186,9 @@ var Fate = {
     skillsSetGetter:function(cell,row,rowIdx){
         var sourceNode = cell.grid.sourceNode;
         var sets = sourceNode.getRelativeData(sourceNode.attr.userSets);
+        if(!sets){
+            return;
+        }
         var cellname = cell.field;
         var setsNodes = sets.getNodes();
         var disabled = '<div class="checkboxOff" disabled="true"></div>';

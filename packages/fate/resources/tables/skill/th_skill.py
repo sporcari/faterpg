@@ -33,7 +33,6 @@ class ViewPicker(BaseComponent):
     def th_options(self):
         return dict(virtualStore=False)
 
-
 class ViewCustomFromGame(BaseComponent):
 
     def th_struct(self,struct):

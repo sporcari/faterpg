@@ -10,7 +10,6 @@ def config(root,application=None):
     fate.thpage('Games',table='fate.game')
     fate.thpage('NPCS',table='fate.npc')
     fate.thpage('Players',table='fate.player')
-    fate.thpage('Characters',table='fate.player_character')
     fate.thpage('Scenarios',table='fate.scenario')
     fate.thpage('Scenes',table='fate.scene')
     fate.thpage('Sessions',table='fate.session')

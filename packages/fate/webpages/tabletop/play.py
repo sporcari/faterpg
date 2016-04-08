@@ -16,24 +16,19 @@ class GnrCustomWebPage(object):
         return True
 
     def main(self,root,*args, **kwargs):
-
         kw = self.getCallArgs('__ins_user','code')
         self.game_tbl = self.db.table('fate.game')
         self.game_record = self.game_tbl.record(**kw).output('bag')
         self.game_shared_id = self.game_record['id']
         self.isGm = (self.game_record['gm_id'] == self.rootenv['player_id'])
-        root.data('play_data', None, shared_id=self.game_shared_id,
-                                     shared_autoLoad=True,
-                                     shared_autoSave=True,
-                                     shared_dbSaveKw=dict(table='fate.game', backup=4))
+        root.sharedObject('play_data', shared_id=self.game_shared_id,
+                                       autoLoad=True, autoSave=True,
+                                       dbSaveKw=dict(table='fate.game', backup=4))
         #controller che imposta la shared scene
-        root.dataController("""var old_scene_id = _triggerpars.kw.oldvalue;
-                              if (old_scene_id){
-                               genro.som.unregisterSharedObject(old_scene_id);};
-                               genro.som.registerSharedObject('current_scene', scene_id,{autoSave:true,
-                                                            autoLoad:true,dbSaveKw:{table:"fate.scene",data_column:"data"}});
-                             """,scene_id='^play_data.current_scene_id',
-                             _if='scene_id')
+        root.sharedObject('current_scene', shared_id='^play_data.current_scene_id', 
+                                       autoLoad=True, autoSave=True,
+                                       dbSaveKw=dict(table='fate.scene', data_column='data'))
+
         #controller che imposta gli shared npcs
         root.dataController("""if(!npcs) {
                                   npcs = new gnr.GnrBag();
@@ -46,7 +41,6 @@ class GnrCustomWebPage(object):
                                          function(pkey){
                                              if (npc_pkeys.indexOf(pkey)<0){
                                                  genro.som.unregisterSharedObject(pkey);
-                                                 npcs.popNode(pkey);
                                              }
                                          })
                                }
@@ -57,6 +51,7 @@ class GnrCustomWebPage(object):
                                             genro.som.registerSharedObject(path, pkey,
                                                                           {autoSave:true,
                                                                           autoLoad:true,
+                                                                          on_unregistered:function(pkey){npcs.popNode(pkey);},
                                                                           dbSaveKw:{table:"fate.npc", data_column:"data"} 
                                                                           });
                                         }

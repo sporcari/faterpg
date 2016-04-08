@@ -89,6 +89,7 @@ class Form(BaseComponent):
                            contentCb='Fate.stuntsForm(pane, kw)')
 
         bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')
+
         #bar.stuntsPicker.palettePicker(
         #    grid=frame.grid,
         #    width='600px',height='350px',
@@ -115,21 +116,32 @@ class Form(BaseComponent):
     def skills(self, pane):
         def struct(struct):
             r = struct.view().rows()
-            r.cell('lv', dtype='I', name='Rate', width='4em', edit=dict(validate_max='=#FORM.record.skill_cap'))
-            r.cell('skill', name='Skill', width='100%',
-                    edit=dict(tag='dbSelect',
-                              dbtable='fate.skill',
-                              exclude=True,
-                              condition='$skill_set IN :sets OR $game_id= :game_id',
-                        condition_sets='^game_record.skill_sets?=#v?#v.split(","):[]',
-                        condition_game_id='=game_record.id'))
+            r.cell('lv', dtype='I', name='Rate', width='4em',
+                    _customGetter="""function(row,idx){
+                        var n = this.grid.dataNodeByIndex(idx);
+                        return parseInt(n.label.slice(2));
+                    }""")
+            r.cell('skills',_customGetter="""function(row,idx){
+                        var n = this.grid.dataNodeByIndex(idx);
+                        return n.getValue();
+                    }""", name='Skills', width='100%')
 
-            
-        pane.bagGrid(storepath='#FORM.record.data.skills',
-            title='Skills',pbl_classes=True,
-            margin='2px',
-            struct=struct,
-            datapath='#FORM.skills')
+        self.npcSkillsPicker(pane)
+        pane.dataController('skillbag.sort("#k");', skillbag='^#FORM.record.data.skills', _if='skillbag')
+        frame = pane.bagGrid(storepath='#FORM.record.data.skills',
+                            title='Skills',
+                            pbl_classes=True,
+                            margin='2px',
+                            datamode='attr',
+                            addrow=False,delrow=False,
+                            struct=struct,
+                            datapath='#FORM.npc_skills')
+
+        bar = frame.top.bar.replaceSlots('#','#,skillsButton,2')
+        bar.skillsButton.slotButton('View Skills',
+                                iconClass='iconbox app',
+                                action='PUBLISH openNpcSkillsPicker;')
+        
 
     def stressTracksEditor(self, pane):
 
@@ -205,6 +217,42 @@ class Form(BaseComponent):
 
     def th_options(self):
         return dict(dialog_height='500px', dialog_width='900px', modal=True)
+
+    def npcSkillsPicker(self, pane):
+        dlg = pane.dialog(title='Choose skills',
+                          closable=True,
+                          datapath='main.pickers.npc_skills_picker',
+                          subscribe_openNpcSkillsPicker="""this.widget.show();
+                                                         """)
+        
+        th = dlg.plainTableHandler(table='fate.skill',
+            height='490px', width='350px',
+            nodeId='npcSkillsPickerGrid',
+                        condition='$skill_set IN :sets OR $game_id= :game_id',
+                        condition_sets='^game_record.skill_sets?=#v?#v.split(","):[]',
+                        condition_game_id='=game_record.id',
+                        configurable=False,
+                        viewResource='ViewPicker',
+                        view_store_onStart=True,
+                        view_grid_userSets='#FORM.record.data.skills')
+        bar = th.view.bottom.slotBar('*,done,2',_class='slotbar_dialog_footer')
+        bar.done.slotButton('!!Done',action="dlg.hide();",dlg=dlg.js_widget)
+
+        dlg.dataController("""for (var i=1; i<=skill_cap;i++){
+                                grid.addNewSetColumn({field:'lv'+i, 
+                                                      name:i, 
+                                                      skillmax:skill_cap,
+                                                      position:'>',
+                                                      _customGetter:function(rowdata,rowIdx){return Fate.skillsSetGetter(this,rowdata,rowIdx)}
+                                                      })
+                                }
+                                """, grid=th.view.grid.js_widget,
+                               skill_cap = 8, 
+                               _onStart=True)
+
+
+
+
 
     @public_method
     def th_onLoading(self, record, newrecord, loadingParameters, recInfo):

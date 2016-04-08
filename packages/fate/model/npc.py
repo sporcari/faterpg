@@ -35,7 +35,8 @@ class Table(object):
                                        mob_size=record['mob_size'],
                                        npc_type=record['npc_type'],
                                        high_concept=record['high_concept'])
-        record['data.aspects'].setItem('hc', Bag(phrase=record['high_concept']), _position='<')
+        if record['data.aspects']:
+            record['data.aspects'].setItem('hc', Bag(phrase=record['high_concept']), _position='<')
         record['data.boosts'] = Bag()
         record['data.situation_aspects'] = Bag()
 
@@ -56,9 +57,11 @@ class Table(object):
                 v.setItem('phrase',None)
 
 
-    def shared_onSaving(self, record, shared_data):
-        print 'ON SAVING NPC', record
-        record['data.aspects'].pop('hc')
+    def shared_onSaving(self, record):
+        print 'ON SAVING NPC'
+        #if not record['data.aspects']:
+        #    print x
+        record['data.aspects'].pop('hc',None)
 
 
 

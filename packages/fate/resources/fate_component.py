@@ -53,7 +53,6 @@ class PlayManager(BaseComponent):
                                                         """,
                             closable=True)
         frame = dlg.framePane(width='400px',height='450px')
-
         frame.center.contentPane(overflow='auto',padding='5px').tree(storepath='.store',hideValues=True,excludeRoot=True,
                          labelAttribute='caption',selectedLabelClass='selectedAspect',
                          connect_ondblclick="""function(e){
@@ -622,7 +621,8 @@ class CharacterSheet(BaseComponent):
                         viewResource='ViewPicker',
                         view_store_onStart=True,
                         view_grid_userSets=pickerStorePath)
-
+        bar = th.view.bottom.slotBar('*,done,2',_class='slotbar_dialog_footer')
+        bar.done.slotButton('!!Done',action="dlg.hide();",dlg=dlg.js_widget)
         dlg.dataController("""for (var i=1; i<=skill_cap;i++){
                                 grid.addNewSetColumn({field:'lv'+i, 
                                                       name:i, 
@@ -634,3 +634,5 @@ class CharacterSheet(BaseComponent):
                                 """, grid=th.view.grid.js_widget,
                                skill_cap = '=game_record.skill_cap', 
                                _onStart=True)
+
+    
