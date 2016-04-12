@@ -6,6 +6,7 @@ class GnrCustomWebPage(object):
     py_requires='th/th:TableHandler,public:Public'
     css_theme = 'fate'
     css_requires = 'css/fate'
+    pageOptions={'enableZoom':False}
 
     def windowTitle(self):
         return 'Games'
@@ -25,7 +26,7 @@ class GnrCustomWebPage(object):
                                                     var username = genro.getData('gnr.avatar.user');
                                                     var gamecode = this.widget.rowByIndex($1.rowIndex)['code'];
                                                     var url = urlprefix+username+'/'+gamecode;
-                                                    genro.openWindow(url)""")
+                                                    genro.gotoURL(url)""")
     
         
 

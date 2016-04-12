@@ -9,7 +9,7 @@ class GnrCustomWebPage(object):
     css_theme = 'fate'
     css_icons = 'retina/red'
     js_requires = 'fate'
-
+    pageOptions={'enableZoom':False}
     auth_main='user'
 
     def isDeveloper(self):

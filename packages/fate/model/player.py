@@ -2,7 +2,7 @@
 
 class Table(object):
     def config_db(self,pkg):
-        tbl =  pkg.table('player',pkey='id',name_long='Player',name_plural='Players',caption_field='fullname', rowcaption='$fullname')
+        tbl =  pkg.table('player',pkey='id',name_long='Player',name_plural='Players',caption_field='username', rowcaption='$username')
         self.sysFields(tbl)
         tbl.column('nickname',name_long='Nickname')
         tbl.column('user_id',name_long='user_id').relation('adm.user.id',relation_name='player', mode='foreignkey', onDelete='setnull', one_one=True)

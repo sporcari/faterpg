@@ -89,16 +89,16 @@ class Form(BaseComponent):
                            contentCb='Fate.stuntsForm(pane, kw)')
 
         bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')
-
-        #bar.stuntsPicker.palettePicker(
-        #    grid=frame.grid,
-        #    width='600px',height='350px',
-        #    table='fate.stunt',
-        #    viewResource='ViewPicker_skill',
-        #    checkbox=True,
-        #    autoInsert=True,
-        #    relation_field='name',
-        #    defaults='name,description')
+        bar.stuntsPicker.palettePicker(grid=frame.grid,
+                width='800px',height='300px',
+                table='fate.stunt',
+                nodeId='npcStunts',
+                viewResource='ViewPicker_skill',
+                checkbox=True,
+                autoInsert=True,
+                relation_field='name',
+                picker_one=False,
+                defaults='name,description')
 
     def aspects(self, tc):
         frame = tc.templateGrid(title='Other Aspects',

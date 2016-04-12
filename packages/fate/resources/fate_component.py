@@ -545,7 +545,7 @@ class CharacterSheet(BaseComponent):
             bar = frame.top.bar.replaceSlots('#','#,stuntsPicker')
             #, addrow_disabled='^play_data.pcsheets.%s.max_stunts' % username)
             bar.stuntsPicker.palettePicker(grid=frame.grid,
-                width='600px',height='350px',
+                width='800px',height='300px',
                 table='fate.stunt',
                 viewResource='ViewPicker_skill',
                 checkbox=True,

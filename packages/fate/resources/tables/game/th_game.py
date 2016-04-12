@@ -37,7 +37,7 @@ class ViewFromPlayerDashboard(BaseComponent):
                     cellClasses='cellbutton',
                     format_buttonclass='icon48 arrow_right iconbox',
                     format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
-                                                           genro.openBrowserTab('/tabletop/play/'+row['__ins_user']+'/'+row['code']);""")
+                                                           genro.mainGenroWindow.genro.gotoURL('/tabletop/play/'+row['__ins_user']+'/'+row['code']);""")
 
         #r.fieldcell('weekday')
         #r.fieldcell('image')
@@ -105,6 +105,15 @@ class ConfigurationForm(BaseComponent):
 
     def th_form(self, form):
         form.dataController("this.form.goToRecord(pkey)",subscribe_configureGame=True)
+        #form.dataController("""
+        #                  console.log(shared_data, shared_data.len());
+        #                  if(!shared_data || shared_data.len()==0){
+        #                      SET #FORM.disable_game_edit = false;
+        #                  }else{
+        #                      SET #FORM.disable_game_edit = true;
+        #                  }""", 
+        #                  shared_data='=#FORM.record.shared_data',
+        #                  loaded='^#FORM.controller.loaded')
 
         tc = form.center.tabContainer(datapath='.record',margin='2px')
         
@@ -150,7 +159,9 @@ class ConfigurationForm(BaseComponent):
             searchOn=False,
             margin='2px',
             title='Players',
-            pbl_classes=True)
+            pbl_classes=True,
+            addrow=True,
+            delrow=False)
 
     def imagePane(self, pane):
         pane.img(src='^.banner_url', #crop_width='110px',crop_height='110px',
@@ -283,14 +294,17 @@ class ConfigurationForm(BaseComponent):
                                   console.log(shared_data);
                                   if(!shared_data || shared_data.len()==0){
                                       if(this.form.changed){
+                                      console.log('SAVE and CREATE DATA');
                                               this.form.save({onReload:function(){
                                                   that.fireEvent('#FORM.createPlayData',true);
                                               }});
                                       }else{
+                                      console.log('CREATE DATA');
                                               FIRE #FORM.createPlayData;
                                       }
                                   }else{
-                                      genro.childBrowserTab('/tabletop/play/'+user+'/'+code);
+                                      console.log('OPEN PLAY WINDOW');
+                                      genro.mainGenroWindow.genro.gotoURL('/tabletop/play/'+user+'/'+code);
                                   }
                                   """,
                                   shared_data='=#FORM.record.shared_data',
