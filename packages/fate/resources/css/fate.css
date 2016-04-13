@@ -240,6 +240,24 @@
 .opponent_box .dice_minus{
     background: transparent url(images/dice/minus_red.svg) no-repeat center center;
 }
+
+
+.svg_icon_24{
+    height: 24px;
+    width:24px;
+    background-size: contain;
+}
+
+
+.play{
+    background: transparent url(images/play-button.svg) no-repeat center center;
+}
+
+.exit{
+    background: transparent url(images/cancel.svg) no-repeat center center;
+}
+
+
 .action_log_bar{
     color: white;
     border-top-left-radius: 4px;

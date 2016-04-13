@@ -27,13 +27,13 @@ class ViewFromGmTools(BaseComponent):
         r.fieldcell('description',name='Description', width='100%')
         r.cell('play_scene',name="Play",calculated=True,width='6em',
                     cellClasses='cellbutton',
-                    format_buttonclass='confirm_icon48',
+                    format_buttonclass='svg_icon_24 play',
                     format_isbutton=True,
                     format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
                                       genro.publish('play_scene', {scene_id:row['_pkey']});""")
         r.cell('close_scene',name="Close",calculated=True,width='6em',
                     cellClasses='cellbutton',
-                    format_buttonclass='cancel_icon48',
+                    format_buttonclass='svg_icon_24 exit',
                     format_isbutton=True,
                     format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
                                      this.widget.sourceNode.setRelativeData('play_data.current_scene_id',null);
