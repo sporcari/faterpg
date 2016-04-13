@@ -3,6 +3,7 @@
 
 class GnrCustomWebPage(object):
     py_requires='pagecontent_handler/pagecontent_handler:PageContentIndex'
+    auth_workdate = 'nobody'
     def windowTitle(self):
         return 'Fate RPG webtabletop'
 

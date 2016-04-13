@@ -238,7 +238,7 @@ class PlayManager(BaseComponent):
                       disabled='^.rolled')
 
         pane.dataController("""
-                             SET %s.timer=0.01;
+                             SET %s.timer=0.1;
                              genro.dom.setClass(rollbtn,'dice_pressing',true)
                              """ %mode,
                              _fired='^%s.roll_run' %mode,rollbtn=rollbtn,
@@ -249,28 +249,29 @@ class PlayManager(BaseComponent):
                               SET .rolled = true;
                              """ %mode,
                              _fired='^%s.roll_stop' %mode,rollbtn=rollbtn,timer='=%s.timer' %mode,
-                             _if='timer')
+                             _if='timer',_delay=300)
         pane.dataController("""
             var tot = 0;
             var v;
+            var b = new gnr.GnrBag();
             for (var i=0;i<4;i++){
                 v = Math.floor(Math.random() *3)-1;
-                this.setRelativeData('.dices.d_'+i,v);
+                b.setItem('d_'+i,v)
                 tot+=v;
             }
-            SET .rolled_value = tot;
-            var that = this;
+            b.setItem('rolled_value',tot);
+            SET .dices = b;
             """,_timing='^%s.timer' %mode)
         box = tr.td()
         for k in range(4):
             box.div(innerHTML="""==Fate.diceContent(_dice_value);""",
                     _dice_value='^.dices.d_%s' %k,display='inline-block')
-        tr.td().div('^.rolled_value',_class='rolled_value',width='22px',
+        tr.td().div('^.dices.rolled_value',_class='rolled_value',width='22px',
                         text_align='right')
         tr = table.tr()
         tr.td(colspan=2).div('Result',_class='rolled_value',text_align='right')
         pane.dataFormula('.overall','(modifiers || 0)+(rolled_value || 0)',
-                        rolled_value='^.rolled_value',modifiers='^.modifiers')
+                        rolled_value='^.dices.rolled_value',modifiers='^.modifiers')
         tr.td().div('^.overall',_class='rolled_value',width='22px',
                         text_align='right')
 
