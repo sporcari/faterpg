@@ -295,3 +295,15 @@
 .is_owner .owner_only{
     visibility: visible;
 }
+
+.confirm_icon32 {
+    background: url(icons/base48/confirm.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+}
+
+.cancel_icon32 {
+    background: url(icons/base48/cancel.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+}

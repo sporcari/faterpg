@@ -124,7 +124,7 @@ class ConfigurationForm(BaseComponent):
         form.dataRpc('#FORM.pcsheets',
                         self.db.table('fate.game').createNewPlayData,
                                  game_id='=#FORM.record.id',
-                                 _onResult="genro.childBrowserTab('/tabletop/play/'+kwargs.user+'/'+kwargs.code);",
+                                 _onResult="genro.mainGenroWindow.genro.gotoURL('/tabletop/play/'+kwargs.user+'/'+kwargs.code);",
                                  _fired='^#FORM.createPlayData',
                                 user='=#FORM.record.__ins_user',
                                  code='=#FORM.record.code')

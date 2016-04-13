@@ -333,16 +333,18 @@ class GmTools(BaseComponent):
         #         game_play_data='=game_record.play_data', _fired='^loadPlayData')
 
         bc = bc.borderContainer(region='center')
-        self.scenesMaker(bc.contentPane(region='top', height='150px'))
+        self.scenesMaker(bc.contentPane(region='top', height='190px'))
         self.npcMaker(bc.contentPane(region='center'))
         bottom = bc.framePane(region='bottom',height='150px')
         bar = bottom.top.slotBar("2,vtitle,*,reset,2",_class='pbl_roundedGroupLabel toolbar')
-        bar.reset.button('Reset',action=""" SET current_scene.action_status = 'no_action';
+        bar.reset.button('!!Undo Action',action=""" SET current_scene.action_status = 'no_action';
                                             SET current_scene.current_action = new gnr.GnrBag();""")
         bar.vtitle.div('Action manager')
         sc = bottom.center.stackContainer(selectedPage='^current_scene.action_status',datapath='current_scene.current_action.data')
         no_action_pane = sc.contentPane(pageName='no_action')
-        no_action_pane.button('New action',action="""Fate.loadAction();""")
+        no_action_pane.button('!!New action',action="""Fate.loadAction();""", disabled='^play_data.current_scene_id?=!#v')
+        no_action_pane.button('!!Compel', action='alert("Not ready yet")')
+
         self.act_chooseCharacter(sc.contentPane(pageName='action'))
         sc.contentPane(pageName='waiting_active_player').div('Waiting active player',margin='20px',color='#217B1F',font_size='20px',text_align='center')
         self.act_chooseOpposition(sc.contentPane(pageName='opposition'))
@@ -420,6 +422,16 @@ class GmTools(BaseComponent):
                                 datapath='.scenes',
                                 formResource='Form',
                                 configurable=False,pbl_classes=True)
+        pane.dataRpc('dummy', self.closeScene, subscribe_close_scene=True)
+        pane.dataController("""SET play_data.current_scene_id = scene_id;""", 
+                             subscribe_play_scene=True)
+
+    @public_method
+    def closeScene(self, scene_id):
+        with self.db.table('fate.scene').recordToUpdate(scene_id) as record:
+            record['closed'] = True
+        self.db.commit()
+
     def npcMaker(self, pane):
         pane.dialogTableHandler(table='fate.npc',
                                 view_store_onStart=True,

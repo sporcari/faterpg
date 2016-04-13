@@ -41,18 +41,19 @@ class Form(BaseComponent):
 
     def th_form(self, form):
         bc = form.center.borderContainer(datapath='.record')
-        bar = form.bottom.bar.replaceSlots('#','#,clearSC')
-        bar.clearSC.slotButton('Clear Stress & Cons', action="""SET #FORM.record.data.stress_tracks =null;
-                                                                SET #FORM.record.data.consequences =null;""")
+        #bar = form.bottom.bar.replaceSlots('#','#,clearSC')
+        #bar.clearSC.slotButton('Clear Stress & Cons', action="""SET #FORM.record.data.stress_tracks =null;
+        #                                                        SET #FORM.record.data.consequences =null;""")
 
-
-        top = bc.borderContainer(region='top', height='140px')
+        top = bc.borderContainer(region='top', height='130px')
         fb = top.contentPane(region='center').formbuilder(cols=5,width='94%',
                 border_spacing='4px',lbl_width='6em', colswidth='auto',
                 fld_width='100%')
         
         fb.field('name', lbl='Name', colspan=2)
-        fb.field('npc_type', lbl='Type', colspan=1, validate_onAccept='if(value!="NL"){SET .mob=null;}')
+        fb.field('npc_type', lbl='Type', colspan=1, 
+                 validate_onAccept='if(value!="NL"){SET .mob=null;}', 
+                 validate_notnull=True, hasDownArrow=True)
         fb.field('mob' , lbl='Is Mob', hidden='^.@npc_type.can_be_mob?=!#v')
         fb.field('mob_size' , lbl='Mob size', hidden='^.mob?=!#v', validate_notnull='^.mob', width='4em')
 
@@ -73,7 +74,7 @@ class Form(BaseComponent):
 
         self.skills(center.contentPane(region='center'))
         self.stunts(center.borderContainer(region='right', width='40%'))
-        bottom = bc.borderContainer(region='bottom', datapath='.data', height='140px')
+        bottom = bc.borderContainer(region='bottom', datapath='.data', height='130px')
         self.stressTracksEditor(bottom.contentPane(region='left',
                                                    width='30%', title='Stress Tracks',
                                                    datapath='#FORM.record'))
@@ -116,19 +117,20 @@ class Form(BaseComponent):
     def skills(self, pane):
         def struct(struct):
             r = struct.view().rows()
-            r.cell('lv', dtype='I', name='Rate', width='4em',
-                    _customGetter="""function(row,idx){
-                        var n = this.grid.dataNodeByIndex(idx);
-                        return parseInt(n.label.slice(2));
-                    }""")
-            r.cell('skills',_customGetter="""function(row,idx){
-                        var n = this.grid.dataNodeByIndex(idx);
-                        return n.getValue();
-                    }""", name='Skills', width='100%')
+            r.cell('lv', dtype='I', name='Rate', width='4em')
+            r.cell('skills',
+                     name='Skills', width='100%')
 
         self.npcSkillsPicker(pane)
-        pane.dataController('skillbag.sort("#k");', skillbag='^#FORM.record.data.skills', _if='skillbag')
-        frame = pane.bagGrid(storepath='#FORM.record.data.skills',
+        pane.dataController("""skillbag.sort("#k");
+                            var result = new gnr.GnrBag();
+                            skillbag.forEach(function(n){
+                                    result.setItem(n.label,null,{lv:parseInt(n.label.slice(2)),skills:n.getValue()});
+                                });
+                            SET #FORM.skills_viewer = result;
+            """, 
+                            skillbag='^#FORM.record.data.skills', _if='skillbag',_delay=100)
+        frame = pane.bagGrid(storepath='#FORM.skills_viewer',
                             title='Skills',
                             pbl_classes=True,
                             margin='2px',
@@ -216,7 +218,7 @@ class Form(BaseComponent):
 
 
     def th_options(self):
-        return dict(dialog_height='500px', dialog_width='900px', modal=True)
+        return dict(dialog_height='500px', dialog_width='940px', modal=True)
 
     def npcSkillsPicker(self, pane):
         dlg = pane.dialog(title='Choose skills',
@@ -258,4 +260,5 @@ class Form(BaseComponent):
     def th_onLoading(self, record, newrecord, loadingParameters, recInfo):
         if newrecord:
             data = Bag()
+            record['npc_type']='SU'
             record['data'] = data

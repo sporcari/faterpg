@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from gnr.web.gnrbaseclasses import BaseComponent
-from gnr.core.gnrdecorator import public_method
+from gnr.core.gnrdecorator import public_method,metadata
 
 class View(BaseComponent):
 
@@ -19,19 +19,31 @@ class View(BaseComponent):
 
 class ViewFromGmTools(BaseComponent):
 
-    def th_struct(self,struct):
+    def th_struct_toplay(self,struct):
         r = struct.view().rows()
-        r.fieldcell('_row_count', name='N.',hidden=True)
-        r.fieldcell('scene_type',name='Type', width='6em')
+        r.fieldcell('_row_count', name='N.')
+        r.fieldcell('scene_type',name='Type', width='10em')
+        r.fieldcell('title',name='Title', width='14em', validate_notnull=True)
+        r.fieldcell('description',name='Description', width='100%')
+        r.cell('play_scene',name="Play",calculated=True,width='6em',
+                    cellClasses='cellbutton',
+                    format_buttonclass='confirm_icon48',
+                    format_isbutton=True,
+                    format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
+                                      genro.publish('play_scene', {scene_id:row['_pkey']});""")
+        r.cell('close_scene',name="Close",calculated=True,width='6em',
+                    cellClasses='cellbutton',
+                    format_buttonclass='cancel_icon48',
+                    format_isbutton=True,
+                    format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
+                                     this.widget.sourceNode.setRelativeData('play_data.current_scene_id',null);
+                                     genro.publish('close_scene',{scene_id:row['_pkey']})""")
+    def th_struct_closedscenes(self,struct):
+        r = struct.view().rows()
+        r.fieldcell('_row_count', name='N.')
+        r.fieldcell('scene_type',name='Type', width='10em')
         r.fieldcell('title',name='Title', width='13em')
         r.fieldcell('description',name='Description', width='100%')
-        r.cell('play_scene',name="Play scene",calculated=True,width='6em',
-                    cellClasses='cellbutton',
-                    format_buttonclass='icon48 arrow_right iconbox',
-                    format_isbutton=True,format_onclick="""var row = this.widget.rowByIndex($1.rowIndex);
-                                                           this.widget.sourceNode.setRelativeData('play_data.current_scene_id',row['_pkey'])
-                                                            """)
-        #r.fieldcell('template_scene',width='100%', name='-')
 
     def th_order(self):
         return '_row_count'
@@ -39,11 +51,11 @@ class ViewFromGmTools(BaseComponent):
     def th_top_custom(self,top):
         top.bar.replaceSlots('vtitle','sections@is_closed')
 
-    def th_sections_is_closed(self):
 
-        l = [dict(code='config', caption='Scenes to play', condition="$closed IS NOT TRUE"),
-             dict(code='creation', caption='Closed scenes', condition="$closed IS TRUE"),
-             dict(code='all',caption='All')]
+    @metadata(variable_struct=True)
+    def th_sections_is_closed(self):
+        l = [dict(code='in_play', caption='To play', condition="$closed IS NOT TRUE", struct='toplay'),
+             dict(code='closed', caption='Played', condition="$closed IS TRUE", struct='closedscenes')]
         return l
 
 
@@ -57,7 +69,7 @@ class Form(BaseComponent):
         bc = form.center.borderContainer(datapath='.record')
         fb = bc.contentPane(region='top').div(margin_right='30px', padding='10px').formbuilder(cols=2,width='100%',
                 border_spacing='4px', lbl_width='6em')
-        fb.field('scene_type', lbl='Type', width='8em')
+        fb.field('scene_type', lbl='Type', width='12em', validate_notnull=True, hasDownArrow=True)
         fb.field('title', lbl='Title', width='17tem')
         fb.field('description', lbl='Description',colspan=2, height='50px', width='35em')
         fb.field('closed',html_label=True)
@@ -88,7 +100,37 @@ class Form(BaseComponent):
         #condition='$id IN :npc_pkeys',
         #condition_npcs='=#FORM.record.npc_pkeys',
 
+    @public_method
+    def th_onLoading(self, record, newrecord, loadingParameters, recInfo):
+        if newrecord:
+            record['scene_type']='CSC'
 
 
     def th_options(self):
         return dict(dialog_height='400px', dialog_width='600px', modal=True)
+
+    def th_bottom_custom(self,bottom):
+        bar = bottom.slotBar('*,back,confirm,2',margin_bottom='2px')
+        bar.back.button('!!Cancel',action='this.form.abort();')
+        box = bar.confirm.div()
+        box.button('!!Save',
+                    iconClass='fh_semaphore',
+                    action='this.form.publish("save")')
+        box.slotButton('!!Play Scene',action= """if(this.form.changed){
+                                              console.log('SAVE and PLAY');
+                                              var that=this;
+                                              this.form.save({onReload:function(){
+                                                                        genro.publish('play_scene', {scene_id:scene_id});
+                                                                        that.form.abort();
+                                                                        }
+                                                             });
+                                          }else{
+                                            console.log('PLAY');
+                                                genro.publish('play_scene', {scene_id:scene_id});
+                                                this.form.abort();
+                                          }""",
+                        hidden='^#FORM.record.closed', 
+                        scene_id='=#FORM.pkey')
+
+
+

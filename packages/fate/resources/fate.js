@@ -343,7 +343,7 @@ var Fate = {
             skilldict = {};
             skills = v.getItem('skills');
             if(skills){
-                skills.values().forEach(function(v){skilldict[v.getItem('skill')] = parseInt(v.getItem('lv'));});
+                skilldict = that.getSkillLevelDict(skills);
             }
             result.setItem(n.label,null,{name:name,player_id:gm_id,caption:name,npc:true,image_url:image_url,
                                         character_skills:skilldict,character_id:n.label,_pkey:n.label});

@@ -26,7 +26,7 @@ class GnrCustomWebPage(object):
                                                     var username = genro.getData('gnr.avatar.user');
                                                     var gamecode = this.widget.rowByIndex($1.rowIndex)['code'];
                                                     var url = urlprefix+username+'/'+gamecode;
-                                                    genro.gotoURL(url)""")
+                                                    genro.openWindow(url)""")
     
         
 
