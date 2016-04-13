@@ -210,7 +210,15 @@ class PlayManager(BaseComponent):
                     """,
                         _class='dice_button',caller='active')
         self.roller(pane,'active')
-        
+
+    def act_finalActive_menu_version(self,pane):
+        invoke_button = pane.lightButton('Invoke aspect',_class='dice_button', width='90%')
+
+        menu = invoke_button.menu(_class='smallMenu')
+        menu.menuLine('Add +2', action="genro.publish('aspect_picker',{reason:'get_bonus',caller:'active'});")
+        menu.menuLine('Re-roll dices', action="genro.publish('aspect_picker',{reason:'re_roll',caller:'active'});")
+
+
 
  
 
@@ -337,9 +345,7 @@ class GmTools(BaseComponent):
         self.scenesMaker(bc.contentPane(region='top', height='190px'))
         self.npcMaker(bc.contentPane(region='center'))
         bottom = bc.framePane(region='bottom',height='150px')
-        bar = bottom.top.slotBar("2,vtitle,*,reset,2",_class='pbl_roundedGroupLabel toolbar')
-        bar.reset.button('!!Undo Action',action=""" SET current_scene.action_status = 'no_action';
-                                            SET current_scene.current_action = new gnr.GnrBag();""")
+        bar = bottom.top.slotBar("2,vtitle,*",_class='pbl_roundedGroupLabel toolbar')
         bar.vtitle.div('Action manager')
         sc = bottom.center.stackContainer(selectedPage='^current_scene.action_status',datapath='current_scene.current_action.data')
         no_action_pane = sc.contentPane(pageName='no_action')
@@ -365,47 +371,51 @@ class GmTools(BaseComponent):
 
 
     def act_chooseOpposition(self,pane):
-        fb = pane.formbuilder(cols=3,border_spacing='3px')
-        #fb.div('^.description')
-        fb.button('^.target_name?=#v + " defends"',
+        fb = pane.formbuilder(cols=3,border_spacing='4px', width='100%',colswidth='auto')
+        fb.textbox('^.target_name', lbl='Defending Character', readOnly=True, width='28em', colspan=2)
+        fb.button('Go',
                 action="""var kw = Fate.characterPars(target_id);
                           kw['action_type'] = 'DF';
                           kw['action_type_disabled'] = true;
                           genro.setData('current_scene.action_status','waiting_opposition');
                           genro.publish('player_phase',kw);""",
                 target_id='=.target_id',
-                hidden='^.target_id?=!#v')
-        fb.br()
+                hidden='^.target_id?=!#v', width='8em')
         
         fb.callbackSelect(value='^.opponent_id',callback="""function(kw){
                 return Fate.getAvailableCharacterSelector(kw);
-            }""",lbl='Opponent',
-            hasDownArrow=True,
-            blacklist='=.opponent_blacklist')
-        fb.button('Confirm',action="""var kw = Fate.characterPars(opponent_id);
+            }""",lbl='Opposing Character',
+            hasDownArrow=True,width='28em',
+            blacklist='=.opponent_blacklist', colspan=2)
+        fb.button('Go',action="""var kw = Fate.characterPars(opponent_id);
                           kw['action_type'] = null;
                           kw['action_type_hidden'] = true;
                           genro.setData('current_scene.action_status','waiting_opposition');
                           genro.publish('player_phase',kw);""",
-                opponent_id='=.opponent_id')
-        fb.br()
-        fb.textbox(value='^.passive_opposition',lbl='Opposition reason')
-        fb.numberTextBox(value='^.passive_modifier',lbl='Modifier',width='5em')
-        fb.button('Confirm',action="Fate.actionPhaseConfirmed(new gnr.GnrBag({modifier:passive_modifier,passive_opposition:passive_opposition || 'Obstacle',passive:true}),'waiting_opposition','Opposition $passive_opposition');",
+                opponent_id='=.opponent_id', width='8em')
+        fb.textbox(value='^.passive_opposition',lbl='Passive opposition description', width='21em')
+        fb.numberTextBox(value='^.passive_modifier',lbl='Level',width='3em')
+        fb.button('Go',action="Fate.actionPhaseConfirmed(new gnr.GnrBag({modifier:passive_modifier,passive_opposition:passive_opposition || 'Obstacle',passive:true}),'waiting_opposition','Opposition $passive_opposition');",
                     passive_opposition='=.passive_opposition',
-                    passive_modifier='=.passive_modifier')
+                    passive_modifier='=.passive_modifier',width='8em')
+        fb.div(colspan='2')
+        fb.button('!!Undo Action', action="""SET current_scene.action_status = 'no_action';
+                                SET current_scene.current_action = new gnr.GnrBag();""", width='8em')
+
 
 
     def act_chooseCharacter(self,pane):
-        fb = pane.formbuilder(cols=2,border_spacing='3px')
+        fb = pane.formbuilder(cols=3)
         fb.callbackSelect(value='^.character_id',callback="""function(kw){
                 return Fate.getAvailableCharacterSelector(kw);
-            }""",lbl='Choose character',hasDownArrow=True,selected_name='.character_name',
+            }""",lbl='Active Character ',hasDownArrow=True,selected_name='.character_name',
                 )
-        fb.button('Confirm',action="""var kw = Fate.characterPars(character_id);
+        fb.button('Go', action="""var kw = Fate.characterPars(character_id);
                                       genro.setData('current_scene.action_status','waiting_active_player');
                                       genro.publish('player_phase',kw);""",
                         character_id='=.character_id')
+        fb.button('!!Undo Action', action="""SET current_scene.action_status = 'no_action';
+                                            SET current_scene.current_action = new gnr.GnrBag();""")
 
     @struct_method
     def ft_npcPage(self, parent, **kwargs):

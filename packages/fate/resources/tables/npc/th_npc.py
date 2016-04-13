@@ -35,7 +35,11 @@ class ViewFromGmTools(BaseComponent):
         r.fieldcell('npc_type')
         r.fieldcell('name', width='12em')
         r.fieldcell('description', width='100%')
-        r.checkboxcolumn('set_in_scene', name='In Scene', width='6em', checkedId='current_scene.npc_pkeys')
+        r.checkboxcolumn('set_in_scene', 
+                          name='In Scene', 
+                          width='6em', 
+                          checkedId='current_scene.npc_pkeys',
+                          hidden='^play_data.current_scene_id?=!#v')
 
 class Form(BaseComponent):
 
@@ -125,12 +129,13 @@ class Form(BaseComponent):
         pane.dataController("""skillbag.sort("#k");
                             var result = new gnr.GnrBag();
                             skillbag.forEach(function(n){
-                                    result.setItem(n.label,null,{lv:parseInt(n.label.slice(2)),skills:n.getValue()});
+                                    if (n.getValue()){result.setItem(n.label,null,{lv:parseInt(n.label.slice(2)),skills:n.getValue()});}
+                                    
                                 });
-                            SET #FORM.skills_viewer = result;
+                            SET #FORM.record.$skills_viewer = result;
             """, 
                             skillbag='^#FORM.record.data.skills', _if='skillbag',_delay=100)
-        frame = pane.bagGrid(storepath='#FORM.skills_viewer',
+        frame = pane.bagGrid(storepath='#FORM.record.$skills_viewer',
                             title='Skills',
                             pbl_classes=True,
                             margin='2px',

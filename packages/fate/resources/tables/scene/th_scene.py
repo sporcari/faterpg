@@ -118,9 +118,9 @@ class Form(BaseComponent):
                     action='this.form.publish("save")')
         box.slotButton('!!Play Scene',action= """if(this.form.changed){
                                               console.log('SAVE and PLAY');
-                                              var that=this;
-                                              this.form.save({onReload:function(){
-                                                                        genro.publish('play_scene', {scene_id:scene_id});
+                                              var that=this; 
+                                              this.form.save({onSaved:function(){
+                                                                        genro.publish('play_scene', {scene_id:arguments[0].savedPkey});
                                                                         that.form.abort();
                                                                         }
                                                              });

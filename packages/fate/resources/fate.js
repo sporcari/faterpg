@@ -278,9 +278,12 @@ var Fate = {
             if(passive){
                 current_action.setItem('opponent_player.passive',true);
                 current_action.setItem('opponent_player.rolled',true);
+                current_action.setItem('opponent_player.image_url',null);
+            }else{
+                current_action.setItem('opponent_player.image_url',d.getItem('image_url'));
             }
             current_action.setItem('opponent_player.player_id',d.getItem('player_id'));
-            current_action.setItem('opponent_player.image_url',d.getItem('image_url'));
+            
             genro.setData('current_scene.action_status','roll_dice');
             steps.setItem('r_'+steps.len(),d);
         }
