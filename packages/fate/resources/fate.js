@@ -10,6 +10,15 @@ var Fate = {
     skillDict: function(code,field){
         return genro.getData('main.game_skills.'+code+'.'+field);
     },
+    imageUrlPrompt:function(sourceNode){
+        genro.dlg.prompt('Image URL', {lbl:'Image URL',
+                                      widget:'textbox',
+                                      wdg_width:'400px',
+                                       action:function(value){
+                                            sourceNode.setRelativeData('.image_url', value);
+                                       }
+                                      });
+    },
     characterAspectsForm:function(pane, kw){
         var data = kw.rowDataNode.getValue();
         var width = '25em';

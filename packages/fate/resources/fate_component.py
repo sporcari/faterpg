@@ -211,10 +211,10 @@ class PlayManager(BaseComponent):
                         _class='dice_button',caller='active')
         self.roller(pane,'active')
 
-    def act_finalActive_menu_version(self,pane):
-        invoke_button = pane.lightButton('Invoke aspect',_class='dice_button', width='90%')
+    def act_finalActive_menu(self,pane):
+        invoke_button = pane.div('Invoke aspect',_class='dice_button', width='90%')
 
-        menu = invoke_button.menu(_class='smallMenu')
+        menu = invoke_button.menu(_class='smallMenu', modifiers='*')
         menu.menuLine('Add +2', action="genro.publish('aspect_picker',{reason:'get_bonus',caller:'active'});")
         menu.menuLine('Re-roll dices', action="genro.publish('aspect_picker',{reason:'re_roll',caller:'active'});")
 
@@ -470,7 +470,7 @@ class CharacterSheet(BaseComponent):
         bc = parent.contentPane(title='^.%s.title' %username, username=username, **kwargs).borderContainer()
         
 
-        top = bc.borderContainer(region='top',height='212px')
+        top = bc.borderContainer(region='top',height='214px')
         center = bc.borderContainer(region='center')
         bottom = bc.borderContainer(region='bottom', height='120px')
         self.idGroup(top,username=username)
@@ -488,7 +488,7 @@ class CharacterSheet(BaseComponent):
         #center.dataFormula()
 
     def idGroup(self, bc, username):
-        box = bc.roundedGroup(title='ID',region='left',width='310px', 
+        box = bc.roundedGroup(title='ID',region='left',width='314px', 
                              datapath='play_data.pcsheets.%s'%username,
                              wrp_border='1px solid #444',
                              lbl_background='transparent',
@@ -502,8 +502,10 @@ class CharacterSheet(BaseComponent):
         box = r.td(rowspan=3).div(height='172px',width='104px',border='1px solid #444',padding='2px')
         box.img(src='^.image_url',height='100%',width='100%',
                             placeholder=self.getResourceUri('css/images/social.svg'),
-                             upload_folder='site:img/%s/pg' %self.game_record['id'],
-                             upload_filename=username,edit=True)
+                            connect_ondblclick="Fate.imageUrlPrompt(this)")
+
+                             #upload_folder='site:img/%s/pg' %self.game_record['id'],
+                             #upload_filename=username,edit=True)
         t.tr().td(colspan=2).simpleTextArea(value='^.description',lbl='Description', 
                             height='70px', width='175px',border=0, disabled=not (username==self.user))
         r = t.tr()

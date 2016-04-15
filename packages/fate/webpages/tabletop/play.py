@@ -102,49 +102,7 @@ class GnrCustomWebPage(object):
         tc.npcPage()
         self.gameCreation(tc.borderContainer(title='World aspects',datapath='main'))
 
-    #def gameCommon(self,main_bc):
-    #    bc = main_bc.borderContainer(region='top',height='160px')
-    #    bc.contentPane(region='left',width='500px').plainTableHandler(relation='@players',viewResource='ViewGamePlayers',
-    #                                                    condition='$player_id!=:env_player_id',pbl_classes=True,configurable=False,
-    #                                                    nodeId='playersTH')
-    #    fb = bc.contentPane(region='center').formbuilder(cols=1,border_spacing='3px',datapath='.record')
-    #    fb.textbox(value='^.description',lbl='Description')
-    #    fb.button('Test',fire='test')
-    #    fb.dataRpc('dummy',self.pagesTest,_fired='^test',game_id=self.game_record['id'],
-    #                _onResult="""
-    #                    var s = GET #playersTH.view.store;
-    #                    s.forEach(function(n){
-    #                            var r = result.getItem(n.attr.player_id);
-    #                            if(r){
-    #                                n.updAttributes({page_id:r.getItem('page_id'),_customClasses:r.getItem('_customClasses')},true);
-    #                            }
-    #                        });
-#
-    #                """,_timing=2)
-#
-    #@public_method
-    #def pagesTest(self,game_id=None):
-    #    game_players = self.pageStore().getItem('game_players.%s' %game_id)
-    #    if not game_players:
-    #        game_players = dict([(r['user'],r['player_id']) for r in self.db.table('fate.game_player').query(columns='$player_id,@player_id.@user_id.username AS user',
-    #                                                                                                    where='$game_id=:g AND $player_id!=:env_player_id',g=game_id).fetch()])
-    #        
-    #        self.pageStore().setItem('game_players.%s' %game_id,game_players)
-    #    pages = self.site.register.pages(filters='relative_url:/tabletop/play/%(username)s/%(code)s' %self.getCallArgs('username','code'))
-    #    result = Bag()
-    #    for page_id,p in pages.items():
-    #        if p['user'] in game_players:
-    #            result[game_players[p['user']]] = Bag(dict(page_id =page_id))
-    #    connected_users = self.connection.connected_users_bag(exclude_guest=True)
-    #    for k,v in game_players.items():
-    #        kw = connected_users.getAttr(k)
-    #        result[game_players[k]] = result[game_players[k]] or Bag()
-    #        if kw:
-    #            result[game_players[k]] = result[game_players[k]] or Bag()
-    #            result[game_players[k]]['_customClasses'] = kw['_customClasses']
-    #        else:
-    #            result[game_players[k]]['_customClasses'] = 'user_disconnected'
-    #    return result
+
 
     def gameCreation(self,main_bc):
         top = main_bc.borderContainer(region='top', height='300px',datapath='.game_creation')
