@@ -156,8 +156,8 @@ class PlayManager(BaseComponent):
         bar = frame.top.bar.replaceSlots('#','*,vtitle,*,avt,2',_class='action_log_bar')
         bar.vtitle.div('^#opponent_player.name')
         bar.avt.img(src='^#opponent_player.image_url',height='60px',margin_top='2px')
-        self.act_finalActive(active.roundedGroup(region='bottom',height='200px',datapath='current_scene.current_action.active_player',nodeId='active_player'))
-        self.act_finalOpposition(opponent.roundedGroup(region='bottom',height='200px',datapath='current_scene.current_action.opponent_player',nodeId='opponent_player'))
+        self.act_finalActive(active.roundedGroupFrame(region='bottom',height='200px',datapath='current_scene.current_action.active_player',nodeId='active_player'))
+        self.act_finalOpposition(opponent.roundedGroupFrame(region='bottom',height='200px',datapath='current_scene.current_action.opponent_player',nodeId='opponent_player'))
         
         end_action = bc.contentPane(height='50px',border_top='1px solid silver',region='bottom')
 
@@ -198,21 +198,23 @@ class PlayManager(BaseComponent):
                         mainbc = bc.js_widget,
                         action_status='^current_scene.action_status')
 
-    def act_finalActive(self,pane):
-        tr = pane.table(width='100%').tbody().tr(_class='owner_only')
-        tr.td('Invoke aspect',_class='rolled_value')
-        tr.td().lightButton('+2',action="""
-                        genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
-                    """,_class='dice_button',caller='active')
-        tr.td().lightButton('Re Roll',
-                    action="""
-                        genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
-                    """,
-                        _class='dice_button',caller='active')
-        self.roller(pane,'active')
+    #def act_finalActive_old(self,pane):
+    #    tr = pane.table(width='100%').tbody().tr(_class='owner_only')
+    #    tr.td('Invoke aspect',_class='rolled_value')
+    #    tr.td().lightButton('+2',action="""
+    #                    genro.publish('aspect_picker',{reason:'get_bonus',caller:caller});
+    #                """,_class='dice_button',caller='active')
+    #    tr.td().lightButton('Re Roll',
+    #                action="""
+    #                    genro.publish('aspect_picker',{reason:'re_roll',caller:caller});
+    #                """,
+    #                    _class='dice_button',caller='active')
+    #    self.roller(pane,'active')
 
-    def act_finalActive_menu(self,pane):
-        invoke_button = pane.div('Invoke aspect',_class='dice_button', width='90%')
+    def act_finalActive(self,frame):
+        self.roller(frame.center.contentPane(region='center'),'active')
+        frame.dataFormula('.disable_invoke', '!rolled', rolled='^.rolled')
+        invoke_button = frame.bottom.lightButton('Invoke aspect',_class='dice_button', width='90%', disabled='^.disable_invoke')
 
         menu = invoke_button.menu(_class='smallMenu', modifiers='*')
         menu.menuLine('Add +2', action="genro.publish('aspect_picker',{reason:'get_bonus',caller:'active'});")
@@ -221,8 +223,19 @@ class PlayManager(BaseComponent):
 
 
  
+    def act_finalOpposition(self,frame):
+        self.roller(frame.center.contentPane(region='center'),'opponent')
+        frame.dataFormula('.disable_invoke', 'false',_if='passive', _else='!rolled', passive='^.passive', rolled='^.rolled')
+        invoke_button = frame.bottom.lightButton('Invoke aspect',_class='dice_button', width='90%', disabled='^.rolled?=!#v')
 
-    def act_finalOpposition(self,pane):
+        menu = invoke_button.menu(_class='smallMenu', modifiers='*')
+        menu.menuLine('Add +2', action="genro.publish('aspect_picker',{reason:'get_bonus',caller:'opposition'});")
+        menu.menuLine('Re-roll dices', action="genro.publish('aspect_picker',{reason:'re_roll',caller:'opposition'});", disabled='^.passive')
+
+
+
+
+    def act_finalOpposition_old(self,pane):
         tr = pane.table(width='100%').tbody().tr(_class='owner_only')
         tr.td('Invoke aspect',_class='rolled_value')
         tr.td().lightButton('+2',action="""
